@@ -1,2 +1,2 @@
 # GenElect2.0
-### New and improved GenCyber Elective application for DSU gencyber
+New and improved GenCyber Elective application for DSU gencyber
