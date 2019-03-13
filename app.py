@@ -1,10 +1,11 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
-from forms import CreateUserForm, LoginForm
+from flask_migrate import Migrate
+from genElect.forms import *
+from genElect.models import *
 
 #set app to flask instance
-app = Flask(__name__)
-
+app = Flask(__name__, template_folder='genElect/templates')
 #CONFIGURATIONS
 #set secret key
 app.config['SECRET_KEY'] = 'ec19370b6275506ac26a40c4e6c2e597'
@@ -14,7 +15,7 @@ app.config['SQLALCHEMY_DATABSE_URI'] = 'sqlite:///genelect.db'
 
 #setup database
 db = SQLAlchemy(app)
-
+migrate = Migrate(app, db)
 #MODELS
 #TO COME FROM MODELS.py
 
