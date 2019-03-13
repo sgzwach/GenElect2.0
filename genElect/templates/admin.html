@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Admin Page</h1><br>
+    <h1>Admin Page</h1>
     <a href="{{ url_for('createuser') }}">Create New User</a><br>
     <a href="{{ url_for('createelective') }}">Create New Elective</a><br>
+    <a href="{{ url_for('createnotification') }}">Create New Notification</a><br>
     <a href="{{ url_for('allusers') }}">List Users</a><br>
     <a href="{{ url_for('allelectives') }}">List Electives</a><br>
 {% endblock content %}

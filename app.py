@@ -30,29 +30,14 @@ def load_user(user_id):
     return Users.query.get(int(user_id))
 
 
-#EXAMPLE POSTS (to be notifications)
-posts = [
-    {
-        'author': 'admin',
-        'title': 'New Elective',
-        'content': 'Check out the new elective!',
-        'date_posted': 'March 12, 2019'
-    },
-    {
-        'author': 'admin',
-        'title': 'Welcome!',
-        'content': 'We are happy to announce a new site!',
-        'date_posted': 'March 11, 2019'
-    }
-]
-
-
 #INDEX PAGE
 @app.route("/")
 @app.route("/home")
 @app.route("/index")
 def index():
-    return render_template('index.html', posts=posts)
+    notifications = Notifications.query.all()
+    notifications.reverse()
+    return render_template('index.html', posts=notifications)
 
 
 #ABOUT PAGE
@@ -112,6 +97,26 @@ def createelective():
 
     else:
         return render_template('denied.html')
+
+
+
+#Notification Creator (new posts on homepage)
+@app.route("/createpost", methods=['GET', 'POST'])
+@app.route("/createnotification", methods=['GET', 'POST'])
+def createnotification():
+    if current_user.is_authenticated and current_user.username == "admin":
+        form = CreateNotificationForm()
+        if form.validate_on_submit():
+            new_post = Notifications(title=form.title.data, notification=form.notification.data)
+            db.session.add(new_post)
+            db.session.commit()
+            flash(f"Notification {form.title.data} created!", 'success')
+            return redirect(url_for('admin'))
+        return render_template('createnotification.html', title='New Notification', form=form)
+
+    else:
+        return render_template('denied.html')
+
 
 
 #ACCOUNT PAGE

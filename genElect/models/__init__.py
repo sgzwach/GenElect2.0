@@ -18,10 +18,9 @@ class Base(db.Model):
             onupdate=db.func.current_timestamp())
 
 
-# class Notifications(Base):
-#     title = db.Column(db.String(100))
-#     notification = db.Column(db.String(1000))
-#     #author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+class Notifications(Base):
+    title = db.Column(db.String(100))
+    notification = db.Column(db.String(1000))
 
 # class Roles(Base): 
 #     role = db.Column(db.String(100))
@@ -32,7 +31,6 @@ class Users(Base, UserMixin):
     full_name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     #role = db.relationship('Roles', lazy=True)
-    #posted_notifications = db.relationship('Notifications', backref='author', lazy=True)
     password = db.Column(db.String(128))
 
 

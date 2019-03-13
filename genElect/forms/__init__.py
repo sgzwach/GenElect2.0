@@ -31,3 +31,10 @@ class CreateElectiveForm(FlaskForm):
 	prerequisites = StringField('Prerequisites', validators=[DataRequired()])
 	capacity = IntegerField('Capacity', validators=[Required()])
 	submit = SubmitField('Save Elective')
+
+
+#Form for creating notifications
+class CreateNotificationForm(FlaskForm):
+	title = StringField('Title', validators=[DataRequired()])
+	notification = StringField('Notification', validators=[DataRequired()])
+	submit = SubmitField('Submit Notification')
