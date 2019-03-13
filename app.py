@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager, login_user
 from genElect.forms import *
 from genElect.models import *
 from genElect.utils.crypto import hash_password
@@ -18,6 +19,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///genelect.db'
 #setup database
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+db.create_all()
+
+#LOGIN MANAGER
+login_manager = LoginManager(app)
 
 
 #EXAMPLE POSTS (to be notifications)
@@ -57,13 +62,13 @@ def createuser():
     #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
     form = CreateUserForm()
     if form.validate_on_submit():
-        ##TO FIX
         #hash password for storage 
-        # hashed_pw = hash_password(form.password.data)
-        # new_user = Users(username=form.username.data, full_name=form.full_name.data, email=form.email.data, password=hashed_pw)
-        # #add user to database and commit changes
-        # db.session.add(new_user)
-        # db.session.commit()
+        hashed_pw = hash_password(form.password.data)
+        new_user = Users(username=form.username.data, full_name=form.full_name.data, email=form.email.data, password=hashed_pw)
+        
+        #add user to database and commit changes
+        db.session.add(new_user)
+        db.session.commit()
         flash(f"User {form.username.data} created", 'success')
         return redirect(url_for('createuser'))
     
