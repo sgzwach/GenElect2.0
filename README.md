@@ -1,9 +1,5 @@
 # GenElect2.0
-<<<<<<< HEAD
 New and improved GenCyber Elective application for DSU GenCyber
-=======
-New and improved GenCyber Elective application for DSU gencyber
-
 
 
 
@@ -14,4 +10,3 @@ New and improved GenCyber Elective application for DSU gencyber
 - [ ] Create elective page
 - [ ] Scheduler page
 - [ ] Build DB 
->>>>>>> e27c43040f13cd7e8310c88496e51e5cfd5badce
