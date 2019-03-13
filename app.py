@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, flash, redirect
+from flask import Flask, render_template, url_for, flash, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
@@ -120,12 +120,25 @@ def createnotification():
 
 
 #ACCOUNT PAGE
-@app.route("/account")
+@app.route("/account", methods=['GET', 'POST'])
 def account():
     if current_user.is_authenticated:
-        return render_template('account.html')
+        form = UpdateUserForm()
+        if form.validate_on_submit():
+            current_user.full_name = form.full_name.data
+            current_user.email = form.email.data
+            db.session.commit()
+            flash("Account Info Updated", 'success')
+            return redirect(url_for('account'))
+        elif request.method == 'GET':
+            form.full_name.data = current_user.full_name
+            form.email.data = current_user.email
+            form.username.data = current_user.username
+            form.role.data = 'admin'
+        return render_template('account.html', title='Account', form=form)
     else:
-        return render_template('denied.html')
+        flash("Please login first", 'info')
+        return redirect(url_for('login'))
 
 
 #ADMIN PAGE
@@ -166,6 +179,7 @@ def contact():
 @app.route("/logout")
 def logout():
     logout_user()
+    flash("Logout successful", 'success')
     return redirect(url_for('index'))
 
 

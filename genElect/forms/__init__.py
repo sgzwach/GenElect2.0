@@ -38,3 +38,13 @@ class CreateNotificationForm(FlaskForm):
 	title = StringField('Title', validators=[DataRequired()])
 	notification = StringField('Notification', validators=[DataRequired()])
 	submit = SubmitField('Submit Notification')
+
+
+#Form for Updating user information (for Administrators)
+class UpdateUserForm(FlaskForm):
+	full_name = StringField('Full Name', validators=[DataRequired()])
+	email = StringField('Email', validators=[DataRequired()])
+	username = StringField('Username', validators=[DataRequired()])
+	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
+	role = SelectField('User Role', choices=choices, validators=[Required()])
+	submit = SubmitField('Update')
