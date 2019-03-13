@@ -4,7 +4,6 @@ from genElect.utils.crypto import hash_password
 from sqlalchemy.orm import validates
 
 # create a new SQLAlchemy object
-
 db = SQLAlchemy()
 
 
@@ -18,16 +17,19 @@ class Base(db.Model):
 
 
 class Notifications(Base):
+    title = db.Column(db.String(100))
     notification = db.Column(db.String(1000))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class Roles(Base): 
     role = db.Column(db.String(100))
 
 class Users(Base): 
-    username = db.Column(db.String(100))
+    username = db.Column(db.String(100), unique=True)
     full_name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     role = db.relationship('Roles', lazy=True)
+    posted_notifications = db.relationship('Notifications', backref='author', lazy=True)
     password = db.Column(db.String(128))
 
 

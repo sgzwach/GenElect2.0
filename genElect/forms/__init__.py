@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
 from wtforms.validators import DataRequired, Length, EqualTo, Required
 
 class CreateUserForm(FlaskForm):
-	name = StringField('Full Name', validators=[DataRequired()])
+	full_name = StringField('Full Name', validators=[DataRequired()])
 	email = StringField('Email', validators=[DataRequired()])
 	username = StringField('Username', validators=[DataRequired()])
 	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
