@@ -11,4 +11,4 @@ To run:
 - [ ] Register page
 - [ ] Create elective page
 - [ ] Scheduler page
-- [ ] Build DB 
+- [X] Build DB 
