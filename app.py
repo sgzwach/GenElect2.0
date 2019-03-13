@@ -67,8 +67,8 @@ def createuser():
     #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
     form = CreateUserForm()
     if form.validate_on_submit():
-        #hash password for storage 
-        hashed_pw = hash_password(form.password.data)
+        #hash password for storage FIX
+        #hashed_pw = hash_password(form.password.data)
         new_user = Users(username=form.username.data, full_name=form.full_name.data, email=form.email.data, password=form.password.data)
         
         #add user to database and commit changes
@@ -103,8 +103,11 @@ def createelective():
     if current_user.is_authenticated and current_user.username == "admin":
         form = CreateElectiveForm()
         if form.validate_on_submit():
+            new_elective = Electives(name=form.name.data, instructor=form.instructor.data, description=form.description.data, prerequisites=form.prerequisites.data, capacity=form.capacity.data)
+            db.session.add(new_elective)
+            db.session.commit()
             flash(f"Elective {form.name.data} created!", 'success')
-            return redirect(url_for('index'))
+            return redirect(url_for('createelective'))
         return render_template('createelective.html', title='Create', form=form)
 
     else:
@@ -114,7 +117,7 @@ def createelective():
 #ACCOUNT PAGE
 @app.route("/account")
 def account():
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated:
         return render_template('account.html')
     else:
         return render_template('denied.html')
@@ -125,6 +128,24 @@ def account():
 def admin():
     if current_user.is_authenticated and current_user.username == "admin":
         return render_template('admin.html')
+    else:
+        return render_template('denied.html')
+
+#ADMIN ALL USERS PAGE
+@app.route("/allusers")
+def allusers():
+    if current_user.is_authenticated and current_user.username == "admin":
+        users = Users.query.all()
+        return render_template('allusers.html', users=users)
+    else:
+        return render_template('denied.html')
+
+#ADMIN ALL ELECTIVES PAGE
+@app.route("/allelectives")
+def allelectives():
+    if current_user.is_authenticated and current_user.username == "admin":
+        electives = Electives.query.all()
+        return render_template('allelectives.html', electives=electives)
     else:
         return render_template('denied.html')
 

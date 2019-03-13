@@ -66,9 +66,10 @@ class Users(Base, UserMixin):
 #     def __init__(self, elective_id):
 #         self.elective_id  = elective_id
 
-# class Electives(Base):
-#     name = db.Column(db.String(100))
-#     instructor = db.Column(db.String(100)) 
-#     description = db.Column(db.String(500))
-#     prerequisites = db.Column(db.String(500))
-#     capacity = db.Column(db.Integer)
+class Electives(Base):
+    __tablename__ = 'electives'
+    name = db.Column(db.String(100))
+    instructor = db.Column(db.String(100)) 
+    description = db.Column(db.String(500))
+    prerequisites = db.Column(db.String(500))
+    capacity = db.Column(db.Integer)
