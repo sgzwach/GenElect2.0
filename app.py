@@ -83,6 +83,16 @@ def login():
     
     return render_template('login.html', title='Login', form=form)
 
+#Elective Creator Page (TESTING ROUTE)
+@app.route("/elective", methods=['GET', 'POST'])
+def createelective():
+    form = CreateElectiveForm()
+    if form.validate_on_submit():
+        flash(f"Elective {form.name.data} created!", 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('createelective.html', title='Create', form=form)
+
 
 #CONTACT PAGE
 @app.route("/contactus")
