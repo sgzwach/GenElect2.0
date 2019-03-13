@@ -29,5 +29,5 @@ class CreateElectiveForm(FlaskForm):
 	instructor = StringField('Instructor', validators=[DataRequired()])
 	description = StringField('Description', validators=[DataRequired()])
 	prerequisites = StringField('Prerequisites', validators=[DataRequired()])
-	capacity = IntegerField('capacity', validators=[Required()])
+	capacity = IntegerField('Capacity', validators=[Required()])
 	submit = SubmitField('Save Elective')

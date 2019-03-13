@@ -1,11 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from genElect.utils.crypto import hash_password
 from sqlalchemy.orm import validates
 from app import db
 
 # create a new SQLAlchemy object
-#db = SQLAlchemy()
+# db imported from app
 
 
 # Base model that for other models to inherit from
@@ -25,7 +26,7 @@ class Base(db.Model):
 # class Roles(Base): 
 #     role = db.Column(db.String(100))
 
-class Users(Base): 
+class Users(Base, UserMixin): 
     __tablename__ = 'users'
     username = db.Column(db.String(100), unique=True)
     full_name = db.Column(db.String(100))

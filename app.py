@@ -1,10 +1,10 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user, current_user
 from genElect.forms import *
 from genElect.models import *
-from genElect.utils.crypto import hash_password
+from genElect.utils.crypto import hash_password, verify_password
 
 #set app to flask instance
 app = Flask(__name__, template_folder='genElect/templates')
@@ -23,6 +23,11 @@ db.create_all()
 
 #LOGIN MANAGER
 login_manager = LoginManager(app)
+
+#DECORATOR FOR LoginManager user_loader
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
 
 
 #EXAMPLE POSTS (to be notifications)
@@ -64,7 +69,7 @@ def createuser():
     if form.validate_on_submit():
         #hash password for storage 
         hashed_pw = hash_password(form.password.data)
-        new_user = Users(username=form.username.data, full_name=form.full_name.data, email=form.email.data, password=hashed_pw)
+        new_user = Users(username=form.username.data, full_name=form.full_name.data, email=form.email.data, password=form.password.data)
         
         #add user to database and commit changes
         db.session.add(new_user)
@@ -78,9 +83,13 @@ def createuser():
 #LOGIN PAGE
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        if form.username.data == 'admin' and form.password.data == 'Password1!':
+        user = Users.query.filter_by(username=form.username.data).first() #login with username for now
+        if user and form.password.data == user.password:
+            login_user(user, remember=form.remember.data)
             flash(f"User {form.username.data} login successful!", 'success')
             return redirect(url_for('index'))
         else:
@@ -89,14 +98,35 @@ def login():
     return render_template('login.html', title='Login', form=form)
 
 #Elective Creator Page (TESTING ROUTE)
-@app.route("/elective", methods=['GET', 'POST'])
+@app.route("/createelective", methods=['GET', 'POST'])
 def createelective():
-    form = CreateElectiveForm()
-    if form.validate_on_submit():
-        flash(f"Elective {form.name.data} created!", 'success')
-        return redirect(url_for('index'))
-    
-    return render_template('createelective.html', title='Create', form=form)
+    if current_user.is_authenticated and current_user.username == "admin":
+        form = CreateElectiveForm()
+        if form.validate_on_submit():
+            flash(f"Elective {form.name.data} created!", 'success')
+            return redirect(url_for('index'))
+        return render_template('createelective.html', title='Create', form=form)
+
+    else:
+        return render_template('denied.html')
+
+
+#ACCOUNT PAGE
+@app.route("/account")
+def account():
+    if current_user.is_authenticated and current_user.username == "admin":
+        return render_template('account.html')
+    else:
+        return render_template('denied.html')
+
+
+#ADMIN PAGE
+@app.route("/admin")
+def admin():
+    if current_user.is_authenticated and current_user.username == "admin":
+        return render_template('admin.html')
+    else:
+        return render_template('denied.html')
 
 
 #CONTACT PAGE
@@ -104,6 +134,13 @@ def createelective():
 @app.route("/contact")
 def contact():
     return render_template('contact.html')
+
+
+#LOGOUT ROUTE
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 
