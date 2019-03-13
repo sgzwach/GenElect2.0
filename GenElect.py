@@ -16,10 +16,7 @@ app.config['SQLALCHEMY_DATABSE_URI'] = 'sqlite:///genelect.db'
 db = SQLAlchemy(app)
 
 #MODELS
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-    username = db.Column(db.String(20), unique=True, nullable=False)
+#TO COME FROM MODELS.py
 
 
 #EXAMPLE POSTS
