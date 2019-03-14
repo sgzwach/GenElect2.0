@@ -158,6 +158,32 @@ def allusers():
     else:
         return render_template('denied.html')
 
+#ADMIN EDIT USER BY USER_ID
+@app.route("/user/<user_id>", methods=['GET', 'POST'])
+@app.route("/edituser/<user_id>", methods=['GET', 'POST'])
+def edituser(user_id):
+    if current_user.is_authenticated and current_user.username == "admin":
+        user = Users.query.filter_by(id=int(user_id)).first()
+        if user:
+            form = UpdateUserForm()
+            if form.validate_on_submit():
+                user.username = form.username.data
+                user.full_name = form.full_name.data
+                user.email = form.email.data
+                db.session.commit()
+                flash("Account Info Updated", 'success')
+                return redirect(f'/user/{user_id}')
+            elif request.method == 'GET':
+                form.full_name.data = user.full_name
+                form.email.data = user.email
+                form.username.data = user.username
+                form.role.data = 'student'
+            return render_template('edituser.html', user=user, form=form, title="User Edit")
+        else:
+            return redirect(url_for('index'))
+    else:
+        return render_template('denied.html')
+
 #ADMIN ALL ELECTIVES PAGE
 @app.route("/allelectives")
 def allelectives():
