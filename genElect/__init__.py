@@ -264,10 +264,10 @@ def editnotification(notification_id):
 @app.route("/notification/<notification_id>/delete")
 def deletenotification(notification_id):
     if current_user.is_authenticated and current_user.username == "admin":
-        notification = Notifications.query.filter_by(id=notification_id)
+        notification = Notifications.query.filter_by(id=notification_id).first()
         if notification:
-            #db.session.delete(notification)
-            #db.session.commit()
+            db.session.delete(notification)
+            db.session.commit()
             flash("Notification Deleted", 'info')
             return redirect('/index')
         else:
