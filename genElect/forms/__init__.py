@@ -48,3 +48,11 @@ class UpdateUserForm(FlaskForm):
 	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
 	role = SelectField('User Role', choices=choices, validators=[Required()])
 	submit = SubmitField('Update')
+
+
+#Form for editing notifications (for Administrators)
+class UpdateNotificationForm(FlaskForm):
+	title = StringField('Title', validators=[DataRequired()])
+	notification = StringField('Notification', validators=[DataRequired()])
+	#author = StringField('Notification', validators=[DataRequired()]) #not user for now
+	submit = SubmitField('Update Notification')

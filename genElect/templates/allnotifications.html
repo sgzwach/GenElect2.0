@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>All Notifications Page</h1>
+    {% for notification in notifications %}
+    	<a href="/editnotification/{{notification.id}}">{{ notification.title }}: {{ notification.notification }}</a><br>
+    {% endfor %}
+
+    <br><br><a href="{{ url_for('createnotification') }}">Create New Notification</a>
+{% endblock content %}

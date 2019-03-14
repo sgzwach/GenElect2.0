@@ -189,7 +189,41 @@ def edituser(user_id):
 def allelectives():
     if current_user.is_authenticated and current_user.username == "admin":
         electives = Electives.query.all()
-        return render_template('allelectives.html', electives=electives)
+        return render_template('allelectives.html', electives=electives, title="Electives")
+    else:
+        return render_template('denied.html')
+
+
+#ADMIN ALL NOTIFICATIONS PAGE
+@app.route("/allnotifications")
+def allnotifications():
+    if current_user.is_authenticated and current_user.username == "admin":
+        notifications = Notifications.query.all()
+        return render_template('allnotifications.html', notifications=notifications, title="Notifications")
+    else:
+        return render_template('denied.html')
+
+
+#ADMIN EDIT NOTIFICATION BY NOTIFICATION_ID
+@app.route("/notification/<notification_id>", methods=['GET', 'POST'])
+@app.route("/editnotification/<notification_id>", methods=['GET', 'POST'])
+def editnotification(notification_id):
+    if current_user.is_authenticated and current_user.username == "admin":
+        notification = Notifications.query.filter_by(id=int(notification_id)).first()
+        if notification:
+            form = UpdateNotificationForm()
+            if form.validate_on_submit():
+                notification.title = form.title.data
+                notification.notification = form.notification.data
+                db.session.commit()
+                flash("Notification Updated", 'success')
+                return redirect(f'/notification/{notification_id}')
+            elif request.method == 'GET':
+                form.title.data = notification.title
+                form.notification.data = notification.notification
+            return render_template('editnotification.html', notification=notification, form=form, title="Notification Edit")
+        else:
+            return redirect(url_for('index'))
     else:
         return render_template('denied.html')
 

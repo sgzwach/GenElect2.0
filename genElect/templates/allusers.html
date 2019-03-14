@@ -1,8 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>All Users</h1>
+    <h1>All Users Page</h1>
     {% for user in users %}
     	<a href="/edituser/{{user.id}}">{{ user.username }}</a>
     	<br>
     {% endfor %}
+
+    <br><br><a href="{{ url_for('createuser') }}">Create New User</a>
 {% endblock content %}
