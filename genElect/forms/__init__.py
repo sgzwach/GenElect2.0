@@ -56,3 +56,13 @@ class UpdateNotificationForm(FlaskForm):
 	notification = StringField('Notification', validators=[DataRequired()])
 	#author = StringField('Notification', validators=[DataRequired()]) #not user for now
 	submit = SubmitField('Update Notification')
+
+
+#Form for Updating electives
+class UpdateElectiveForm(FlaskForm):
+	name = StringField('Elective Name', validators=[DataRequired()])
+	instructor = StringField('Instructor', validators=[DataRequired()])
+	description = StringField('Description', validators=[DataRequired()])
+	prerequisites = StringField('Prerequisites', validators=[DataRequired()])
+	capacity = IntegerField('Capacity', validators=[Required()])
+	submit = SubmitField('Update Elective')

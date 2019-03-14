@@ -2,7 +2,7 @@
 {% block content %}
     <h1>All Electives</h1>
     {% for elective in electives %}
-    	{{ elective.name }}
+    	<a href="/editelective/{{elective.id}}">{{ elective.name }}: {{ elective.instructor }}</a><br>
     	<br>
     {% endfor %}
 {% endblock content %}
