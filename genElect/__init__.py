@@ -40,7 +40,7 @@ from genElect.forms import *
 def index():
     notifications = Notifications.query.all()
     notifications.reverse()
-    return render_template('index.html', posts=notifications)
+    return render_template('index.html', notifications=notifications)
 
 
 #ABOUT PAGE
@@ -255,9 +255,28 @@ def editnotification(notification_id):
                 form.notification.data = notification.notification
             return render_template('editnotification.html', notification=notification, form=form, title="Notification Edit")
         else:
-            return redirect(url_for('index'))
+            return render_template('notfound.html')
     else:
         return render_template('denied.html')
+
+
+@app.route("/deletenotification/<notification_id>")
+@app.route("/notification/<notification_id>/delete")
+def deletenotification(notification_id):
+    if current_user.is_authenticated and current_user.username == "admin":
+        notification = Notifications.query.filter_by(id=notification_id)
+        if notification:
+            #db.session.delete(notification)
+            #db.session.commit()
+            flash("Notification Deleted", 'info')
+            return redirect('/index')
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+
+
 
 
 

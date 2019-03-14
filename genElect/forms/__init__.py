@@ -37,7 +37,7 @@ class CreateElectiveForm(FlaskForm):
 class CreateNotificationForm(FlaskForm):
 	title = StringField('Title', validators=[DataRequired()])
 	notification = StringField('Notification', validators=[DataRequired()])
-	submit = SubmitField('Submit Notification')
+	submit = SubmitField('Create Notification')
 
 
 #Form for Updating user information (for Administrators)

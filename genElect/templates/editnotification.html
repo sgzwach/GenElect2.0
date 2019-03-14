@@ -4,7 +4,7 @@
     	<form method="POST" action="">
     		{{ form.hidden_tag() }}
     		<fieldset class="form-group">
-    			<legend class="border-bottom mb-4">Edit Notification {{ notification.title }}</legend>
+    			<legend class="border-bottom mb-4">Edit Notification: {{ notification.title }}</legend>
     			<div class="form-group">
     				{{ form.title.label(class="form-control-label") }}
 
@@ -36,6 +36,7 @@
     		<div class="form-group">
     			{{ form.submit(class="btn btn-outline-info") }}
                 <button type="button" onclick="window.location.href = '/allnotifications'" class="btn btn-outline-danger">Cancel</button>
+                <button type="button" onclick="window.location.href = '/deletenotification/{{notification.id}}'" class="btn btn-outline-danger">Delete</button>
     		</div>
     	</form>
     </div>
