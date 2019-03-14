@@ -1,9 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>All Notifications Page</h1>
-    {% for notification in notifications %}
-    	<a href="/editnotification/{{notification.id}}">{{ notification.title }}: {{ notification.notification }}</a><br>
-    {% endfor %}
-
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">#</th>
+	      <th scope="col">Title</th>
+	      <th scope="col">Date Created</th>
+	      <th scope="col">Update</th>
+	      <th scope="col">Delete</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for notification in notifications %}
+	    <tr>
+	      <th scope="row">{{notification.id}}</th>
+	      <th scope="row">{{notification.title}}</th>
+	      <th scope="row">{{notification.date_created}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/editnotification/{{notification.id}}'" class="btn btn-outline-info">Update</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/deletenotification/{{notification.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
     <br><br><a href="{{ url_for('createnotification') }}">Create New Notification</a>
 {% endblock content %}

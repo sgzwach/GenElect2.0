@@ -277,6 +277,21 @@ def deletenotification(notification_id):
 
 
 
+@app.route("/deleteelective/<elective_id>")
+@app.route("/elective/<elective_id>/delete")
+def deleteelective(elective_id):
+    if current_user.is_authenticated and current_user.username == "admin":
+        elective = Electives.query.filter_by(id=elective_id).first()
+        if elective:
+            db.session.delete(elective)
+            db.session.commit()
+            flash("Elective Deleted", 'info')
+            return redirect('/allelectives')
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
 
 
 

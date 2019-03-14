@@ -1,8 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>All Electives</h1>
-    {% for elective in electives %}
-    	<a href="/editelective/{{elective.id}}">{{ elective.name }}: {{ elective.instructor }}</a><br>
-    	<br>
-    {% endfor %}
+    <h1>All Electives Page</h1>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">#</th>
+	      <th scope="col">Name</th>
+	      <th scope="col">Date Created</th>
+	      <th scope="col">Update</th>
+	      <th scope="col">Delete</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for elective in electives %}
+	    <tr>
+	      <th scope="row">{{elective.id}}</th>
+	      <th scope="row">{{elective.name}}</th>
+	      <th scope="row">{{elective.date_created}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/editelective/{{elective.id}}'" class="btn btn-outline-info">Update</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteelective/{{elective.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+    <br><br><a href="{{ url_for('createelective') }}">Create New elective</a>
 {% endblock content %}
