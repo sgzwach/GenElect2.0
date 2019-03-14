@@ -3,7 +3,7 @@ New and improved GenCyber Elective application for DSU GenCyber
 
 To run:
 
-`python3 app.py`
+`python3 run.py`
 
 ## Todo - Break these out into further tasks as we go 
 - [ ] Homepage (with notifications)

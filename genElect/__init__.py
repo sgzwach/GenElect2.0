@@ -2,19 +2,17 @@ from flask import Flask, render_template, url_for, flash, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
-from genElect.forms import *
-from genElect.models import *
-from genElect.utils.crypto import hash_password, verify_password
 
 #set app to flask instance
-app = Flask(__name__, template_folder='genElect/templates')
+app = Flask(__name__, template_folder='templates')
 
 #CONFIGURATIONS
 #set secret key
 app.config['SECRET_KEY'] = 'ec19370b6275506ac26a40c4e6c2e597'
 #sqlite uri
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///genelect.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../genelect.db'
 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 #setup database
 db = SQLAlchemy(app)
@@ -29,6 +27,11 @@ login_manager = LoginManager(app)
 def load_user(user_id):
     return Users.query.get(int(user_id))
 
+from genElect.models import Notifications
+from genElect.models import Users
+from genElect.models import Electives
+
+from genElect.forms import *
 
 #INDEX PAGE
 @app.route("/")
@@ -242,7 +245,3 @@ def logout():
     flash("Logout successful", 'success')
     return redirect(url_for('index'))
 
-
-
-if __name__ == '__main__':
-    app.run(debug=True) #start app in debug mode

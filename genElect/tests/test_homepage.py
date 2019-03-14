@@ -2,6 +2,7 @@
 import os
 import unittest
  
+from genElect import app
  
 TEST_DB = 'test.db'
  

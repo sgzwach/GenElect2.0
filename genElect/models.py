@@ -1,13 +1,10 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from genElect.utils.crypto import hash_password
 from sqlalchemy.orm import validates
-from app import db
+from genElect import db
 
-# create a new SQLAlchemy object
 # db imported from app
-
 
 # Base model that for other models to inherit from
 class Base(db.Model):
@@ -33,10 +30,6 @@ class Users(Base, UserMixin):
     #role = db.relationship('Roles', lazy=True)
     password = db.Column(db.String(128))
 
-
-    # @validates('password')
-    # def validate_password(self, key, plaintext):
-    #     return hash_password(str(plaintext))
 
     # # Future VIP registration option
     # early_reg = db.Column(db.Boolean)
