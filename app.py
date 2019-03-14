@@ -193,6 +193,35 @@ def allelectives():
     else:
         return render_template('denied.html')
 
+#ADMIN EDIT ELECTIVE BY ELECTIVE_ID
+@app.route("/elective/<elective_id>", methods=['GET', 'POST'])
+@app.route("/editelective/<elective_id>", methods=['GET', 'POST'])
+def editelective(elective_id):
+    if current_user.is_authenticated and current_user.username == "admin":
+        elective = Electives.query.filter_by(id=int(elective_id)).first()
+        if elective:
+            form = UpdateElectiveForm()
+            if form.validate_on_submit():
+                elective.name = form.name.data
+                elective.instructor = form.instructor.data
+                elective.description = form.description.data
+                elective.prerequisites = form.prerequisites.data
+                elective.capacity = form.capacity.data
+                db.session.commit()
+                flash("Elective Info Updated", 'success')
+                return redirect(f'/elective/{elective_id}')
+            elif request.method == 'GET':
+                form.name.data = elective.name
+                form.instructor.data = elective.instructor
+                form.description.data = elective.description
+                form.prerequisites.data = elective.prerequisites
+                form.capacity.data = elective.capacity
+            return render_template('editelective.html', elective=elective, form=form, title="Elective Edit")
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
 
 #ADMIN ALL NOTIFICATIONS PAGE
 @app.route("/allnotifications")
@@ -226,6 +255,7 @@ def editnotification(notification_id):
             return redirect(url_for('index'))
     else:
         return render_template('denied.html')
+
 
 
 #CONTACT PAGE
