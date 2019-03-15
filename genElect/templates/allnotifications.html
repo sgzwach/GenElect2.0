@@ -23,5 +23,6 @@
 	    {% endfor %}
 	  </tbody>
 	</table>
-    <br><br><a href="{{ url_for('createnotification') }}">Create New Notification</a>
+    <br>
+    <button type="button" onclick="window.location.href = '/createnotification'" class="btn btn-outline-info">Create New Notification</button>
 {% endblock content %}

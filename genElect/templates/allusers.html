@@ -1,10 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>All Users Page</h1>
-    {% for user in users %}
-    	<a href="/edituser/{{user.id}}">{{ user.username }}</a>
-    	<br>
-    {% endfor %}
-
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">#</th>
+	      <th scope="col">Full Name</th>
+	      <th scope="col">Username</th>
+	      <th scope="col">Email</th>
+	      <th scope="col">Update</th>
+	      <th scope="col">Delete</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for user in users %}
+	    <tr>
+	      <th scope="row">{{user.id}}</th>
+	      <th scope="row">{{user.full_name}}</th>
+	      <th scope="row">{{user.username}}</th>
+	      <th scope="row">{{user.email}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/edituser/{{user.id}}'" class="btn btn-outline-info">Update</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteuser/{{user.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
     <br><br><a href="{{ url_for('createuser') }}">Create New User</a>
 {% endblock content %}

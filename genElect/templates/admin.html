@@ -1,10 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>Admin Page</h1>
-    <a href="{{ url_for('createuser') }}">Create New User</a><br>
-    <a href="{{ url_for('createelective') }}">Create New Elective</a><br>
-    <a href="{{ url_for('createnotification') }}">Create New Notification</a><br>
-    <a href="{{ url_for('allusers') }}">List Users</a><br>
-    <a href="{{ url_for('allelectives') }}">List Electives</a><br>
-    <a href="{{ url_for('allnotifications') }}">List Notifications</a><br>
+    <br>
+    <button type="button" onclick="window.location.href = '/allusers'" class="btn btn-outline-info">Users</button>
+    <button type="button" onclick="window.location.href = '/createuser'" class="btn btn-outline-info">Create New User</button>
+    <br><br><br>
+    <button type="button" onclick="window.location.href = '/allelectives'" class="btn btn-outline-info">Electives</button>
+    <button type="button" onclick="window.location.href = '/createelective'" class="btn btn-outline-info">Create New Elective</button>
+    <br><br><br>
+    <button type="button" onclick="window.location.href = '/allnotifications'" class="btn btn-outline-info">Notifications</button>
+    <button type="button" onclick="window.location.href = '/createnotification'" class="btn btn-outline-info">Create New Notification</button>
 {% endblock content %}

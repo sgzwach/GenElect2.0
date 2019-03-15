@@ -26,17 +26,24 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('index') }}">Home</a>
-              <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
-              <a class="nav-item nav-link" href="{{ url_for('contact') }}">Contact</a>
+              {% if not current_user.is_authenticated or current_user.username != "admin" %}  
+                <a class="nav-item nav-link" href="{{ url_for('index') }}">Home</a>
+                <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+                <a class="nav-item nav-link" href="{{ url_for('contact') }}">Contact</a>
+              {% endif %}
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
                 {% if current_user.username == "admin" %}
                   <a class="nav-item nav-link" href="{{ url_for('admin') }}">Admin</a>
+                  <a class="nav-item nav-link" href="{{ url_for('allusers') }}">Users</a>
+                  <a class="nav-item nav-link" href="{{ url_for('allelectives') }}">Electives</a>
+                  <a class="nav-item nav-link" href="{{ url_for('allnotifications') }}">Notifications</a>
                 {% endif %}
-                <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
+                {% if current_user.username != "admin" %}
+                  <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
+                {% endif %}
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
               {% else %}
                 <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>

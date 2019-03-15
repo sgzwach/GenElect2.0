@@ -187,6 +187,24 @@ def edituser(user_id):
     else:
         return render_template('denied.html')
 
+
+#ADMIN DELETE USER BY USER ID
+@app.route("/deleteuser/<user_id>")
+@app.route("/user/<user_id>/delete")
+def deleteuser(user_id):
+    if current_user.is_authenticated and current_user.username == "admin":
+        user = Users.query.filter_by(id=user_id).first()
+        if user and user.username != "admin": #make sure not to delete admin
+            db.session.delete(user)
+            db.session.commit()
+            flash("User Deleted", 'info')
+            return redirect('/allusers')
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+
 #ADMIN ALL ELECTIVES PAGE
 @app.route("/allelectives")
 def allelectives():
@@ -195,6 +213,7 @@ def allelectives():
         return render_template('allelectives.html', electives=electives, title="Electives")
     else:
         return render_template('denied.html')
+
 
 #ADMIN EDIT ELECTIVE BY ELECTIVE_ID
 @app.route("/elective/<elective_id>", methods=['GET', 'POST'])
@@ -220,6 +239,22 @@ def editelective(elective_id):
                 form.prerequisites.data = elective.prerequisites
                 form.capacity.data = elective.capacity
             return render_template('editelective.html', elective=elective, form=form, title="Elective Edit")
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+#ADMIN DELETE ELECTIVE BY ELECTIVE ID
+@app.route("/deleteelective/<elective_id>")
+@app.route("/elective/<elective_id>/delete")
+def deleteelective(elective_id):
+    if current_user.is_authenticated and current_user.username == "admin":
+        elective = Electives.query.filter_by(id=elective_id).first()
+        if elective:
+            db.session.delete(elective)
+            db.session.commit()
+            flash("Elective Deleted", 'info')
+            return redirect('/allelectives')
         else:
             return render_template('notfound.html')
     else:
@@ -260,6 +295,7 @@ def editnotification(notification_id):
         return render_template('denied.html')
 
 
+#ADMIN DELETE NOTIFICATION BY NOTIFICATION ID
 @app.route("/deletenotification/<notification_id>")
 @app.route("/notification/<notification_id>/delete")
 def deletenotification(notification_id):
@@ -270,23 +306,6 @@ def deletenotification(notification_id):
             db.session.commit()
             flash("Notification Deleted", 'info')
             return redirect('/index')
-        else:
-            return render_template('notfound.html')
-    else:
-        return render_template('denied.html')
-
-
-
-@app.route("/deleteelective/<elective_id>")
-@app.route("/elective/<elective_id>/delete")
-def deleteelective(elective_id):
-    if current_user.is_authenticated and current_user.username == "admin":
-        elective = Electives.query.filter_by(id=elective_id).first()
-        if elective:
-            db.session.delete(elective)
-            db.session.commit()
-            flash("Elective Deleted", 'info')
-            return redirect('/allelectives')
         else:
             return render_template('notfound.html')
     else:
