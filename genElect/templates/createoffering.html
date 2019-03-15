@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+    	<form method="POST" action="">
+    		{{ form.hidden_tag() }}
+    		<fieldset class="form-group">
+    			<legend class="border-bottom mb-4">Create New Notification</legend>
+    			<div class="form-group">
+    				{{ form.building.label(class="form-control-label") }}
+
+                    {% if form.building.errors %}
+                        {{ form.building(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.building.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.building(class="form-control form-control-lg") }}
+                    {% endif %}
+    			</div>
+    			<div class="form-group">
+    				{{ form.room.label(class="form-control-label") }}
+    				{% if form.room.errors %}
+                        {{ form.room(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.room.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.room(class="form-control form-control-lg") }}
+                    {% endif %}
+    			</div>
+                <div class="form-group">
+                    {{ form.instructor.label(class="form-control-label") }}
+                    {% if form.instructor.errors %}
+                        {{ form.instructor(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.instructor.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.instructor(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.capacity.label(class="form-control-label") }}
+                    {% if form.capacity.errors %}
+                        {{ form.capacity(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.capacity.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.capacity(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+    		</fieldset>
+    		<div class="form-group">
+    			{{ form.submit(class="btn btn-outline-info") }}
+                <button type="button" onclick="window.location.href = '/allofferings'" class="btn btn-outline-danger">Cancel</button>
+    		</div>
+    	</form>
+    </div>
+{% endblock content %}

@@ -20,19 +20,6 @@
                     {% endif %}
     			</div>
     			<div class="form-group">
-    				{{ form.instructor.label(class="form-control-label") }}
-    				{% if form.instructor.errors %}
-                        {{ form.instructor(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.instructor.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor%}
-                        </div>
-                    {% else %}
-                        {{ form.instructor(class="form-control form-control-lg") }}
-                    {% endif %}
-    			</div>
-    			<div class="form-group">
     				{{ form.description.label(class="form-control-label") }}
     				{% if form.description.errors %}
                         {{ form.description(class="form-control form-control-lg is-invalid") }}
@@ -56,19 +43,6 @@
                         </div>
                     {% else %}
                         {{ form.prerequisites(class="form-control form-control-lg") }}
-                    {% endif %}
-    			</div>
-    			<div class="form-group">
-    				{{ form.capacity.label(class="form-control-label") }}
-    				{% if form.capacity.errors %}
-                        {{ form.capacity(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.capacity.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor%}
-                        </div>
-                    {% else %}
-                        {{ form.capacity(class="form-control form-control-lg") }}
                     {% endif %}
     			</div>
     		</fieldset>

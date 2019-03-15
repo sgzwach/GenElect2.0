@@ -4,8 +4,6 @@ from flask_login import UserMixin
 from sqlalchemy.orm import validates
 from genElect import db
 
-# db imported from app
-
 # Base model that for other models to inherit from
 class Base(db.Model):
     __abstract__ = True
@@ -19,15 +17,12 @@ class Notifications(Base):
     title = db.Column(db.String(100))
     notification = db.Column(db.String(1000))
 
-# class Roles(Base): 
-#     role = db.Column(db.String(100))
-
 class Users(Base, UserMixin): 
     __tablename__ = 'users'
     username = db.Column(db.String(100), unique=True)
     full_name = db.Column(db.String(100))
     email = db.Column(db.String(100))
-    #role = db.relationship('Roles', lazy=True)
+    role = db.Column(db.String(32), nullable=False)
     password = db.Column(db.String(128))
 
 
@@ -46,21 +41,28 @@ class Users(Base, UserMixin):
 #         self.user_id = username
 #         self.offering_id = offering_id
 
-# class Offerings(Base):
-#     day = db.Column(db.Date)
-#     period_start = db.Column(db.Integer)
-#     period_length = db.Column(db.Integer)
-#     building = db.Column(db.String(100))
-#     room = db.Column(db.String(100))
-#     elective_id = db.relationship('Electives', lazy=True)
+class Offerings(Base):
+    __tablename__ = 'offerings'
+    day = db.Column(db.Date)
+    period_start = db.Column(db.Integer)
+    period_length = db.Column(db.Integer)
+    building = db.Column(db.String(100))
+    room = db.Column(db.String(100))
+    instructor = db.Column(db.String(100))
+    capacity = db.Column(db.Integer)
+    #elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
 
 #     def __init__(self, elective_id):
 #         self.elective_id  = elective_id
 
 class Electives(Base):
     __tablename__ = 'electives'
-    name = db.Column(db.String(100))
-    instructor = db.Column(db.String(100)) 
+    name = db.Column(db.String(100)) 
     description = db.Column(db.String(500))
     prerequisites = db.Column(db.String(500))
-    capacity = db.Column(db.Integer)
+
+
+#SOMETHING FOR CHECKING IF TEACHING MAYBER
+# class Teachings(Base):
+#     offering_id
+#     user_id

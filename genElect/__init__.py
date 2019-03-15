@@ -30,6 +30,7 @@ def load_user(user_id):
 from genElect.models import Notifications
 from genElect.models import Users
 from genElect.models import Electives
+from genElect.models import Offerings
 
 from genElect.forms import *
 
@@ -49,25 +50,6 @@ def about():
     return render_template('about.html', title='About')
 
 
-#CREATE USER PAGE
-@app.route("/createuser", methods=['GET', 'POST'])
-def createuser():
-    #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
-    form = CreateUserForm()
-    if form.validate_on_submit():
-        #hash password for storage FIX
-        #hashed_pw = hash_password(form.password.data)
-        new_user = Users(username=form.username.data, full_name=form.full_name.data, email=form.email.data, password=form.password.data)
-        
-        #add user to database and commit changes
-        db.session.add(new_user)
-        db.session.commit()
-        flash(f"User {form.username.data} created", 'success')
-        return redirect(url_for('createuser'))
-    
-    return render_template('createuser.html', title='Create User', form=form)
-
-
 #LOGIN PAGE
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -85,60 +67,12 @@ def login():
     
     return render_template('login.html', title='Login', form=form)
 
-#Elective Creator Page (TESTING ROUTE)
-@app.route("/createelective", methods=['GET', 'POST'])
-def createelective():
-    if current_user.is_authenticated and current_user.username == "admin":
-        form = CreateElectiveForm()
-        if form.validate_on_submit():
-            new_elective = Electives(name=form.name.data, instructor=form.instructor.data, description=form.description.data, prerequisites=form.prerequisites.data, capacity=form.capacity.data)
-            db.session.add(new_elective)
-            db.session.commit()
-            flash(f"Elective {form.name.data} created!", 'success')
-            return redirect(url_for('createelective'))
-        return render_template('createelective.html', title='Create', form=form)
-
-    else:
-        return render_template('denied.html')
-
-
-
-#Notification Creator (new posts on homepage)
-@app.route("/createpost", methods=['GET', 'POST'])
-@app.route("/createnotification", methods=['GET', 'POST'])
-def createnotification():
-    if current_user.is_authenticated and current_user.username == "admin":
-        form = CreateNotificationForm()
-        if form.validate_on_submit():
-            new_post = Notifications(title=form.title.data, notification=form.notification.data)
-            db.session.add(new_post)
-            db.session.commit()
-            flash(f"Notification {form.title.data} created!", 'success')
-            return redirect(url_for('admin'))
-        return render_template('createnotification.html', title='New Notification', form=form)
-
-    else:
-        return render_template('denied.html')
-
-
 
 #ACCOUNT PAGE
 @app.route("/account", methods=['GET', 'POST'])
 def account():
     if current_user.is_authenticated:
-        form = UpdateUserForm()
-        if form.validate_on_submit():
-            current_user.full_name = form.full_name.data
-            current_user.email = form.email.data
-            db.session.commit()
-            flash("Account Info Updated", 'success')
-            return redirect(url_for('account'))
-        elif request.method == 'GET':
-            form.full_name.data = current_user.full_name
-            form.email.data = current_user.email
-            form.username.data = current_user.username
-            form.role.data = 'admin'
-        return render_template('account.html', title='Account', form=form)
+        return render_template('account.html', title='Account')
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))
@@ -147,15 +81,38 @@ def account():
 #ADMIN PAGE
 @app.route("/admin")
 def admin():
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         return render_template('admin.html')
     else:
         return render_template('denied.html')
 
+
+#### USERS ####
+
+#ADMIN CREATE USER PAGE
+@app.route("/createuser", methods=['GET', 'POST'])
+def createuser():
+    #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
+    if current_user.is_authenticated and current_user.role == "admin":
+        form = CreateUserForm()
+        if form.validate_on_submit():
+            new_user = Users(username=form.username.data, full_name=form.full_name.data, role=form.role.data, email=form.email.data, password=form.password.data)
+            
+            #add user to database and commit changes
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"User {form.username.data} created", 'success')
+            return redirect(url_for('createuser'))
+        return render_template('createuser.html', title='Create User', form=form)
+    
+    else:
+        return render_template('denied.html')
+
+
 #ADMIN ALL USERS PAGE
 @app.route("/allusers")
 def allusers():
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         users = Users.query.all()
         return render_template('allusers.html', users=users)
     else:
@@ -165,7 +122,7 @@ def allusers():
 @app.route("/user/<user_id>", methods=['GET', 'POST'])
 @app.route("/edituser/<user_id>", methods=['GET', 'POST'])
 def edituser(user_id):
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         user = Users.query.filter_by(id=int(user_id)).first()
         if user:
             form = UpdateUserForm()
@@ -173,6 +130,7 @@ def edituser(user_id):
                 user.username = form.username.data
                 user.full_name = form.full_name.data
                 user.email = form.email.data
+                user.role = form.role.data
                 db.session.commit()
                 flash("Account Info Updated", 'success')
                 return redirect(f'/user/{user_id}')
@@ -180,7 +138,7 @@ def edituser(user_id):
                 form.full_name.data = user.full_name
                 form.email.data = user.email
                 form.username.data = user.username
-                form.role.data = 'student'
+                form.role.data = user.role
             return render_template('edituser.html', user=user, form=form, title="User Edit")
         else:
             return redirect(url_for('index'))
@@ -192,7 +150,7 @@ def edituser(user_id):
 @app.route("/deleteuser/<user_id>")
 @app.route("/user/<user_id>/delete")
 def deleteuser(user_id):
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         user = Users.query.filter_by(id=user_id).first()
         if user and user.username != "admin": #make sure not to delete admin
             db.session.delete(user)
@@ -204,11 +162,32 @@ def deleteuser(user_id):
     else:
         return render_template('denied.html')
 
+#### END OF USERS ####
+
+
+
+#### ELECTIVES ####
+
+#Elective Creator Page (TESTING ROUTE)
+@app.route("/createelective", methods=['GET', 'POST'])
+def createelective():
+    if current_user.is_authenticated and current_user.role == "admin":
+        form = ElectiveForm()
+        if form.validate_on_submit():
+            new_elective = Electives(name=form.name.data, description=form.description.data, prerequisites=form.prerequisites.data)
+            db.session.add(new_elective)
+            db.session.commit()
+            flash(f"Elective {form.name.data} created!", 'success')
+            return redirect(url_for('createelective'))
+        return render_template('createelective.html', title='Create', form=form)
+
+    else:
+        return render_template('denied.html')
 
 #ADMIN ALL ELECTIVES PAGE
 @app.route("/allelectives")
 def allelectives():
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         electives = Electives.query.all()
         return render_template('allelectives.html', electives=electives, title="Electives")
     else:
@@ -219,25 +198,21 @@ def allelectives():
 @app.route("/elective/<elective_id>", methods=['GET', 'POST'])
 @app.route("/editelective/<elective_id>", methods=['GET', 'POST'])
 def editelective(elective_id):
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         elective = Electives.query.filter_by(id=int(elective_id)).first()
         if elective:
-            form = UpdateElectiveForm()
+            form = ElectiveForm()
             if form.validate_on_submit():
                 elective.name = form.name.data
-                elective.instructor = form.instructor.data
                 elective.description = form.description.data
                 elective.prerequisites = form.prerequisites.data
-                elective.capacity = form.capacity.data
                 db.session.commit()
                 flash("Elective Info Updated", 'success')
                 return redirect(f'/elective/{elective_id}')
             elif request.method == 'GET':
                 form.name.data = elective.name
-                form.instructor.data = elective.instructor
                 form.description.data = elective.description
                 form.prerequisites.data = elective.prerequisites
-                form.capacity.data = elective.capacity
             return render_template('editelective.html', elective=elective, form=form, title="Elective Edit")
         else:
             return render_template('notfound.html')
@@ -248,7 +223,7 @@ def editelective(elective_id):
 @app.route("/deleteelective/<elective_id>")
 @app.route("/elective/<elective_id>/delete")
 def deleteelective(elective_id):
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         elective = Electives.query.filter_by(id=elective_id).first()
         if elective:
             db.session.delete(elective)
@@ -260,11 +235,64 @@ def deleteelective(elective_id):
     else:
         return render_template('denied.html')
 
+#### END OF ELECTIVES ####
+
+
+
+
+#### OFFERINGS ####
+
+#ALL OFFERINGS PAGE
+@app.route("/allofferings")
+def allofferings():
+    offerings = Offerings.query.all()
+    return render_template('allofferings.html', offerings=offerings, title="Offerings")
+
+#ADMIN CREATE NEW OFFERING
+#Elective Creator Page (TESTING ROUTE)
+@app.route("/createoffering", methods=['GET', 'POST'])
+def createoffering():
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
+        form = OfferingForm()
+        if form.validate_on_submit():
+            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data)
+            db.session.add(new_offering)
+            db.session.commit()
+            flash(f"Offering created!", 'success')
+            return redirect(url_for('createoffering'))
+        return render_template('createoffering.html', title='Create Offering', form=form)
+
+    else:
+        return render_template('denied.html')
+
+
+#### END OF OFFERINGS ####
+
+
+
+#### NOTIFICATIONS ####
+
+#ADMIN Notification Creator (new posts on homepage)
+@app.route("/createpost", methods=['GET', 'POST'])
+@app.route("/createnotification", methods=['GET', 'POST'])
+def createnotification():
+    if current_user.is_authenticated and current_user.role == "admin":
+        form = NotificationForm()
+        if form.validate_on_submit():
+            new_post = Notifications(title=form.title.data, notification=form.notification.data)
+            db.session.add(new_post)
+            db.session.commit()
+            flash(f"Notification {form.title.data} created!", 'success')
+            return redirect(url_for('admin'))
+        return render_template('createnotification.html', title='New Notification', form=form)
+
+    else:
+        return render_template('denied.html')
 
 #ADMIN ALL NOTIFICATIONS PAGE
 @app.route("/allnotifications")
 def allnotifications():
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         notifications = Notifications.query.all()
         return render_template('allnotifications.html', notifications=notifications, title="Notifications")
     else:
@@ -275,10 +303,10 @@ def allnotifications():
 @app.route("/notification/<notification_id>", methods=['GET', 'POST'])
 @app.route("/editnotification/<notification_id>", methods=['GET', 'POST'])
 def editnotification(notification_id):
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         notification = Notifications.query.filter_by(id=int(notification_id)).first()
         if notification:
-            form = UpdateNotificationForm()
+            form = NotificationForm()
             if form.validate_on_submit():
                 notification.title = form.title.data
                 notification.notification = form.notification.data
@@ -299,7 +327,7 @@ def editnotification(notification_id):
 @app.route("/deletenotification/<notification_id>")
 @app.route("/notification/<notification_id>/delete")
 def deletenotification(notification_id):
-    if current_user.is_authenticated and current_user.username == "admin":
+    if current_user.is_authenticated and current_user.role == "admin":
         notification = Notifications.query.filter_by(id=notification_id).first()
         if notification:
             db.session.delete(notification)
@@ -311,7 +339,7 @@ def deletenotification(notification_id):
     else:
         return render_template('denied.html')
 
-
+#### END OF NOTIFICATIONS ####
 
 
 #CONTACT PAGE
