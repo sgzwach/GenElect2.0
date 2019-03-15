@@ -2,7 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Length, EqualTo, Required
 
-
 #Form for Creating New Users (for Administrators)
 class CreateUserForm(FlaskForm):
 	full_name = StringField('Full Name', validators=[DataRequired()])
@@ -45,9 +44,9 @@ class OfferingForm(FlaskForm):
 	building = StringField('Building', validators=[DataRequired()])
 	room = StringField('Room', validators=[DataRequired()])
 	instructor = StringField('Instructor', validators=[DataRequired()])
-	#choices = get_elective_choices()
-	#elective = SelectField('Elective', choices=choices, validators=[Required()])
-	capacity = IntegerField('capacity', validators=[DataRequired()])
+	choices = []
+	elective = SelectField('Elective', choices=choices, validators=[Required()])
+	capacity = IntegerField('Capacity', validators=[DataRequired()])
 	submit = SubmitField('Save Offering')
 
 

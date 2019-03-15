@@ -254,8 +254,14 @@ def allofferings():
 def createoffering():
     if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         form = OfferingForm()
+        choices = []
+        electives = Electives.query.all()
+        for elective in electives:
+            choices.append((str(elective.id), elective.name))
+        form.elective.choices = choices
         if form.validate_on_submit():
-            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data)
+            elective = Electives.query.filter_by(id=int(form.elective.data)).first()
+            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, elective=elective)
             db.session.add(new_offering)
             db.session.commit()
             flash(f"Offering created!", 'success')

@@ -5,7 +5,8 @@
 	  <thead>
 	    <tr>
 	      <th scope="col">#</th>
-	      <th scope="col">Title</th>
+	      <th scope="col">Elective Name</th>
+	      <th scope="col">Building</th>
 	      <th scope="col">Date Created</th>
 	      <th scope="col">Update</th>
 	      <th scope="col">Delete</th>
@@ -15,6 +16,7 @@
 	  	{% for offering in offerings %}
 	    <tr>
 	      <th scope="row">{{offering.id}}</th>
+	      <th scope="row">{{offering.elective.name}}</th>
 	      <th scope="row">{{offering.building}}</th>
 	      <th scope="row">{{offering.date_created}}</th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '#'" class="btn btn-outline-info">Update</button></th>

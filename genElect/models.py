@@ -50,7 +50,7 @@ class Offerings(Base):
     room = db.Column(db.String(100))
     instructor = db.Column(db.String(100))
     capacity = db.Column(db.Integer)
-    #elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
+    elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
 
 #     def __init__(self, elective_id):
 #         self.elective_id  = elective_id
@@ -60,6 +60,7 @@ class Electives(Base):
     name = db.Column(db.String(100)) 
     description = db.Column(db.String(500))
     prerequisites = db.Column(db.String(500))
+    offerings = db.relationship('Offerings', backref='elective', lazy=True)
 
 
 #SOMETHING FOR CHECKING IF TEACHING MAYBER
