@@ -16,7 +16,7 @@ To run:
 
 To run tests:
 From the root directory
-- `coverage run --source . -m "tests.test_basic"`
+- `coverage run --source . --omit tests/* -m "tests.test_basic"`
 - `coverage html`
 
 This will generate html reports with code coverage information
