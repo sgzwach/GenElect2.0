@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = 'ec19370b6275506ac26a40c4e6c2e597'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../genelect.db'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['BASEDIR'] = '.'
 #setup database
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
