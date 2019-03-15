@@ -7,7 +7,9 @@
 	      <th scope="col">#</th>
 	      <th scope="col">Elective Name</th>
 	      <th scope="col">Building</th>
-	      <th scope="col">Date Created</th>
+	      <th scope="col">Room</th>
+	      <th scope="col">Capacity</th>
+	      <th scope="col">Instructor</th>
 	      <th scope="col">Update</th>
 	      <th scope="col">Delete</th>
 	    </tr>
@@ -18,9 +20,11 @@
 	      <th scope="row">{{offering.id}}</th>
 	      <th scope="row">{{offering.elective.name}}</th>
 	      <th scope="row">{{offering.building}}</th>
-	      <th scope="row">{{offering.date_created}}</th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '#'" class="btn btn-outline-info">Update</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '#'" class="btn btn-outline-danger">Delete</button></th>
+	      <th scope="row">{{offering.room}}</th>
+	      <th scope="row">{{offering.capacity}}</th>
+	      <th scope="row">{{offering.instructor}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/editoffering/{{offering.id}}'" class="btn btn-outline-info">Update</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = 'deleteoffering/{{offering.id}}'" class="btn btn-outline-danger">Delete</button></th>
 	    </tr>
 	    {% endfor %}
 	  </tbody>

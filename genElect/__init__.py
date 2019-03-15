@@ -272,6 +272,58 @@ def createoffering():
         return render_template('denied.html')
 
 
+#ADMIN EDIT OFFERING BY OFFERING
+@app.route("/offering/<offering_id>", methods=['GET', 'POST'])
+@app.route("/editoffering/<offering_id>", methods=['GET', 'POST'])
+def editoffering(offering_id):
+    if current_user.is_authenticated and current_user.role == "admin":
+        offering = Offerings.query.filter_by(id=int(offering_id)).first()
+        if offering:
+            form = OfferingForm()
+            choices = []
+            electives = Electives.query.all()
+            for elective in electives:
+                choices.append((str(elective.id), elective.name))
+            form.elective.choices = choices
+            if form.validate_on_submit():
+                elective = Electives.query.filter_by(id=int(form.elective.data)).first()
+                offering.elective = elective
+                offering.building = form.building.data
+                offering.room = form.room.data
+                offering.instructor = form.instructor.data
+                offering.capacity = form.capacity.data
+                db.session.commit()
+                flash("Offering Info Updated", 'success')
+                return redirect(f'/offering/{offering_id}')
+            elif request.method == 'GET':
+                form.elective.data = str(offering.elective.id)
+                form.building.data = offering.building
+                form.room.data = offering.room
+                form.instructor.data = offering.instructor
+                form.capacity.data = offering.capacity
+            return render_template('editoffering.html', offering=offering, form=form, title="Offering Edit")
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+
+#ADMIN DELETE ELECTIVE BY ELECTIVE ID
+@app.route("/deleteoffering/<offering_id>")
+@app.route("/offering/<offering_id>/delete")
+def deleteoffering(offering_id):
+    if current_user.is_authenticated and current_user.role == "admin":
+        offering = Offerings.query.filter_by(id=offering_id).first()
+        if offering:
+            db.session.delete(offering)
+            db.session.commit()
+            flash("Offering Deleted", 'info')
+            return redirect('/allofferings')
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
 #### END OF OFFERINGS ####
 
 
@@ -346,6 +398,7 @@ def deletenotification(notification_id):
         return render_template('denied.html')
 
 #### END OF NOTIFICATIONS ####
+
 
 
 #CONTACT PAGE
