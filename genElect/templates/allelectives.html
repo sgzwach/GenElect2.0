@@ -6,6 +6,7 @@
 	    <tr>
 	      <th scope="col">#</th>
 	      <th scope="col">Name</th>
+	      <th scope="col">Description</th>
 	      <th scope="col">Date Created</th>
 	      <th scope="col">Update</th>
 	      <th scope="col">Delete</th>
@@ -16,6 +17,7 @@
 	    <tr>
 	      <th scope="row">{{elective.id}}</th>
 	      <th scope="row">{{elective.name}}</th>
+	      <th scope="row">{{elective.description}}</th>
 	      <th scope="row">{{elective.date_created}}</th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/editelective/{{elective.id}}'" class="btn btn-outline-info">Update</button></th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteelective/{{elective.id}}'" class="btn btn-outline-danger">Delete</button></th>
