@@ -62,6 +62,14 @@
                         {{ form.capacity(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
+                <div class="form-group">
+                    {{ form.period_start.label(class="form-control-label") }}
+                    {{ form.period_start(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.period_length.label(class="form-control-label") }}
+                    {{ form.period_length(class="form-control") }}
+                </div>
     		</fieldset>
     		<div class="form-group">
     			{{ form.submit(class="btn btn-outline-info") }}

@@ -24,6 +24,7 @@ class Users(Base, UserMixin):
     email = db.Column(db.String(100))
     role = db.Column(db.String(32), nullable=False)
     password = db.Column(db.String(128))
+    registrations = db.relationship('Registrations', backref='user', lazy=True)
 
 
     # # Future VIP registration option
@@ -33,9 +34,10 @@ class Users(Base, UserMixin):
     #     self.role_id = role_id
     #     self.early_reg = True
 
-# class Registrations(Base):
-#     user_id = db.relationship('Users', lazy=True)
-#     offering_id = db.relationship('Offerings', lazy=True)
+class Registrations(Base):
+    __tablesname__ = 'registrations'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    offering_id = db.Column(db.Integer, db.ForeignKey('offerings.id'), nullable=False)
 
 #     def __init__(self, username, offering_id):
 #         self.user_id = username
@@ -49,8 +51,10 @@ class Offerings(Base):
     building = db.Column(db.String(100))
     room = db.Column(db.String(100))
     instructor = db.Column(db.String(100))
+    #current_student_count = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
+    registrations = db.relationship('Registrations', backref='offering', lazy=True)
 
 #     def __init__(self, elective_id):
 #         self.elective_id  = elective_id

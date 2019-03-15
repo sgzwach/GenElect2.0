@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for offering in schedule %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{offering.instructor}}</a>
+              <small class="text-muted">{{ offering.date_created }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ offering.elective.name }}</a></h2>
+            <p class="article-content">{{ offering.elective.description }}</p>
+            <p class="article-content">{{ offering.building }} {{ offering.room }}</p>
+            <p class="article-content">Capacity {{ offering.capacity }}</p>
+          </div>
+          <div class="form-group">
+            <button type="button" onclick="window.location.href = '#'" class="btn btn-outline-danger">Drop</button>
+        </div>
+        </article>
+    {% endfor %}
+{% endblock content %}

@@ -42,8 +42,11 @@
                   <a class="nav-item nav-link" href="{{ url_for('allnotifications') }}">Notifications</a>
                   <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
                 {% endif %}
-                {% if current_user.role != "admin"  and current_user.role != "instructor" %}
-                  <a class="nav-item nav-link" href="#">Electives</a>
+                {% if current_user.role == "instructor" %}
+                  <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
+                {% endif %}
+                {% if current_user.role == "student" %}
+                  <a class="nav-item nav-link" href="/electives">Electives</a>
                   <a class="nav-item nav-link" href="#">My Schedule</a>
                   <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 {% endif %}

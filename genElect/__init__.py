@@ -261,7 +261,7 @@ def createoffering():
         form.elective.choices = choices
         if form.validate_on_submit():
             elective = Electives.query.filter_by(id=int(form.elective.data)).first()
-            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, elective=elective)
+            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, elective=elective, period_start=int(form.period_start.data), period_length=int(form.period_length.data))
             db.session.add(new_offering)
             db.session.commit()
             flash(f"Offering created!", 'success')
@@ -292,6 +292,8 @@ def editoffering(offering_id):
                 offering.room = form.room.data
                 offering.instructor = form.instructor.data
                 offering.capacity = form.capacity.data
+                offering.period_start = int(form.period_start.data)
+                offering.period_length = int(form.period_length.data)
                 db.session.commit()
                 flash("Offering Info Updated", 'success')
                 return redirect(f'/offering/{offering_id}')
@@ -301,6 +303,8 @@ def editoffering(offering_id):
                 form.room.data = offering.room
                 form.instructor.data = offering.instructor
                 form.capacity.data = offering.capacity
+                form.period_start.data = str(offering.period_start)
+                form.period_length.data = str(offering.period_length)
             return render_template('editoffering.html', offering=offering, form=form, title="Offering Edit")
         else:
             return render_template('notfound.html')
@@ -399,6 +403,36 @@ def deletenotification(notification_id):
 
 #### END OF NOTIFICATIONS ####
 
+
+
+#### STUDENT PAGES ####
+
+#STUDENTS VIEWING ELECTIVES
+@app.route("/electives") #FOR STUDENT USE
+@app.route("/offerings") #FOR STUDENT USE
+def electives():
+    if current_user.is_authenticated:
+        offerings = Offerings.query.all()
+        return render_template('studentelectives.html', offerings=offerings)
+    else:
+        flash("Please login first", 'info')
+        return redirect(url_for('login'))
+
+
+#STUDENTS VIEWING THEIR SCHEDULE
+@app.route("/schedule") #FOR STUDENT USE
+def schedule():
+    if current_user.is_authenticated:
+        schedule = []
+        registrations = current_user.registrations #grab all user registrations
+        for registration in registrations:
+            schedule.append(registration.offering) #build schedule from offerings
+        return render_template('schedule.html', schedule=schedule)
+    else:
+        flash("Please login first", 'info')
+        return redirect(url_for('login'))
+
+#### END OF STUDENTS PAGES ####
 
 
 #CONTACT PAGE

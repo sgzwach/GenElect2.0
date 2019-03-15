@@ -44,9 +44,12 @@ class OfferingForm(FlaskForm):
 	building = StringField('Building', validators=[DataRequired()])
 	room = StringField('Room', validators=[DataRequired()])
 	instructor = StringField('Instructor', validators=[DataRequired()])
-	choices = []
+	choices = [] #to be filled dynamically
 	elective = SelectField('Elective', choices=choices, validators=[Required()])
 	capacity = IntegerField('Capacity', validators=[DataRequired()])
+	num_choices = [('1','1'), ('2','2'), ('3','3')]
+	period_start = SelectField('Offering Period', choices=num_choices, validators=[Required()])
+	period_length = SelectField('Offering Length', choices=num_choices, validators=[Required()])
 	submit = SubmitField('Save Offering')
 
 
