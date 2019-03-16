@@ -87,6 +87,26 @@ def admin():
     else:
         return render_template('denied.html')
 
+#ADMIN RESET REGISTRATIONS
+@app.route("/reset")
+def reset():
+    if current_user.is_authenticated and current_user.role == "admin":
+        #reset registrations
+        registrations = Registrations.query.all()
+        for registration in registrations:
+            db.session.delete(registration)
+
+        #set student count to 0 for all offerings
+        offerings = Offerings.query.all()
+        for offering in offerings:
+            offering.current_count = 0
+            
+        db.session.commit()
+        flash(f"Registrations reset", 'success')
+        return render_template('admin.html')
+    else:
+        return render_template('denied.html')
+
 
 #### USERS ####
 
@@ -441,7 +461,7 @@ def schedule():
         for registration in registrations:
             if registration.offering.period_start == 3:
                 registered.append(registration.offering)
-                
+
         return render_template('schedule.html', registered=registered)
     else:
         flash("Please login first", 'info')
@@ -452,6 +472,10 @@ def schedule():
 @app.route("/register/<offering_id>")
 def register(offering_id):
     if current_user.is_authenticated:
+        #make sure user isn't admin or instructor since they shouldn't be registering
+        if current_user.role == "admin" or current_user.role == "instructor":
+            flash("Only students can register for electives", 'danger')
+            return redirect(url_for('allelectives'))
 
         #check if already registered for (won't happen unless going by url)
         reg_check = Registrations.query.filter_by(user_id=current_user.id, offering_id=offering_id).first()
@@ -495,6 +519,11 @@ def register(offering_id):
 @app.route("/drop/<offering_id>")
 def drop(offering_id):
     if current_user.is_authenticated:
+        #make sure user isn't admin or instructor since they shouldn't be dropping
+        if current_user.role == "admin" or current_user.role == "instructor":
+            flash("Only students can drop electives", 'danger')
+            return redirect(url_for('allelectives'))
+
         registration = Registrations.query.filter_by(offering_id=offering_id, user_id=current_user.id).first()
         if registration:
             if current_user.id == registration.user_id or current_user.role == "admin":

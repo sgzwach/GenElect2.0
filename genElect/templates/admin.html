@@ -13,4 +13,26 @@
     <br><br><br>
     <button type="button" onclick="window.location.href = '/allofferings'" class="btn btn-outline-info">Offerings</button>
     <button type="button" onclick="window.location.href = '/createoffering'" class="btn btn-outline-info">Create New Offering</button>
+
+    <br><br><br><br><br><br>
+    <button type="button" data-toggle="modal" data-target="#resetModal" class="btn btn-outline-info">Reset Registrations</button>
+
+
+<!-- Modal -->
+  <div class="modal fade" id="resetModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Reset Registrations?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="window.location.href = '/reset'">Reset</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
