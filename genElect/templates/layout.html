@@ -43,6 +43,7 @@
                   <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
                 {% endif %}
                 {% if current_user.role == "instructor" %}
+                  <a class="nav-item nav-link" href="{{ url_for('allelectives') }}">Electives</a>
                   <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
                 {% endif %}
                 {% if current_user.role == "student" %}

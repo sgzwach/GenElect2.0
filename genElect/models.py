@@ -51,7 +51,7 @@ class Offerings(Base):
     building = db.Column(db.String(100))
     room = db.Column(db.String(100))
     instructor = db.Column(db.String(100))
-    #current_student_count = db.Column(db.Integer)
+    current_count = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
     registrations = db.relationship('Registrations', backref='offering', lazy=True)

@@ -172,7 +172,7 @@ def deleteuser(user_id):
 #Elective Creator Page (TESTING ROUTE)
 @app.route("/createelective", methods=['GET', 'POST'])
 def createelective():
-    if current_user.is_authenticated and current_user.role == "admin":
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         form = ElectiveForm()
         if form.validate_on_submit():
             new_elective = Electives(name=form.name.data, description=form.description.data, prerequisites=form.prerequisites.data)
@@ -188,7 +188,7 @@ def createelective():
 #ADMIN ALL ELECTIVES PAGE
 @app.route("/allelectives")
 def allelectives():
-    if current_user.is_authenticated and current_user.role == "admin":
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         electives = Electives.query.all()
         return render_template('allelectives.html', electives=electives, title="Electives")
     else:
@@ -199,7 +199,7 @@ def allelectives():
 @app.route("/elective/<elective_id>", methods=['GET', 'POST'])
 @app.route("/editelective/<elective_id>", methods=['GET', 'POST'])
 def editelective(elective_id):
-    if current_user.is_authenticated and current_user.role == "admin":
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         elective = Electives.query.filter_by(id=int(elective_id)).first()
         if elective:
             form = ElectiveForm()
@@ -224,7 +224,7 @@ def editelective(elective_id):
 @app.route("/deleteelective/<elective_id>")
 @app.route("/elective/<elective_id>/delete")
 def deleteelective(elective_id):
-    if current_user.is_authenticated and current_user.role == "admin":
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         elective = Electives.query.filter_by(id=elective_id).first()
         if elective:
             db.session.delete(elective)
@@ -262,7 +262,7 @@ def createoffering():
         form.elective.choices = choices
         if form.validate_on_submit():
             elective = Electives.query.filter_by(id=int(form.elective.data)).first()
-            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, elective=elective, period_start=int(form.period_start.data), period_length=int(form.period_length.data))
+            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, current_count=0, elective=elective, period_start=int(form.period_start.data), period_length=int(form.period_length.data))
             db.session.add(new_offering)
             db.session.commit()
             flash(f"Offering created!", 'success')
@@ -414,7 +414,11 @@ def deletenotification(notification_id):
 def electives():
     if current_user.is_authenticated:
         offerings = Offerings.query.all()
-        return render_template('studentelectives.html', offerings=offerings)
+        registered = [] #build out list of registered offerings
+        registrations = current_user.registrations
+        for registration in registrations:
+            registered.append(registration.offering)
+        return render_template('studentelectives.html', offerings=offerings, registered=registered)
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))
@@ -435,27 +439,41 @@ def schedule():
 @app.route("/register/<offering_id>")
 def register(offering_id):
     if current_user.is_authenticated:
+
+        #check if already registered for
+        reg_check = Registrations.query.filter_by(user_id=current_user.id, offering_id=offering_id).first()
+        if reg_check:
+            flash("Elective already registered for", 'danger')
+            return redirect(url_for('electives'))
+
         offering = Offerings.query.filter_by(id=offering_id).first()
         if offering:
+            if offering.current_count >= offering.capacity:
+                flash("Elective full", 'danger')
+                return redirect(url_for('electives'))
+            #if everything passed, register
             new_registration = Registrations(user_id=current_user.id, offering_id=offering_id)
+            offering.current_count += 1
             db.session.add(new_registration)
             db.session.commit()
             flash("Elective Registration Successful", 'success')
             return redirect(url_for('electives'))
         else:
-            return render_template('notfound.html')
+            flash("Elective not found for registration", 'danger')
+            return redirect(url_for('electives'))
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))
 
 
 #STUDENTS DROP AN ELECTIVE THEY HAVE REGISTERED FOR
-@app.route("/drop/<registration_id>")
-def drop(registration_id):
+@app.route("/drop/<offering_id>")
+def drop(offering_id):
     if current_user.is_authenticated:
-        registration = Registrations.query.filter_by(id=registration_id).first()
+        registration = Registrations.query.filter_by(offering_id=offering_id, user_id=current_user.id).first()
         if registration:
             if current_user.id == registration.user_id or current_user.role == "admin":
+                registration.offering.current_count -= 1
                 db.session.delete(registration)
                 db.session.commit()
                 flash("Elective Succesfully Dropped", 'info')
@@ -463,7 +481,8 @@ def drop(registration_id):
             else:
                 return render_template('denied.html')
         else:
-            return render_template('notfound.html')
+            flash("Elective not found for drop", 'danger')
+            return redirect(url_for('electives'))
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))

@@ -10,10 +10,16 @@
             <h2><a class="article-title" href="#">{{ offering.elective.name }}</a></h2>
             <p class="article-content">{{ offering.elective.description }}</p>
             <p class="article-content">{{ offering.building }} {{ offering.room }}</p>
-            <p class="article-content">Capacity {{ offering.capacity }}</p>
+            <p class="article-content">Capacity: {{ offering.capacity }}</p>
+            <p class="article-content">Current Student Count: {{ offering.current_count }}</p>
+            <p class="article-content">Period: {{ offering.period_start }}</p>
           </div>
           <div class="form-group">
-            <button type="button" onclick="window.location.href = '/register/{{offering.id}}'" class="btn btn-outline-success">Register</button>
+            {% if offering in registered %}
+              <button type="button" onclick="window.location.href = '/drop/{{offering.id}}'" class="btn btn-outline-danger">Drop</button>
+            {% else %}
+              <button type="button" onclick="window.location.href = '/register/{{offering.id}}'" class="btn btn-outline-success">Register</button>
+            {% endif %}
         </div>
         </article>
     {% endfor %}

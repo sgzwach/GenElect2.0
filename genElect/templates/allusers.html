@@ -8,6 +8,7 @@
 	      <th scope="col">Full Name</th>
 	      <th scope="col">Username</th>
 	      <th scope="col">Email</th>
+	      <th scope="col">Role</th>
 	      <th scope="col">Update</th>
 	      <th scope="col">Delete</th>
 	    </tr>
@@ -19,6 +20,7 @@
 	      <th scope="row">{{user.full_name}}</th>
 	      <th scope="row">{{user.username}}</th>
 	      <th scope="row">{{user.email}}</th>
+	      <th scope="row">{{user.role}}</th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/edituser/{{user.id}}'" class="btn btn-outline-info">Update</button></th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteuser/{{user.id}}'" class="btn btn-outline-danger">Delete</button></th>
 	    </tr>

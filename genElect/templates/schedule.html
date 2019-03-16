@@ -5,15 +5,14 @@
           <div class="media-body">
             <div class="article-metadata">
               <a class="mr-2" href="#">{{registration.offering.instructor}}</a>
-              <small class="text-muted">{{ registration.offering.date_created }}</small>
+              <small class="text-muted">Period: {{ registration.offering.period_start }}</small>
             </div>
             <h2><a class="article-title" href="#">{{ registration.offering.elective.name }}</a></h2>
             <p class="article-content">{{ registration.offering.elective.description }}</p>
             <p class="article-content">{{ registration.offering.building }} {{ registration.offering.room }}</p>
-            <p class="article-content">Capacity {{ registration.offering.capacity }}</p>
           </div>
           <div class="form-group">
-            <button type="button" onclick="window.location.href = '/drop/{{registration.id}}'" class="btn btn-outline-danger">Drop</button>
+            <button type="button" onclick="window.location.href = '/drop/{{registration.offering.id}}'" class="btn btn-outline-danger">Drop</button>
         </div>
         </article>
     {% endfor %}
