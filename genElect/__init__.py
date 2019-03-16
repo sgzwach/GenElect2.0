@@ -431,7 +431,6 @@ def schedule():
         return redirect(url_for('login'))
 
 
-
 #STUDENTS REGISTER FOR AN OFFERING
 @app.route("/register/<offering_id>")
 def register(offering_id):
@@ -443,6 +442,26 @@ def register(offering_id):
             db.session.commit()
             flash("Elective Registration Successful", 'success')
             return redirect(url_for('electives'))
+        else:
+            return render_template('notfound.html')
+    else:
+        flash("Please login first", 'info')
+        return redirect(url_for('login'))
+
+
+#STUDENTS DROP AN ELECTIVE THEY HAVE REGISTERED FOR
+@app.route("/drop/<registration_id>")
+def drop(registration_id):
+    if current_user.is_authenticated:
+        registration = Registrations.query.filter_by(id=registration_id).first()
+        if registration:
+            if current_user.id == registration.user_id or current_user.role == "admin":
+                db.session.delete(registration)
+                db.session.commit()
+                flash("Elective Succesfully Dropped", 'info')
+                return redirect(url_for('schedule'))
+            else:
+                return render_template('denied.html')
         else:
             return render_template('notfound.html')
     else:
