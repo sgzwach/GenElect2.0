@@ -31,6 +31,7 @@ from genElect.models import Notifications
 from genElect.models import Users
 from genElect.models import Electives
 from genElect.models import Offerings
+from genElect.models import Registrations
 
 from genElect.forms import *
 
@@ -423,11 +424,27 @@ def electives():
 @app.route("/schedule") #FOR STUDENT USE
 def schedule():
     if current_user.is_authenticated:
-        schedule = []
         registrations = current_user.registrations #grab all user registrations
-        for registration in registrations:
-            schedule.append(registration.offering) #build schedule from offerings
-        return render_template('schedule.html', schedule=schedule)
+        return render_template('schedule.html', registrations=registrations)
+    else:
+        flash("Please login first", 'info')
+        return redirect(url_for('login'))
+
+
+
+#STUDENTS REGISTER FOR AN OFFERING
+@app.route("/register/<offering_id>")
+def register(offering_id):
+    if current_user.is_authenticated:
+        offering = Offerings.query.filter_by(id=offering_id).first()
+        if offering:
+            new_registration = Registrations(user_id=current_user.id, offering_id=offering_id)
+            db.session.add(new_registration)
+            db.session.commit()
+            flash("Elective Registration Successful", 'success')
+            return redirect(url_for('electives'))
+        else:
+            return render_template('notfound.html')
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))

@@ -47,7 +47,7 @@
                 {% endif %}
                 {% if current_user.role == "student" %}
                   <a class="nav-item nav-link" href="/electives">Electives</a>
-                  <a class="nav-item nav-link" href="#">My Schedule</a>
+                  <a class="nav-item nav-link" href="/schedule">My Schedule</a>
                   <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 {% endif %}
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
