@@ -429,7 +429,20 @@ def electives():
 def schedule():
     if current_user.is_authenticated:
         registrations = current_user.registrations #grab all user registrations
-        return render_template('schedule.html', registrations=registrations)
+        registered = [] #to build out registered offerings
+
+        #WEIRD WAY TO SORT REGISTERED OFFERINGS SINCE sorted() DOESN'T WORK ON TYPE OFFERINGS
+        for registration in registrations:
+            if registration.offering.period_start == 1:
+                registered.append(registration.offering)
+        for registration in registrations:
+            if registration.offering.period_start == 2:
+                registered.append(registration.offering)
+        for registration in registrations:
+            if registration.offering.period_start == 3:
+                registered.append(registration.offering)
+                
+        return render_template('schedule.html', registered=registered)
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))
@@ -440,15 +453,27 @@ def schedule():
 def register(offering_id):
     if current_user.is_authenticated:
 
-        #check if already registered for
+        #check if already registered for (won't happen unless going by url)
         reg_check = Registrations.query.filter_by(user_id=current_user.id, offering_id=offering_id).first()
         if reg_check:
             flash("Elective already registered for", 'danger')
             return redirect(url_for('electives'))
 
         offering = Offerings.query.filter_by(id=offering_id).first()
+        
+        #check if registered for same time period or elective
+        for registration in current_user.registrations:
+            if registration.offering.period_start == offering.period_start:
+                flash("Elective time conflict", 'danger')
+                return redirect(url_for('electives'))
+            if registration.offering.elective == offering.elective:
+                flash("Already registered for that elective type", 'danger')
+                return redirect(url_for('electives'))
+
+        #check if already completed the elective
+
         if offering:
-            if offering.current_count >= offering.capacity:
+            if offering.current_count >= offering.capacity: #check if offering is full
                 flash("Elective full", 'danger')
                 return redirect(url_for('electives'))
             #if everything passed, register

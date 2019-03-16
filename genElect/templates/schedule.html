@@ -1,18 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for registration in registrations %}
+<h1>My Schedule</h1>
+    {% for offering in registered %}
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{registration.offering.instructor}}</a>
-              <small class="text-muted">Period: {{ registration.offering.period_start }}</small>
+              <a class="mr-2" href="#">{{offering.instructor}}</a>
+              <small class="text-muted">Period: {{ offering.period_start }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ registration.offering.elective.name }}</a></h2>
-            <p class="article-content">{{ registration.offering.elective.description }}</p>
-            <p class="article-content">{{ registration.offering.building }} {{ registration.offering.room }}</p>
+            <h2><a class="article-title" href="#">{{ offering.elective.name }}</a></h2>
+            <p class="article-content">{{ offering.elective.description }}</p>
+            <p class="article-content">{{ offering.building }} {{ offering.room }}</p>
           </div>
           <div class="form-group">
-            <button type="button" onclick="window.location.href = '/drop/{{registration.offering.id}}'" class="btn btn-outline-danger">Drop</button>
+            <button type="button" onclick="window.location.href = '/drop/{{offering.id}}'" class="btn btn-outline-danger">Drop</button>
         </div>
         </article>
     {% endfor %}

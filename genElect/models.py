@@ -71,3 +71,8 @@ class Electives(Base):
 # class Teachings(Base):
 #     offering_id
 #     user_id
+
+#SOMETHING FOR CHECKING IF ALREADY COMPLETED (added after each day)
+# class Completed(Base):
+#   elective_id
+#   user_id
