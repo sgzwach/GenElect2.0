@@ -471,6 +471,27 @@ def drop(registration_id):
 #### END OF STUDENTS PAGES ####
 
 
+
+#### INSTRUCTOR PAGES ####
+
+#INSTRUCTORS VIEW OFFERING REGISTERED STUDENTS (ATTENDANCE/ROLLCALL)
+@app.route("/attendance/<offering_id>")
+@app.route("/roll/<offering_id>")
+def attendance(offering_id):
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
+        offering = Offerings.query.filter_by(id=offering_id).first()
+        if offering:
+            registrations = Registrations.query.filter_by(offering_id=offering.id)
+            return render_template('roll.html', registrations=registrations, title='Roll')
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+
+
+#### END OF INSTRUCTOR PAGES ####
+
 #CONTACT PAGE
 @app.route("/contactus")
 @app.route("/contact")

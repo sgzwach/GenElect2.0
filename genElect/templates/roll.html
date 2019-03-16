@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Roll Call Page</h1>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">Full Name</th>
+	      <th scope="col">Email</th>
+	      <th scope="col">Username</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for registration in registrations %}
+	    <tr>
+	      <th scope="row">{{registration.user.full_name}}</th>
+	      <th scope="row">{{registration.user.email}}</th>
+	      <th scope="row">{{registration.user.username}}</th>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+{% endblock content %}
