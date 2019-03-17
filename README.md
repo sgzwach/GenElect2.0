@@ -10,11 +10,24 @@ To run:
 - [X] Admin page
 - [X] Create User page
 - [X] Create elective page
+- [X] Create offering page
+- [X] Create notification/announcment
+- [X] Allow offering to select elective base
 - [X] Scheduler page
 - [X] Build DB
-- [X] Prerequisites and Completed Electives
+- [X] Prerequisites and Completed Electives (disabling repeats)
 - [ ] Offerings Templates
-- [ ] Multiple User Creation (from text document possibly)   
+- [ ] Bulk User Import (from text document possibly)
+- [ ] Non-authenticated elective view
+- [ ] Create elective field that allows it to be repeated
+- [ ] Student Elective search box (should auto refresh)
+- [ ] Non-registered user list
+- [ ] Stats Page (possibly featuring: # of registered/unregistered students, # of open seats, full electives, etc)
+- [ ] Overall Camp Schedule
+- [ ] Redirect correctly after editing feature or dropping from elective
+- [ ] Show registered electives when looking at a students information
+- [ ] Solve same day registered prereq situations (registered but not completed a prereq)
+
 
 
 
