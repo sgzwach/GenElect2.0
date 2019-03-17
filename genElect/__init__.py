@@ -33,6 +33,7 @@ from genElect.models import Electives
 from genElect.models import Offerings
 from genElect.models import Registrations
 from genElect.models import Completions
+from genElect.models import Prerequisites
 
 from genElect.forms import *
 
@@ -214,9 +215,29 @@ def deleteuser(user_id):
 def createelective():
     if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         form = ElectiveForm()
+
+        #CREATE THE PREREQ LIST CHOICES
+        prereq_choices = [('-1','None')]
+        electives = Electives.query.all()
+        for elective in electives:
+            prereq_choices.append((str(elective.id), elective.name))
+        #SET THE PREREQ LIST
+        form.prerequisites.choices = prereq_choices
+
+        #IF FORM IS SUBMITTED AND VALID
         if form.validate_on_submit():
-            new_elective = Electives(name=form.name.data, description=form.description.data, prerequisites=form.prerequisites.data)
+            new_elective = Electives(name=form.name.data, description=form.description.data)
             db.session.add(new_elective)
+            #commit our new elective (have to do this to get new_elective's id)
+            db.session.commit()
+            #NOW ADD ALL PREREQUISITES THAT WERE SELECTED
+            for pre in form.prerequisites.data:
+                pre = int(pre)
+                if pre > 0:
+                    new_prerequisite = Prerequisites(elective_id=new_elective.id, prerequisite_elective_id=pre)
+                    db.session.add(new_prerequisite)
+
+            #commit our prereqs
             db.session.commit()
             flash(f"Elective {form.name.data} created!", 'success')
             return redirect(url_for('createelective'))
@@ -243,17 +264,46 @@ def editelective(elective_id):
         elective = Electives.query.filter_by(id=int(elective_id)).first()
         if elective:
             form = ElectiveForm()
+
+            #CREATE THE PREREQ LIST CHOICES
+            prereq_choices = [('-1','None')]
+            electives = Electives.query.all()
+            for e in electives:
+                if elective != e:
+                    prereq_choices.append((str(e.id), e.name))
+            #SET THE PREREQ LIST
+            form.prerequisites.choices = prereq_choices
+
             if form.validate_on_submit():
                 elective.name = form.name.data
                 elective.description = form.description.data
-                elective.prerequisites = form.prerequisites.data
+
+                #NOW UPDATE ALL PREREQUISITES THAT WERE SELECTED
+                for prerequisite in elective.prerequisites:
+                    db.session.delete(prerequisite)
+                for pre in form.prerequisites.data:
+                    pre = int(pre)
+                    if pre > 0:
+                        new_prerequisite = Prerequisites(elective_id=elective.id, prerequisite_elective_id=pre)
+                        db.session.add(new_prerequisite)
+
                 db.session.commit()
                 flash("Elective Info Updated", 'success')
                 return redirect(f'/elective/{elective_id}')
+            
             elif request.method == 'GET':
                 form.name.data = elective.name
                 form.description.data = elective.description
-                form.prerequisites.data = elective.prerequisites
+                #CREATE THE DATA LIST OF CHOICES
+                picked = []
+                for p in elective.prerequisites:
+                    picked.append(str(p.prerequisite_elective_id))
+                #SET THE DATA LIST OF PICKED PREREQS
+                if picked:
+                    form.prerequisites.data = picked
+                else: #if there are no selected prerequisites show 'None' selected
+                    form.prerequisites.data = ['-1']
+
             return render_template('editelective.html', elective=elective, form=form, title="Elective Edit")
         else:
             return render_template('notfound.html')
@@ -267,12 +317,25 @@ def deleteelective(elective_id):
     if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         elective = Electives.query.filter_by(id=elective_id).first()
         if elective:
-            offerings_to_delete = Offerings.query.filter_by(elective_id=elective.id)
+            #DELETE PREREQ INSTANCES FOR ELECTIVE
+            prerequisites_to_delete = elective.prerequisites
+            for pre in prerequisites_to_delete:
+                db.session.delete(pre)
+
+            #DELETE PREREQS WHERE ELECTIVE IS THE PREREQ
+            prerequisites_to_delete = Prerequisites.query.filter_by(prerequisite_elective_id=elective.id)
+            for pre in prerequisites_to_delete:
+                db.session.delete(pre)
+
+            #DELETE ELECTIVE OFFERINGS
+            offerings_to_delete = elective.offerings
             for offering in offerings_to_delete:
-                registrations_to_delete = Registrations.query.filter_by(offering_id=offering.id)
+                registrations_to_delete = offering.registrations
                 for registration in registrations_to_delete:
                     db.session.delete(registration)
                 db.session.delete(offering)
+            
+            #SAVE DELETIONS
             db.session.delete(elective)
             db.session.commit()
             flash("Elective Deleted", 'info')
@@ -472,7 +535,7 @@ def electives():
         registrations = current_user.registrations
         for registration in registrations:
             registered.append(registration.offering)
-        return render_template('studentelectives.html', offerings=offerings, registered=registered)
+        return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives)
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))
@@ -520,9 +583,16 @@ def register(offering_id):
         offering = Offerings.query.filter_by(id=offering_id).first()
 
         #check if already completed elective type
-        for completion in current_user.completed_electives:
-            if completion.elective_id == offering.elective.id:
-                flash("Elective type already completed", 'danger')
+        completion = Completions.query.filter_by(user_id=current_user.id, elective_id=offering.elective.id).first()
+        if completion:
+            flash("Elective type already completed", 'danger')
+            return redirect(url_for('electives'))
+                
+        #check if completed prerequisites
+        for p in offering.elective.prerequisites:
+            p_check = Completions.query.filter_by(user_id=current_user.id, elective_id=p.prerequisite_elective_id).first()
+            if not p_check:
+                flash("Elective prerequisites not completed", 'danger')
                 return redirect(url_for('electives'))
         
         #check if registered for same time period or elective

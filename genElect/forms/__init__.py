@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, EqualTo, Required
 
 #Form for Creating New Users (for Administrators)
@@ -35,7 +35,7 @@ class LoginForm(FlaskForm):
 class ElectiveForm(FlaskForm):
 	name = StringField('Elective Name', validators=[DataRequired()])
 	description = StringField('Description', validators=[DataRequired()])
-	prerequisites = StringField('Prerequisites', validators=[DataRequired()])
+	prerequisites = SelectMultipleField('Prerequisites', choices = []) #fill dynamically
 	submit = SubmitField('Save Elective')
 
 

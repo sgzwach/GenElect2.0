@@ -63,7 +63,7 @@ class Electives(Base):
     __tablename__ = 'electives'
     name = db.Column(db.String(100)) 
     description = db.Column(db.String(500))
-    prerequisites = db.Column(db.String(500))
+    prerequisites = db.relationship('Prerequisites', backref='elective', lazy=True)
     offerings = db.relationship('Offerings', backref='elective', lazy=True)
     completed_users = db.relationship('Completions', backref='elective', lazy=True)
 
@@ -72,3 +72,9 @@ class Completions(Base):
     __tablename__ = 'completions'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
+
+
+class Prerequisites(Base):
+    __tablename__ = 'prerequisites'
+    elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
+    prerequisite_elective_id = db.Column(db.Integer, nullable=False)
