@@ -32,6 +32,7 @@ from genElect.models import Users
 from genElect.models import Electives
 from genElect.models import Offerings
 from genElect.models import Registrations
+from genElect.models import Completions
 
 from genElect.forms import *
 
@@ -84,6 +85,22 @@ def account():
 def admin():
     if current_user.is_authenticated and current_user.role == "admin":
         return render_template('admin.html')
+    else:
+        return render_template('denied.html')
+
+
+#ADMIN SET ALL REGESTRATIONS TO COMPLETIONS
+@app.route("/complete")
+def complete():
+    if current_user.is_authenticated and current_user.role == "admin":
+        registrations = Registrations.query.all()
+        for registration in registrations:
+            completion = Completions(user_id=registration.user_id,elective_id=registration.offering.elective.id)
+            db.session.add(completion)
+
+        db.session.commit()
+        flash(f"Completions set", 'success')
+        return redirect(url_for('admin'))
     else:
         return render_template('denied.html')
 
@@ -501,6 +518,12 @@ def register(offering_id):
             return redirect(url_for('electives'))
 
         offering = Offerings.query.filter_by(id=offering_id).first()
+
+        #check if already completed elective type
+        for completion in current_user.completed_electives:
+            if completion.elective_id == offering.elective.id:
+                flash("Elective type already completed", 'danger')
+                return redirect(url_for('electives'))
         
         #check if registered for same time period or elective
         for registration in current_user.registrations:
