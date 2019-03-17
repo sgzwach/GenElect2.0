@@ -100,10 +100,10 @@ def reset():
         offerings = Offerings.query.all()
         for offering in offerings:
             offering.current_count = 0
-            
+
         db.session.commit()
         flash(f"Registrations reset", 'success')
-        return render_template('admin.html')
+        return redirect(url_for('admin'))
     else:
         return render_template('denied.html')
 
@@ -433,7 +433,12 @@ def deletenotification(notification_id):
 @app.route("/offerings") #FOR STUDENT USE
 def electives():
     if current_user.is_authenticated:
-        offerings = Offerings.query.all()
+        period = request.args.get('period')
+
+        if period:
+            offerings = Offerings.query.filter_by(period_start=period)
+        else:
+            offerings = Offerings.query.all()
         registered = [] #build out list of registered offerings
         registrations = current_user.registrations
         for registration in registrations:
