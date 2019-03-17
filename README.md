@@ -6,12 +6,16 @@ To run:
 `python3 run.py`
 
 ## Todo - Break these out into further tasks as we go 
-- [ ] Homepage (with notifications)
-- [ ] Admin page
-- [ ] Register page
-- [ ] Create elective page
-- [ ] Scheduler page
-- [X] Build DB 
+- [X] Homepage (with notifications)
+- [X] Admin page
+- [X] Create User page
+- [X] Create elective page
+- [X] Scheduler page
+- [X] Build DB
+- [X] Prerequisites and Completed Electives
+- [ ] Offerings Templates
+- [ ] Multiple User Creation (from text document possibly)   
+
 
 
 To run tests:
