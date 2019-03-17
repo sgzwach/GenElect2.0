@@ -25,7 +25,7 @@ class Users(Base, UserMixin):
     role = db.Column(db.String(32), nullable=False)
     password = db.Column(db.String(128))
     registrations = db.relationship('Registrations', backref='user', lazy=True)
-    completed_electives = db.relationship('Completions', backref='user', lazy=True)
+    #completed_electives = db.relationship('Completions', backref='user', lazy=True)
 
     # # Future VIP registration option
     # early_reg = db.Column(db.Boolean)
@@ -65,10 +65,10 @@ class Electives(Base):
     description = db.Column(db.String(500))
     prerequisites = db.Column(db.String(500))
     offerings = db.relationship('Offerings', backref='elective', lazy=True)
-    completed_users = db.relationship('Completions', backref='elective', lazy=True)
+    #completed_users = db.relationship('Completions', backref='elective', lazy=True)
 
 
-class Completions(Base):
-    __tablename__ = 'completions'
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
+# class Completions(Base):
+#     __tablename__ = 'completions'
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+#     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)

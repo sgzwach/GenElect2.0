@@ -173,8 +173,11 @@ def edituser(user_id):
 def deleteuser(user_id):
     if current_user.is_authenticated and current_user.role == "admin":
         user = Users.query.filter_by(id=user_id).first()
+        registrations_to_delete = Registrations.query.filter_by(user_id=user.id) #delete users registrations
         if user and user.username != "admin": #make sure not to delete admin
             db.session.delete(user)
+            for registration in registrations_to_delete:
+                db.session.delete(registration)
             db.session.commit()
             flash("User Deleted", 'info')
             return redirect('/allusers')
@@ -247,6 +250,12 @@ def deleteelective(elective_id):
     if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         elective = Electives.query.filter_by(id=elective_id).first()
         if elective:
+            offerings_to_delete = Offerings.query.filter_by(elective_id=elective.id)
+            for offering in offerings_to_delete:
+                registrations_to_delete = Registrations.query.filter_by(offering_id=offering.id)
+                for registration in registrations_to_delete:
+                    db.session.delete(registration)
+                db.session.delete(offering)
             db.session.delete(elective)
             db.session.commit()
             flash("Elective Deleted", 'info')
@@ -340,6 +349,9 @@ def deleteoffering(offering_id):
     if current_user.is_authenticated and current_user.role == "admin":
         offering = Offerings.query.filter_by(id=offering_id).first()
         if offering:
+            registrations_to_delete = Registrations.query.filter_by(offering_id=offering.id) #dump registrations that involve the offering that is deleted
+            for registration in registrations_to_delete:
+                db.session.delete(registration)
             db.session.delete(offering)
             db.session.commit()
             flash("Offering Deleted", 'info')
