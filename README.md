@@ -17,6 +17,7 @@ To run:
 - [X] Build DB
 - [X] Prerequisites and Completed Electives (disabling repeats)
 - [X] Remove completions on elective delete
+- [X] Allow non-authenticated users to view electives
 - [ ] Offerings Templates
 - [ ] Bulk User Import (from text document possibly)
 - [ ] Non-authenticated elective view
@@ -29,6 +30,7 @@ To run:
 - [ ] Show registered electives when looking at a students information
 - [ ] Solve same day registered prereq situations (registered but not completed a prereq)
 - [ ] Allow admins to set a Registration timeline
+- [ ] Utilize LDAP for Domain Auth ?
 
 
 

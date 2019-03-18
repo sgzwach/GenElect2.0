@@ -527,21 +527,21 @@ def deletenotification(notification_id):
 @app.route("/electives") #FOR STUDENT USE
 @app.route("/offerings") #FOR STUDENT USE
 def electives():
-    if current_user.is_authenticated:
-        period = request.args.get('period')
+    period = request.args.get('period')
 
-        if period:
-            offerings = Offerings.query.filter_by(period_start=period)
-        else:
-            offerings = Offerings.query.all()
-        registered = [] #build out list of registered offerings
+    #QUERY FOR WHAT OFFERINGS TO SHOW
+    if period:
+        offerings = Offerings.query.filter_by(period_start=period)
+    else:
+        offerings = Offerings.query.all()
+
+    registered = [] #build out list of registered offerings
+    if current_user.is_authenticated:
         registrations = current_user.registrations
         for registration in registrations:
             registered.append(registration.offering)
-        return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives)
-    else:
-        flash("Please login first", 'info')
-        return redirect(url_for('login'))
+    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives)
+
 
 
 #STUDENTS VIEWING THEIR SCHEDULE
