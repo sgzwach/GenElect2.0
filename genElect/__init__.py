@@ -170,6 +170,7 @@ def edituser(user_id):
                 user.full_name = form.full_name.data
                 user.email = form.email.data
                 user.role = form.role.data
+                user.password = form.password.data
                 db.session.commit()
                 flash("Account Info Updated", 'success')
                 return redirect(f'/user/{user_id}')
@@ -178,6 +179,7 @@ def edituser(user_id):
                 form.email.data = user.email
                 form.username.data = user.username
                 form.role.data = user.role
+                form.password.password = user.password
             return render_template('edituser.html', user=user, form=form, title="User Edit")
         else:
             return redirect(url_for('index'))
@@ -318,8 +320,7 @@ def deleteelective(elective_id):
         elective = Electives.query.filter_by(id=elective_id).first()
         if elective:
             #DELETE PREREQ INSTANCES FOR ELECTIVE
-            prerequisites_to_delete = elective.prerequisites
-            for pre in prerequisites_to_delete:
+            for pre in elective.prerequisites:
                 db.session.delete(pre)
 
             #DELETE PREREQS WHERE ELECTIVE IS THE PREREQ
@@ -327,11 +328,13 @@ def deleteelective(elective_id):
             for pre in prerequisites_to_delete:
                 db.session.delete(pre)
 
+            #DELETE COMPLETIONS FOR AN ELECTIVE
+            for completion in elective.completed_users:
+                db.session.delete(completion)
+
             #DELETE ELECTIVE OFFERINGS
-            offerings_to_delete = elective.offerings
-            for offering in offerings_to_delete:
-                registrations_to_delete = offering.registrations
-                for registration in registrations_to_delete:
+            for offering in elective.offerings:
+                for registration in offering.registrations:
                     db.session.delete(registration)
                 db.session.delete(offering)
             

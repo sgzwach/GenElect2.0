@@ -16,6 +16,7 @@ To run:
 - [X] Scheduler page
 - [X] Build DB
 - [X] Prerequisites and Completed Electives (disabling repeats)
+- [X] Remove completions on elective delete
 - [ ] Offerings Templates
 - [ ] Bulk User Import (from text document possibly)
 - [ ] Non-authenticated elective view
@@ -27,6 +28,7 @@ To run:
 - [ ] Redirect correctly after editing feature or dropping from elective
 - [ ] Show registered electives when looking at a students information
 - [ ] Solve same day registered prereq situations (registered but not completed a prereq)
+- [ ] Allow admins to set a Registration timeline
 
 
 
