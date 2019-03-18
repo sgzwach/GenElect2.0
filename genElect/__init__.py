@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, flash, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
+import datetime #for registration time set
 
 #set app to flask instance
 app = Flask(__name__, template_folder='templates')
@@ -14,6 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../genelect.db'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASEDIR'] = '.'
+
 #setup database
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -36,6 +38,12 @@ from genElect.models import Completions
 from genElect.models import Prerequisites
 
 from genElect.forms import *
+
+global registration_start_time
+global egistration_end_time
+
+registration_start_time = "00:00:00"
+registration_end_time = "00:00:01"
 
 #INDEX PAGE
 @app.route("/")
@@ -122,6 +130,26 @@ def reset():
         db.session.commit()
         flash(f"Registrations reset", 'success')
         return redirect(url_for('admin'))
+    else:
+        return render_template('denied.html')
+
+
+#ADMIN SET REGISTRATION TIME
+@app.route("/settime", methods=['GET', 'POST'])
+def settime():
+    if current_user.is_authenticated and current_user.role == "admin":
+        form = TimeSetForm()
+        global registration_start_time
+        global registration_end_time
+        if form.validate_on_submit():
+            registration_start_time = form.start_time.data
+            registration_end_time = form.end_time.data
+            flash("Registration time set", 'success')
+            return redirect(f'settime')
+        elif request.method == 'GET':
+            form.start_time.data = registration_start_time
+            form.end_time.data = registration_end_time
+        return render_template('settime.html', title='Set Registration Time', form=form)
     else:
         return render_template('denied.html')
 
@@ -571,6 +599,11 @@ def schedule():
 #STUDENTS REGISTER FOR AN OFFERING
 @app.route("/register/<offering_id>")
 def register(offering_id):
+    currTime = datetime.datetime.now().strftime("%H:%M:%S")
+    if currTime < registration_start_time or currTime > registration_end_time:
+        flash(f"It is {currTime} and Registration time is from {registration_start_time} to {registration_end_time}", 'danger')
+        return redirect(url_for('electives'))
+
     if current_user.is_authenticated:
         #make sure user isn't admin or instructor since they shouldn't be registering
         if current_user.role == "admin" or current_user.role == "instructor":

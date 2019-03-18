@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+    	<form method="POST" action="">
+    		{{ form.hidden_tag() }}
+    		<fieldset class="form-group">
+    			<legend class="border-bottom mb-4">Edit Registration Time:</legend>
+                {{ form.start_time.label(class="form-control-label") }}
+                {{ form.start_time (class="form-control form-control-lg") }}
+                {{ form.end_time.label(class="form-control-label") }}
+                {{ form.end_time (class="form-control form-control-lg") }}
+    		</fieldset>
+    		<div class="form-group">
+    			{{ form.submit(class="btn btn-outline-info") }}
+    		</div>
+    	</form>
+    </div>
+{% endblock content %}

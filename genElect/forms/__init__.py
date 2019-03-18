@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField, DateField
 from wtforms.validators import DataRequired, Length, EqualTo, Required
+from wtforms import widgets
 
 #Form for Creating New Users (for Administrators)
 class CreateUserForm(FlaskForm):
@@ -59,3 +60,10 @@ class NotificationForm(FlaskForm):
 	title = StringField('Title', validators=[DataRequired()])
 	notification = StringField('Notification', validators=[DataRequired()])
 	submit = SubmitField('Save Notification')
+
+
+#Form for setting the registration time period
+class TimeSetForm(FlaskForm):
+	start_time = StringField('Start Time', validators=[DataRequired()])
+	end_time = StringField('End Time', validators=[DataRequired()])
+	submit = SubmitField('Set Time')

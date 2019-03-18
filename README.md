@@ -20,7 +20,6 @@ To run:
 - [X] Allow non-authenticated users to view electives
 - [ ] Offerings Templates
 - [ ] Bulk User Import (from text document possibly)
-- [ ] Non-authenticated elective view
 - [ ] Create elective field that allows it to be repeated
 - [ ] Student Elective search box (should auto refresh)
 - [ ] Non-registered user list
@@ -29,8 +28,10 @@ To run:
 - [ ] Redirect correctly after editing feature or dropping from elective
 - [ ] Show registered electives when looking at a students information
 - [ ] Solve same day registered prereq situations (registered but not completed a prereq)
-- [ ] Allow admins to set a Registration timeline
+- [X] Allow admins to set a Registration timeline
 - [ ] Utilize LDAP for Domain Auth ?
+- [ ] Create field that allows elective to be taken more than once
+- [ ] Check current registrations for prereq completions
 
 
 
