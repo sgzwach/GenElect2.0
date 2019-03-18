@@ -43,7 +43,7 @@ global registration_start_time
 global egistration_end_time
 
 registration_start_time = "00:00:00"
-registration_end_time = "00:00:01"
+registration_end_time = "23:59:59"
 
 #INDEX PAGE
 @app.route("/")
@@ -624,10 +624,16 @@ def register(offering_id):
             flash("Elective type already completed", 'danger')
             return redirect(url_for('electives'))
                 
-        #check if completed prerequisites
+        #check if completed prerequisites (using both completed and other registrations)
         for p in offering.elective.prerequisites:
+            #CHECK ELECTIVES THAT HAVE BEEN COMPLETED
             p_check = Completions.query.filter_by(user_id=current_user.id, elective_id=p.prerequisite_elective_id).first()
-            if not p_check:
+            #CHECK ELECTIVES REGISTERED NOW THAT WILL TAKE PLACE BEFORE THIS ELECTIVE 
+            r_check = False
+            for registration in current_user.registrations:
+                if registration.offering.elective_id == p.prerequisite_elective_id and registration.offering.period_start < offering.period_start:
+                    r_check = True
+            if not p_check and not r_check:
                 flash("Elective prerequisites not completed", 'danger')
                 return redirect(url_for('electives'))
         
@@ -673,10 +679,20 @@ def drop(offering_id):
         registration = Registrations.query.filter_by(offering_id=offering_id, user_id=current_user.id).first()
         if registration:
             if current_user.id == registration.user_id or current_user.role == "admin":
+                #DELETE OTHER REGISTRATIONS THAT RELIED ON THIS AS A PREREQ
+                for other_registration in current_user.registrations:
+                    if other_registration == registration:
+                        continue
+                    for pre_req in other_registration.offering.elective.prerequisites:
+                        if registration.offering.elective_id == pre_req.prerequisite_elective_id: #if we are deleting a prereq that was required
+                            other_registration.offering.current_count -= 1
+                            db.session.delete(other_registration)
+                            break
+
                 registration.offering.current_count -= 1
                 db.session.delete(registration)
                 db.session.commit()
-                flash("Elective Succesfully Dropped", 'info')
+                flash("Elective and other reliant electives succesfully dropped", 'info')
                 return redirect(url_for('schedule'))
             else:
                 return render_template('denied.html')
