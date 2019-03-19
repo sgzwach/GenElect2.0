@@ -45,6 +45,10 @@
                         {{ form.prerequisites(class="form-control form-control-lg") }}
                     {% endif %}
     			</div>
+                <div class="form-check">
+                    {{ form.can_retake(class="form-check-input") }}
+                    {{ form.can_retake.label(class="form-check-label") }}
+                </div>
     		</fieldset>
     		<div class="form-group">
     			{{ form.submit(class="btn btn-outline-info") }}

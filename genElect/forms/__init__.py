@@ -38,6 +38,7 @@ class ElectiveForm(FlaskForm):
 	name = StringField('Elective Name', validators=[DataRequired()])
 	description = StringField('Description', validators=[DataRequired()])
 	prerequisites = SelectMultipleField('Prerequisites', choices = []) #fill dynamically
+	can_retake = BooleanField('Allow users to take several times')
 	submit = SubmitField('Save Elective')
 
 

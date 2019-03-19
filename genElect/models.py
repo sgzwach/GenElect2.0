@@ -66,6 +66,7 @@ class Electives(Base):
     prerequisites = db.relationship('Prerequisites', backref='elective', lazy=True)
     offerings = db.relationship('Offerings', backref='elective', lazy=True)
     completed_users = db.relationship('Completions', backref='elective', lazy=True)
+    can_retake = db.Column(db.Boolean)
 
 
 class Completions(Base):

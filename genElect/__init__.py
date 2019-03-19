@@ -256,7 +256,7 @@ def createelective():
 
         #IF FORM IS SUBMITTED AND VALID
         if form.validate_on_submit():
-            new_elective = Electives(name=form.name.data, description=form.description.data)
+            new_elective = Electives(name=form.name.data, description=form.description.data, can_retake=form.can_retake.data)
             db.session.add(new_elective)
             #commit our new elective (have to do this to get new_elective's id)
             db.session.commit()
@@ -307,6 +307,7 @@ def editelective(elective_id):
             if form.validate_on_submit():
                 elective.name = form.name.data
                 elective.description = form.description.data
+                elective.can_retake = form.can_retake.data
 
                 #NOW UPDATE ALL PREREQUISITES THAT WERE SELECTED
                 for prerequisite in elective.prerequisites:
@@ -324,6 +325,7 @@ def editelective(elective_id):
             elif request.method == 'GET':
                 form.name.data = elective.name
                 form.description.data = elective.description
+                form.can_retake.data = elective.can_retake
                 #CREATE THE DATA LIST OF CHOICES
                 picked = []
                 for p in elective.prerequisites:
@@ -620,13 +622,14 @@ def register(offering_id):
 
         #check if already completed elective type
         completion = Completions.query.filter_by(user_id=current_user.id, elective_id=offering.elective.id).first()
-        if completion:
+        if completion and offering.elective.can_retake == False: #if they can't retake the elective
             flash("Elective type already completed", 'danger')
             return redirect(url_for('electives'))
                 
         #check if completed prerequisites (using both completed and other registrations)
         for p in offering.elective.prerequisites:
             #CHECK ELECTIVES THAT HAVE BEEN COMPLETED
+            #QUERY FOR COMPLETION WITH USER_ID AND THE PREREQUISITE_ELECTIVE_ID
             p_check = Completions.query.filter_by(user_id=current_user.id, elective_id=p.prerequisite_elective_id).first()
             #CHECK ELECTIVES REGISTERED NOW THAT WILL TAKE PLACE BEFORE THIS ELECTIVE 
             r_check = False
@@ -642,11 +645,9 @@ def register(offering_id):
             if registration.offering.period_start == offering.period_start:
                 flash("Elective time conflict", 'danger')
                 return redirect(url_for('electives'))
-            if registration.offering.elective == offering.elective:
+            if registration.offering.elective == offering.elective and offering.elective.can_retake == False:
                 flash("Already registered for that elective type", 'danger')
                 return redirect(url_for('electives'))
-
-        #check if already completed the elective
 
         if offering:
             if offering.current_count >= offering.capacity: #check if offering is full
