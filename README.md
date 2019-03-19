@@ -30,7 +30,7 @@ To run:
 - [ ] Solve same day registered prereq situations (registered but not completed a prereq)
 - [X] Allow admins to set a Registration timeline
 - [ ] Utilize LDAP for Domain Auth ?
-- [ ] Create field that allows elective to be taken more than once
+- [X] Create field that allows elective to be taken more than once
 - [X] Check current registrations for prereq completions
 - [X] Remove registrations with prereq registrations are dropped
 
