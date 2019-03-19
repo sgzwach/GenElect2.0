@@ -402,13 +402,32 @@ def createoffering():
         for elective in electives:
             choices.append((str(elective.id), elective.name))
         form.elective.choices = choices
+
         if form.validate_on_submit():
-            elective = Electives.query.filter_by(id=int(form.elective.data)).first()
-            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, current_count=0, elective=elective, period_start=int(form.period_start.data), period_length=int(form.period_length.data))
+            #elective = Electives.query.filter_by(id=int(form.elective.data)).first()
+            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, current_count=0, elective_id=int(form.elective.data), period_start=int(form.period_start.data), period_length=int(form.period_length.data))
             db.session.add(new_offering)
             db.session.commit()
             flash(f"Offering created!", 'success')
-            return redirect(url_for('createoffering'))
+            return redirect(url_for('allofferings'))
+
+        elif request.method == 'GET':
+            #IF TEMPLATED FILL THE FIELDS WITH THE TEMPLATE
+            template_id = request.args.get('offering_template_id')
+            if template_id:
+                template_offering = Offerings.query.filter_by(id=template_id).first()
+                if not template_offering: #if the offering template is not found
+                    flash("Offering template not found", 'danger')
+                    return redirect(url_for('allofferings'))
+                else: #fill the new elective with the template information 
+                    form.building.data = template_offering.building
+                    form.room.data = template_offering.room
+                    form.instructor.data = template_offering.instructor
+                    form.capacity.data = template_offering.capacity
+                    form.elective.data = str(template_offering.elective_id)
+                    form.period_start.data = str(template_offering.period_start)
+                    form.period_length.data = str(template_offering.period_length)
+
         return render_template('createoffering.html', title='Create Offering', form=form)
 
     else:
