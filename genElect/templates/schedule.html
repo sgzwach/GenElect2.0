@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>My Schedule</h1>
+<h1>{{user.full_name}}'s Schedule</h1>
     {% for offering in registered %}
         <article class="media content-section">
           <div class="media-body">
@@ -12,9 +12,11 @@
             <p class="article-content">{{ offering.elective.description }}</p>
             <p class="article-content">{{ offering.building }} {{ offering.room }}</p>
           </div>
-          <div class="form-group">
-            <button type="button" onclick="window.location.href = '/drop/{{offering.id}}'" class="btn btn-outline-danger">Drop</button>
-        </div>
+          {% if current_user == user %}
+            <div class="form-group">
+              <button type="button" onclick="window.location.href = '/drop/{{offering.id}}'" class="btn btn-outline-danger">Drop</button>
+            </div>
+          {% endif %}
         </article>
     {% endfor %}
 {% endblock content %}

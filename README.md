@@ -26,8 +26,8 @@ To run:
 - [ ] Stats Page (possibly featuring: # of registered/unregistered students, # of open seats, full electives, etc)
 - [ ] Overall Camp Schedule
 - [ ] Redirect correctly after editing feature or dropping from elective
-- [ ] Show registered electives when looking at a students information
-- [ ] Solve same day registered prereq situations (registered but not completed a prereq)
+- [X] Show registered electives when looking at a students information, add schedule button
+- [X] Solve same day registered prereq situations (registered but not completed a prereq)
 - [X] Allow admins to set a Registration timeline
 - [ ] Utilize LDAP for Domain Auth ?
 - [X] Create field that allows elective to be taken more than once

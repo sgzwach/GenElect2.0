@@ -597,7 +597,16 @@ def electives():
 @app.route("/schedule") #FOR STUDENT USE
 def schedule():
     if current_user.is_authenticated:
-        registrations = current_user.registrations #grab all user registrations
+        if current_user.role == 'admin' or current_user.role == 'instructor':
+            user_id = request.args.get('user_id')
+            user = Users.query.filter_by(id=user_id).first()
+            if not user:
+                flash("User schedule not found", 'danger')
+                return redirect(url_for('allusers'))   
+        else:
+            user = current_user
+
+        registrations = user.registrations #grab all user registrations
         registered = [] #to build out registered offerings
 
         #WEIRD WAY TO SORT REGISTERED OFFERINGS SINCE sorted() DOESN'T WORK ON TYPE OFFERINGS
@@ -611,7 +620,8 @@ def schedule():
             if registration.offering.period_start == 3:
                 registered.append(registration.offering)
 
-        return render_template('schedule.html', registered=registered)
+        return render_template('schedule.html', registered=registered, user=user)
+
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))

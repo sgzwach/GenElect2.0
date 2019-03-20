@@ -10,6 +10,7 @@
 	      <th scope="col">Email</th>
 	      <th scope="col">Role</th>
 	      <th scope="col">Update</th>
+	      <th scope="col">Schedule</th>
 	      <th scope="col">Delete</th>
 	    </tr>
 	  </thead>
@@ -22,6 +23,12 @@
 	      <th scope="row">{{user.email}}</th>
 	      <th scope="row">{{user.role}}</th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/edituser/{{user.id}}'" class="btn btn-outline-info">Update</button></th>
+	      {% if user.role == 'student' %}
+	      	<th scope="row"><button type="button" onclick="window.location.href = '/schedule?user_id={{user.id}}'" class="btn btn-outline-info">Schedule</button></th>
+	      {% else %}
+	      	<th scope="row">Not a student</th>
+	      {% endif %}
+
 	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteuser/{{user.id}}'" class="btn btn-outline-danger">Delete</button></th>
 	    </tr>
 	    {% endfor %}
