@@ -25,7 +25,7 @@ To run:
 - [ ] Non-registered user list
 - [ ] Stats Page (possibly featuring: # of registered/unregistered students, # of open seats, full electives, etc)
 - [ ] Overall Camp Schedule
-- [ ] Redirect correctly after editing feature or dropping from elective
+- [X] Redirect correctly after editing feature or dropping from elective
 - [X] Show registered electives when looking at a students information, add schedule button
 - [X] Solve same day registered prereq situations (registered but not completed a prereq)
 - [X] Allow admins to set a Registration timeline
@@ -33,7 +33,7 @@ To run:
 - [X] Create field that allows elective to be taken more than once
 - [X] Check current registrations for prereq completions
 - [X] Remove registrations with prereq registrations are dropped
-- [ ] Allow admins and instructors to drop students from classes
+- [X] Allow admins and instructors to drop students from classes
 
 
 
