@@ -700,11 +700,28 @@ def register(offering_id):
 #STUDENTS DROP AN ELECTIVE THEY HAVE REGISTERED FOR
 @app.route("/drop/<offering_id>")
 def drop(offering_id):
+    #TO GRAB WHERE TO RETURN TO
+    back = request.args.get('back')
     if current_user.is_authenticated:
         #make sure user isn't admin or instructor since they shouldn't be dropping
         if current_user.role == "admin" or current_user.role == "instructor":
-            flash("Only students can drop electives", 'danger')
-            return redirect(url_for('allelectives'))
+            user_id = request.args.get('user_id')
+            registration = Registrations.query.filter_by(user_id=user_id,offering_id=offering_id).first()
+            if not registration:
+                flash("Registration not found", 'danger')
+                return redirect(url_for('attendance',offering_id=offering_id))
+            else:
+                student_name = registration.user.full_name
+                registration.offering.current_count -= 1
+                db.session.delete(registration)
+                db.session.commit()
+                flash(f"{student_name} dropped", 'success')
+                #IF WE CAME FROM SCHEDULE RETURN THERE
+                if back == 'schedule':
+                    return redirect(f'/schedule?user_id={user_id}')
+                #OTHERWISE RETURN BACK TO THE ATTENDANCE PAGE
+                else:
+                    return redirect(url_for('attendance',offering_id=offering_id))
 
         registration = Registrations.query.filter_by(offering_id=offering_id, user_id=current_user.id).first()
         if registration:
@@ -723,7 +740,13 @@ def drop(offering_id):
                 db.session.delete(registration)
                 db.session.commit()
                 flash("Elective and other reliant electives succesfully dropped", 'info')
-                return redirect(url_for('schedule'))
+                #RETURN TO SCHEDULE IF WE CAME FROM THERE
+                if back == 'schedule':
+                    return redirect(url_for('schedule'))
+                #OTHERWISE RETURN BACK TO ELECTIVES
+                else:
+                    return redirect(url_for('electives'))
+
             else:
                 return render_template('denied.html')
         else:

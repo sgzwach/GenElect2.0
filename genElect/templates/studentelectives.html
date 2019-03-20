@@ -29,7 +29,7 @@
           </div>
           <div class="form-group">
             {% if offering in registered %}
-              <button type="button" onclick="window.location.href = '/drop/{{offering.id}}'" class="btn btn-outline-danger">Drop</button>
+              <button type="button" onclick="window.location.href = '/drop/{{offering.id}}?back=electives'" class="btn btn-outline-danger">Drop</button>
             {% else %}
               <button type="button" onclick="window.location.href = '/register/{{offering.id}}'" class="btn btn-outline-success">Register</button>
             {% endif %}

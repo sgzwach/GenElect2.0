@@ -18,7 +18,7 @@
 	      <th scope="row">{{registration.user.email}}</th>
 	      <th scope="row">{{registration.user.username}}</th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '#'" class="btn btn-outline-success">Mark As Present</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '#'" class="btn btn-outline-danger">Absent/Drop Student</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/drop/{{registration.offering_id}}?user_id={{registration.user_id}}'" class="btn btn-outline-danger">Absent/Drop Student</button></th>
 	    </tr>
 	    {% endfor %}
 	  </tbody>

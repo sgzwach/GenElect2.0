@@ -14,7 +14,11 @@
           </div>
           {% if current_user == user %}
             <div class="form-group">
-              <button type="button" onclick="window.location.href = '/drop/{{offering.id}}'" class="btn btn-outline-danger">Drop</button>
+              <button type="button" onclick="window.location.href = '/drop/{{offering.id}}?back=schedule'" class="btn btn-outline-danger">Drop</button>
+            </div>
+          {% elif current_user.role == 'admin' %}  
+            <div class="form-group">
+              <button type="button" onclick="window.location.href = '/drop/{{offering.id}}?user_id={{user.id}}&back=schedule'" class="btn btn-outline-danger">Drop Student</button>
             </div>
           {% endif %}
         </article>
