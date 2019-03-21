@@ -15,6 +15,7 @@
 	      <th scope="col">Update</th>
 	      <th scope="col">Roll</th>
 	      <th scope="col">Use as Template</th>
+	      <th scope="col">Complete</th>
 	      <th scope="col">Delete</th>
 	    </tr>
 	  </thead>
@@ -32,7 +33,8 @@
 	      <th scope="row"><button type="button" onclick="window.location.href = '/editoffering/{{offering.id}}'" class="btn btn-outline-info">Update</button></th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/roll/{{offering.id}}'" class="btn btn-outline-info">Roll</button></th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/createoffering?offering_template_id={{offering.id}}'" class="btn btn-outline-info">Use as Template</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = 'deleteoffering/{{offering.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/complete/{{offering.id}}'" class="btn btn-outline-success">Complete</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteoffering/{{offering.id}}'" class="btn btn-outline-danger">Delete</button></th>
 	    </tr>
 	    {% endfor %}
 	  </tbody>

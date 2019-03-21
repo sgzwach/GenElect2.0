@@ -102,16 +102,36 @@ def admin():
 @app.route("/notregistered")
 def notregistered():
     if current_user.is_authenticated and current_user.role == "admin":
-        bad_students = []
+        students_not_registered = []
         for user in Users.query.filter_by(role='student'):
             if len(user.registrations) < 3:
-                bad_students.append(user)
-        return render_template('notregistered.html', users=bad_students)
+                students_not_registered.append(user)
+        return render_template('notregistered.html', users=students_not_registered)
     else:
         return render_template('denied.html')
 
 
-
+#ADMIN COMPLETE A SINGLE OFFERING
+@app.route("/complete/<offering_id>")
+def complete(offering_id):
+    if current_user.is_authenticated and current_user.role == "admin":
+        offering = Offerings.query.filter_by(id=offering_id).first()
+        if not offering:
+            flash('Offering not found to complete', 'danger')
+            return redirect(url_for('allofferings'))
+        else:
+            #RESET THE STUDENT COUNT BEFORE COMPLETING THE OFFERING
+            offering.current_count = 0
+            for registration in offering.registrations:
+                #LOOP THROUGH REGISTRATIONS FOR THIS OFFERING AND MAKE A COMPLETION AND DUMP THE REGISTRATION
+                new_completion = Completions(elective_id=offering.elective_id, user_id=registration.user_id)
+                db.session.add(new_completion)
+                db.session.delete(registration)
+            db.session.commit()
+            flash('Offering completed', 'success')
+            return redirect(url_for('allofferings'))
+    else:
+        return render_template('denied.html')
 
 
 #ADMIN SET ALL REGESTRATIONS TO COMPLETIONS
