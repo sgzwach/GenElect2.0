@@ -22,7 +22,7 @@ To run:
 - [ ] Bulk User Import (from text document possibly)
 - [X] Create elective field that allows it to be repeated
 - [ ] Student Elective search box (should auto refresh)
-- [ ] Non-registered user list
+- [X] Non-registered user list
 - [ ] Stats Page (possibly featuring: # of registered/unregistered students, # of open seats, full electives, etc)
 - [ ] Overall Camp Schedule
 - [X] Redirect correctly after editing feature or dropping from elective
@@ -34,6 +34,7 @@ To run:
 - [X] Check current registrations for prereq completions
 - [X] Remove registrations with prereq registrations are dropped
 - [X] Allow admins and instructors to drop students from classes
+- [ ] Decide if registrations should be manually or automatically converted to completions
 
 
 

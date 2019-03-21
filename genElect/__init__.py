@@ -98,9 +98,25 @@ def admin():
         return render_template('denied.html')
 
 
+#ADMIN VIEW STUDENTS THAT ARE NOT REGISTERED FOR ALL PERIODS
+@app.route("/notregistered")
+def notregistered():
+    if current_user.is_authenticated and current_user.role == "admin":
+        bad_students = []
+        for user in Users.query.filter_by(role='student'):
+            if len(user.registrations) < 3:
+                bad_students.append(user)
+        return render_template('notregistered.html', users=bad_students)
+    else:
+        return render_template('denied.html')
+
+
+
+
+
 #ADMIN SET ALL REGESTRATIONS TO COMPLETIONS
-@app.route("/complete")
-def complete():
+@app.route("/completeall")
+def completeall():
     if current_user.is_authenticated and current_user.role == "admin":
         registrations = Registrations.query.all()
         for registration in registrations:
@@ -648,6 +664,9 @@ def register(offering_id):
             return redirect(url_for('electives'))
 
         offering = Offerings.query.filter_by(id=offering_id).first()
+        if not offering:
+            flash("Elective not found for registration", 'danger')
+            return redirect(url_for('electives'))
 
         #check if already completed elective type
         completion = Completions.query.filter_by(user_id=current_user.id, elective_id=offering.elective.id).first()
@@ -689,9 +708,7 @@ def register(offering_id):
             db.session.commit()
             flash("Elective Registration Successful", 'success')
             return redirect(url_for('electives'))
-        else:
-            flash("Elective not found for registration", 'danger')
-            return redirect(url_for('electives'))
+
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))

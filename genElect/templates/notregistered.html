@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>All Students that have not registered for 3 electives</h1>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">#</th>
+	      <th scope="col">Full Name</th>
+	      <th scope="col">Username</th>
+	      <th scope="col">Email</th>
+	      <th scope="col">Schedule</th>
+	      <th scope="col">Delete</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for user in users %}
+	    <tr>
+	      <th scope="row">{{user.id}}</th>
+	      <th scope="row">{{user.full_name}}</th>
+	      <th scope="row">{{user.username}}</th>
+	      <th scope="row">{{user.email}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/schedule?user_id={{user.id}}'" class="btn btn-outline-info">Schedule</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteuser/{{user.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+{% endblock content %}
