@@ -7,6 +7,7 @@
 	      <th scope="col">Full Name</th>
 	      <th scope="col">Email</th>
 	      <th scope="col">Username</th>
+	      <th scope="col">Schedule</th>
 	      <th scope="col">Mark as Present</th>
 	      <th scope="col">Drop Student</th>
 	    </tr>
@@ -17,6 +18,7 @@
 	      <th scope="row">{{registration.user.full_name}}</th>
 	      <th scope="row">{{registration.user.email}}</th>
 	      <th scope="row">{{registration.user.username}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/schedule?user_id={{registration.user_id}}'" class="btn btn-outline-info">Student Schedule</button></th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '#'" class="btn btn-outline-success">Mark As Present</button></th>
 	      <th scope="row"><button type="button" onclick="window.location.href = '/drop/{{registration.offering_id}}?user_id={{registration.user_id}}'" class="btn btn-outline-danger">Absent/Drop Student</button></th>
 	    </tr>

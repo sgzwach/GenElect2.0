@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
+{% if user == current_user %}
+<h1>My Schedule</h1>
+{% else %}
 <h1>{{user.full_name}}'s Schedule</h1>
+{% endif %}
     {% for offering in registered %}
         <article class="media content-section">
           <div class="media-body">
