@@ -21,7 +21,7 @@ class UpdateUserForm(FlaskForm):
 	username = StringField('Username', validators=[DataRequired()])
 	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
 	role = SelectField('User Role', choices=choices, validators=[Required()])
-	password = PasswordField('Set New Password', validators=[DataRequired()])
+	password = PasswordField('Set New Password')
 	submit = SubmitField('Update User')
 
 

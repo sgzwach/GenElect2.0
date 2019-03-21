@@ -214,7 +214,8 @@ def edituser(user_id):
                 user.full_name = form.full_name.data
                 user.email = form.email.data
                 user.role = form.role.data
-                user.password = form.password.data
+                if form.password.data:
+                    user.password = form.password.data
                 db.session.commit()
                 flash("Account Info Updated", 'success')
                 return redirect(f'/user/{user_id}')
