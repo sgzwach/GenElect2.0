@@ -19,7 +19,7 @@ To run:
 - [X] Remove completions on elective delete
 - [X] Allow non-authenticated users to view electives
 - [X] Offerings Templates
-- [ ] Bulk User Import (from text document possibly)
+- [X] Bulk User Import (from text document possibly)
 - [X] Create elective field that allows it to be repeated
 - [ ] Student Elective search box (should auto refresh)
 - [X] Non-registered user list
