@@ -232,16 +232,20 @@ def uploadusers():
             users = file.readlines()
             for user in users:
                 user = user.decode().strip().split(',')
-                new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
-                db.session.add(new_user)
+                if len(user) != 5:
+                    print("Bad user input")
+                else:
+                    new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
+                    db.session.add(new_user)
             #try to commit the new users
             try:
                 db.session.commit()
+                flash("Users uploaded!", 'success')
             except:
                 print("Fail happened (repeat on unique values?)")
+                flash("Something went wrong, unique value repeat?", 'danger')
 
-            flash("Users uploaded!", 'success')
-            return redirect('/admin')
+            return redirect('/allusers')
     else:
         return render_template('uploadusers.html')
 
