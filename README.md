@@ -36,6 +36,8 @@ To run:
 - [X] Allow admins and instructors to drop students from classes
 - [X] Decide if registrations should be manually or automatically converted to completions (currently manual, see 'Complete' options within allofferings view)
 - [X] Fix change password in user update bug
+- [X] Add Favicon
+- [ ] Enable mobile app conversion and push notifications
 
 
 

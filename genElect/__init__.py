@@ -212,6 +212,41 @@ def createuser():
         return render_template('denied.html')
 
 
+#ADMIN UPLOAD USER CSV FILE
+@app.route('/uploadusers', methods=['GET', 'POST'])
+def uploadusers():
+    if request.method == 'POST': #posting user file information
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file data found', 'danger')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file', 'danger')
+            return redirect(request.url)
+        if file: #if file data is found
+            filename = file.filename
+            print(f"Users found in file {filename}")
+            users = file.readlines()
+            for user in users:
+                user = user.decode().strip().split(',')
+                new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
+                db.session.add(new_user)
+            #try to commit the new users
+            try:
+                db.session.commit()
+            except:
+                print("Fail happened (repeat on unique values?)")
+
+            flash("Users uploaded!", 'success')
+            return redirect('/admin')
+    else:
+        return render_template('uploadusers.html')
+
+
+
 #ADMIN ALL USERS PAGE
 @app.route("/allusers")
 def allusers():
@@ -258,11 +293,19 @@ def edituser(user_id):
 def deleteuser(user_id):
     if current_user.is_authenticated and current_user.role == "admin":
         user = Users.query.filter_by(id=user_id).first()
-        registrations_to_delete = Registrations.query.filter_by(user_id=user.id) #delete users registrations
-        if user and user.username != "admin": #make sure not to delete admin
-            db.session.delete(user)
-            for registration in registrations_to_delete:
+        if user: #make sure user is found
+            if user.username == 'admin':
+                #DON'T DELETE THE ADMIN USER
+                flash("Cannot delete the admin user", 'danger')
+                return redirect('/allusers')
+            #WE HAVE TO DELETE THE REGISTRATIONS AND COMPLETIONS
+            for registration in user.registrations:
+                registration.offering.current_count -= 1
                 db.session.delete(registration)
+            for completion in user.completed_electives:
+                db.session.delete(completion)
+
+            db.session.delete(user)
             db.session.commit()
             flash("User Deleted", 'info')
             return redirect('/allusers')
