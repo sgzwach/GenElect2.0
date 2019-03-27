@@ -139,9 +139,14 @@ def complete(offering_id):
 def completeall():
     if current_user.is_authenticated and current_user.role == "admin":
         registrations = Registrations.query.all()
-        for registration in registrations:
+        offerings = Offerings.query.all()
+        for registration in registrations: #complete each registration
             completion = Completions(user_id=registration.user_id,elective_id=registration.offering.elective.id)
+            db.session.delete(registration) #if we want to dump all registrations while completing them
             db.session.add(completion)
+
+        for offering in offerings: #reset offering student count
+            offering.current_count = 0 
 
         db.session.commit()
         flash(f"Completions set", 'success')
@@ -215,39 +220,43 @@ def createuser():
 #ADMIN UPLOAD USER CSV FILE
 @app.route('/uploadusers', methods=['GET', 'POST'])
 def uploadusers():
-    if request.method == 'POST': #posting user file information
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file data found', 'danger')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file', 'danger')
-            return redirect(request.url)
-        if file: #if file data is found
-            filename = file.filename
-            print(f"Users found in file {filename}")
-            users = file.readlines()
-            for user in users:
-                user = user.decode().strip().split(',')
-                if len(user) != 5:
-                    print("Bad user input")
-                else:
-                    new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
-                    db.session.add(new_user)
-            #try to commit the new users
-            try:
-                db.session.commit()
-                flash("Users uploaded!", 'success')
-            except:
-                print("Fail happened (repeat on unique values?)")
-                flash("Something went wrong, unique value repeat?", 'danger')
+    #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
+    if current_user.is_authenticated and current_user.role == "admin":
+        if request.method == 'POST': #posting user file information
+            # check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file data found', 'danger')
+                return redirect(request.url)
+            file = request.files['file']
+            # if user does not select file, browser also
+            # submit an empty part without filename
+            if file.filename == '':
+                flash('No selected file', 'danger')
+                return redirect(request.url)
+            if file: #if file data is found
+                filename = file.filename
+                print(f"Users found in file {filename}")
+                users = file.readlines()
+                for user in users:
+                    user = user.decode().strip().split(',')
+                    if len(user) != 5:
+                        print("Bad user input")
+                    else:
+                        new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
+                        db.session.add(new_user)
+                #try to commit the new users
+                try:
+                    db.session.commit()
+                    flash("Users uploaded!", 'success')
+                except:
+                    print("Fail happened (repeat on unique values?)")
+                    flash("Something went wrong, unique value repeat?", 'danger')
 
-            return redirect('/allusers')
+                return redirect('/allusers')
+        else:
+            return render_template('uploadusers.html')
     else:
-        return render_template('uploadusers.html')
+        return render_template('denied.html')
 
 
 
@@ -472,7 +481,7 @@ def deleteelective(elective_id):
 #ALL OFFERINGS PAGE
 @app.route("/allofferings")
 def allofferings():
-    offerings = Offerings.query.all()
+    offerings = Offerings.query.order_by(Offerings.elective_id).all()
     return render_template('allofferings.html', offerings=offerings, title="Offerings")
 
 #ADMIN CREATE NEW OFFERING
@@ -664,9 +673,9 @@ def electives():
 
     #QUERY FOR WHAT OFFERINGS TO SHOW
     if period:
-        offerings = Offerings.query.filter_by(period_start=period)
+        offerings = Offerings.query.order_by(Offerings.elective_id).filter_by(period_start=period)
     else:
-        offerings = Offerings.query.all()
+        offerings = Offerings.query.order_by(Offerings.elective_id).all()
 
     registered = [] #build out list of registered offerings
     if current_user.is_authenticated:
@@ -678,7 +687,7 @@ def electives():
 
 
 #STUDENTS VIEWING THEIR SCHEDULE
-@app.route("/schedule") #FOR STUDENT USE
+@app.route("/schedule") #FOR STUDENT OR ADMIN USE
 def schedule():
     if current_user.is_authenticated:
         if current_user.role == 'admin' or current_user.role == 'instructor':
@@ -694,6 +703,7 @@ def schedule():
         registered = [] #to build out registered offerings
 
         #WEIRD WAY TO SORT REGISTERED OFFERINGS SINCE sorted() DOESN'T WORK ON TYPE OFFERINGS
+        #TODO: BETTERE SORTING MECHANISM
         for registration in registrations:
             if registration.offering.period_start == 1:
                 registered.append(registration.offering)
