@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -51,12 +53,14 @@
                   <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
                 {% endif %}
                 {% if current_user.role == "student" %}
+                  <a class="nav-item nav-link" href="/campschedule">Camp Schedule</a>
                   <a class="nav-item nav-link" href="/electives">Electives</a>
                   <a class="nav-item nav-link" href="/schedule">My Schedule</a>
                   <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 {% endif %}
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
               {% else %}
+                <a class="nav-item nav-link" href="/campschedule">Camp Schedule</a>
                 <a class="nav-item nav-link" href="/electives">Electives</a>
                 <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
               {% endif %}

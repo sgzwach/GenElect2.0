@@ -662,6 +662,11 @@ def deletenotification(notification_id):
 #### END OF NOTIFICATIONS ####
 
 
+#CAMP SCHEDULE PAGE
+@app.route("/campschedule")
+def campschedule():
+    return render_template('campschedule.html')
+
 
 #### STUDENT PAGES ####
 
