@@ -685,20 +685,29 @@ def campschedule():
 @app.route("/electives") #FOR STUDENT USE
 @app.route("/offerings") #FOR STUDENT USE
 def electives():
-    period = request.args.get('period')
+    try:
+        period = int(request.args.get('period'))
+    except:
+        period = 0
+    
+    search = request.args.get('search')
+
+    if search is None:
+        search = ""
 
     #QUERY FOR WHAT OFFERINGS TO SHOW
-    if period:
-        offerings = Offerings.query.order_by(Offerings.elective_id).filter_by(period_start=period)
-    else:
-        offerings = Offerings.query.order_by(Offerings.elective_id).all()
+    all_offerings = Offerings.query.order_by(Offerings.elective_id).all()
+    offerings = []
+    for offering in all_offerings:
+        if (period == 0 or offering.period_start == period) and (search == "" or search.lower() in offering.elective.name.lower()):
+            offerings.append(offering)
 
-    registered = [] #build out list of registered offerings
+    registered = [] #build out list of registered offerings based on user registrations
     if current_user.is_authenticated:
         registrations = current_user.registrations
         for registration in registrations:
             registered.append(registration.offering)
-    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives)
+    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives, period=period)
 
 
 

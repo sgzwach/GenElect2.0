@@ -44,8 +44,8 @@
                 {% if current_user.role == "admin" %}
                   <a class="nav-item nav-link" href="{{ url_for('admin') }}">Admin</a>
                   <a class="nav-item nav-link" href="{{ url_for('allusers') }}">Users</a>
-                  <a class="nav-item nav-link" href="{{ url_for('allelectives') }}">Electives</a>
                   <a class="nav-item nav-link" href="{{ url_for('allnotifications') }}">Notifications</a>
+                  <a class="nav-item nav-link" href="{{ url_for('allelectives') }}">Electives</a>
                   <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
                 {% endif %}
                 {% if current_user.role == "instructor" %}

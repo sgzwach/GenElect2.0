@@ -2,10 +2,32 @@
 {% block content %}
     <h1>Electives:</h1>
     <br>
-    <button type="button" onclick="window.location.href = '/electives'" class="btn btn-outline-info">All</button>
-    <button type="button" onclick="window.location.href = '/electives?period=1'" class="btn btn-outline-info">Period 1</button>
-    <button type="button" onclick="window.location.href = '/electives?period=2'" class="btn btn-outline-info">Period 2</button>
-    <button type="button" onclick="window.location.href = '/electives?period=3'" class="btn btn-outline-info">Period 3</button>
+    <form class="example" action="" method="get">
+      <input type="text" placeholder="Search.." name="search" class="form-control">
+      <button type="submit" class="btn btn-outline-info">Search</button>
+    </form>
+    <br>
+    {% if not period %}
+      <button type="button" onclick="window.location.href = '/electives'" class="btn btn-info">All</button>
+    {% else %}
+      <button type="button" onclick="window.location.href = '/electives'" class="btn btn-outline-info">All</button>
+    {% endif %}
+
+    {% if period and period == 1 %}
+      <button type="button" onclick="window.location.href = '/electives?period=1'" class="btn btn-info">Period 1</button>
+    {% else %}
+      <button type="button" onclick="window.location.href = '/electives?period=1'" class="btn btn-outline-info">Period 1</button>
+    {% endif %}
+    {% if period and period == 2 %}
+      <button type="button" onclick="window.location.href = '/electives?period=2'" class="btn btn-info">Period 2</button>
+    {% else %}
+      <button type="button" onclick="window.location.href = '/electives?period=2'" class="btn btn-outline-info">Period 2</button>
+    {% endif %}
+    {% if period and period == 3 %}
+      <button type="button" onclick="window.location.href = '/electives?period=3'" class="btn btn-info">Period 3</button>
+    {% else %}
+      <button type="button" onclick="window.location.href = '/electives?period=3'" class="btn btn-outline-info">Period 3</button>
+    {% endif %}
     <br><br>
     {% for offering in offerings %}
         <article class="media content-section">
