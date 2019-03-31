@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Admin Statistics Page</h1>
+    <br><br>
+    <h2>Empty Offerings</h2>
+    <table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">Offering ID</th>
+	      <th scope="col">Elective Name</th>
+	      <th scope="col">Instructor Name</th>
+	      <th scope="col">Period</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for offering in empty %}
+	    <tr>
+	      <th scope="row">{{offering.id}}</th>
+	      <th scope="row">{{offering.elective.name}}</th>
+	      <th scope="row">{{offering.instructor}}</th>
+	      <th scope="row">{{offering.period_start}}</th>
+	    {% endfor %}
+	  </tbody>
+	</table>
+{% endblock content %}

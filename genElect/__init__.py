@@ -98,6 +98,17 @@ def admin():
         return render_template('denied.html')
 
 
+#ADMIN STAT PAGE
+@app.route("/stats")
+def stats():
+    if current_user.is_authenticated and current_user.role == "admin":
+        empty = Offerings.query.filter_by(current_count=0)
+        full = Offerings.query.filter_by(current_count=Offerings.capacity).all()
+        return render_template('stats.html', empty=empty, full=full)
+    else:
+        return render_template('denied.html')
+
+
 #ADMIN VIEW STUDENTS THAT ARE NOT REGISTERED FOR ALL PERIODS
 @app.route("/notregistered")
 def notregistered():
