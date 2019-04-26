@@ -21,9 +21,9 @@ To run:
 - [X] Offerings Templates
 - [X] Bulk User Import (from text document possibly)
 - [X] Create elective field that allows it to be repeated
-- [ ] Student Elective search box (should auto refresh)
+- [X] Student Elective search box
 - [X] Non-registered user list
-- [ ] Stats Page (possibly featuring: # of registered/unregistered students, # of open seats, full electives, etc)
+- [X] Stats Page (possibly featuring: # of registered/unregistered students, # of open seats, full electives, etc)
 - [ ] Overall Camp Schedule
 - [X] Redirect correctly after editing feature or dropping from elective
 - [X] Show registered electives when looking at a students information, add schedule button
@@ -34,10 +34,10 @@ To run:
 - [X] Check current registrations for prereq completions
 - [X] Remove registrations with prereq registrations are dropped
 - [X] Allow admins and instructors to drop students from classes
-- [X] Decide if registrations should be manually or automatically converted to completions (currently manual, see 'Complete' options within allofferings view)
+- [X] Decide if registrations should be manually or automatically converted to completions (currently manual, see 'Complete' button within allofferings view)
 - [X] Fix change password in user update bug
 - [X] Add Favicon
-- [ ] Enable mobile app conversion and push notifications
+- [ ] Enable mobile app conversion and push notifications (<meta name="mobile-web-app-capable" content="yes">)
 
 
 
