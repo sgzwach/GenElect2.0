@@ -1,6 +1,6 @@
-jarodkeene,jarod keene,jarod@email.com,student,password
-collin,collin rumpca,collin@email.com,student,password
-andrew,andrew kramer,andrew@email.com,admin,password
-kyle,kyle cronin,kyle@email.com,admin,password
-evan,evan bolt,evan@email.com,instructor,password
-tyler,tyler flagen,tyler@email.com,instructor,password
+jarodkeene,jarod keene,jarod@email.com,student,password,1,2,3
+collin,collin rumpca,collin@email.com,student,password,1,2,3
+andrew,andrew kramer,andrew@email.com,admin,password,1,2,3
+kyle,kyle cronin,kyle@email.com,admin,password,1,2,3
+evan,evan bolt,evan@email.com,instructor,password,1,2,3
+tyler,tyler flagen,tyler@email.com,instructor,password,1,2,3

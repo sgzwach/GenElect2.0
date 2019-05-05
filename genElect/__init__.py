@@ -37,6 +37,7 @@ from genElect.models import Registrations
 from genElect.models import Completions
 from genElect.models import Prerequisites
 from genElect.models import Cores
+from genElect.models import CoreRegistrations
 
 from genElect.forms import *
 
@@ -259,11 +260,22 @@ def uploadusers():
                 users = file.readlines()
                 for user in users:
                     user = user.decode().strip().split(',')
-                    if len(user) != 5:
+                    if len(user) != 8:
                         print("Bad user input")
                     else:
                         new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
                         db.session.add(new_user)
+
+                        #just trying (to get the id for the user)
+                        db.session.commit()
+
+                        #now add core registrations based on the last id
+                        for i in range(5,8):
+                            print(new_user.id)
+                            new_core_registration = CoreRegistrations(user_id=new_user.id, core_id=int(user[i]))
+                            print("Trying new core registrion")
+                            db.session.add(new_core_registration)
+
                 #try to commit the new users
                 try:
                     db.session.commit()
@@ -337,6 +349,10 @@ def deleteuser(user_id):
                 db.session.delete(registration)
             for completion in user.completed_electives:
                 db.session.delete(completion)
+
+            #WE ALSO HAVE TO REMOVE ALL CORE REGISTRATIONS
+            for core_registration in user.core_registrations:
+                db.session.delete(core_registration)
 
             db.session.delete(user)
             db.session.commit()
@@ -732,6 +748,7 @@ def schedule():
                 return redirect(url_for('allusers'))   
         else:
             user = current_user
+            user_id = user.id
 
         registrations = user.registrations #grab all user registrations
         registered = [] #to build out registered offerings
@@ -748,7 +765,9 @@ def schedule():
             if registration.offering.period_start == 3:
                 registered.append(registration.offering)
 
-        return render_template('schedule.html', registered=registered, user=user)
+        core_registrations = user.core_registrations
+
+        return render_template('schedule.html', registered=registered, core_registrations=core_registrations, user=user)
 
     else:
         flash("Please login first", 'info')
@@ -992,6 +1011,10 @@ def deletecore(core_id):
     if current_user.is_authenticated and current_user.role == "admin":
         core = Cores.query.filter_by(id=core_id).first()
         if core:
+            #WE NEED TO REMOVE ALL REGISTRATIONS FOR THE CORE COURSE THAT WE ARE ABOUT TO DELETE
+            for core_registration in core.registrations:
+                db.session.delete(core_registration)
+                
             db.session.delete(core)
             db.session.commit()
             flash("Core Deleted", 'info')

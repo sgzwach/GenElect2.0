@@ -8,6 +8,19 @@
     <!-- start with the core courses -->
     <br><br>
     <h2>Core Courses</h2>
+    {% for core_registration in core_registrations %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{core_registration.core.instructor}}</a>
+              <small class="text-muted">Start Time: {{ core_registration.core.start_time }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ core_registration.core.name }}</a></h2>
+            <p class="article-content">{{ core_registration.core.description }}</p>
+            <p class="article-content">{{ core_registration.core.building }} {{ core_registration.core.room }}</p>
+          </div>
+        </article>
+    {% endfor %}
 
 
     <!-- Now print out the elective courses -->

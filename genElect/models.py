@@ -25,6 +25,7 @@ class Users(Base, UserMixin):
     role = db.Column(db.String(32), nullable=False)
     password = db.Column(db.String(128))
     registrations = db.relationship('Registrations', backref='user', lazy=True)
+    core_registrations = db.relationship('CoreRegistrations', backref='user', lazy=True)
     completed_electives = db.relationship('Completions', backref='user', lazy=True)
 
     # # Future VIP registration option
@@ -39,9 +40,10 @@ class Registrations(Base):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     offering_id = db.Column(db.Integer, db.ForeignKey('offerings.id'), nullable=False)
 
-#     def __init__(self, username, offering_id):
-#         self.user_id = username
-#         self.offering_id = offering_id
+class CoreRegistrations(Base):
+    __tablesname__ = 'registrations'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    core_id = db.Column(db.Integer, db.ForeignKey('cores.id'), nullable=False)
 
 class Offerings(Base):
     __tablename__ = 'offerings'
@@ -77,6 +79,7 @@ class Cores(Base):
     start_time = db.Column(db.String(100))
     end_time = db.Column(db.String(100))
     instructor = db.Column(db.String(100))
+    registrations = db.relationship('CoreRegistrations', backref='core', lazy=True)
 
 
 class Completions(Base):
