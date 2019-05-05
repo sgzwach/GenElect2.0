@@ -5,6 +5,14 @@
 {% else %}
 <h1>{{user.full_name}}'s Schedule</h1>
 {% endif %}
+    <!-- start with the core courses -->
+    <br><br>
+    <h2>Core Courses</h2>
+
+
+    <!-- Now print out the elective courses -->
+    <br><br>
+    <h2>Elective Courses</h2>
     {% for offering in registered %}
         <article class="media content-section">
           <div class="media-body">

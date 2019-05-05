@@ -42,6 +42,18 @@ class ElectiveForm(FlaskForm):
 	submit = SubmitField('Save Elective')
 
 
+#Form for creating and updating electives
+class CoreForm(FlaskForm):
+	name = StringField('Core Name', validators=[DataRequired()])
+	description = StringField('Description', validators=[DataRequired()])
+	instructor = StringField('Instructor', validators=[DataRequired()])
+	building = StringField('Building', validators=[DataRequired()])
+	room = StringField('Room', validators=[DataRequired()])
+	start_time = StringField('Start Time', validators=[DataRequired()])
+	end_time = StringField('End Time', validators=[DataRequired()])
+	submit = SubmitField('Save Core')
+
+
 #Form for creating and updating offerings
 class OfferingForm(FlaskForm):
 	building = StringField('Building', validators=[DataRequired()])

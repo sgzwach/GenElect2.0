@@ -68,6 +68,16 @@ class Electives(Base):
     completed_users = db.relationship('Completions', backref='elective', lazy=True)
     can_retake = db.Column(db.Boolean)
 
+class Cores(Base):
+    __tablename__ = 'cores'
+    name = db.Column(db.String(100))
+    description = db.Column(db.String(500))
+    building = db.Column(db.String(100))
+    room = db.Column(db.String(100))
+    start_time = db.Column(db.String(100))
+    end_time = db.Column(db.String(100))
+    instructor = db.Column(db.String(100))
+
 
 class Completions(Base):
     __tablename__ = 'completions'
@@ -79,3 +89,7 @@ class Prerequisites(Base):
     __tablename__ = 'prerequisites'
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
     prerequisite_elective_id = db.Column(db.Integer, nullable=False)
+
+
+# class Cores(Base):
+#     __tablename__ = ""

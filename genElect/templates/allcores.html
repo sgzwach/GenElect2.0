@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>All Cores Page</h1>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">#</th>
+	      <th scope="col">Name</th>
+	      <th scope="col">Description</th>
+	      <th scope="col">Instructor</th>
+	      <th scope="col">Building</th>
+	      <th scope="col">Room</th>
+	      <th scope="col">Start Time</th>
+	      <th scope="col">End Time</th>
+	      <th scope="col">Update</th>
+	      <th scope="col">Delete</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for core in cores %}
+	    <tr>
+	      <th scope="row">{{core.id}}</th>
+	      <th scope="row">{{core.name}}</th>
+	      <th scope="row">{{core.description}}</th>
+	      <th scope="row">{{core.instructor}}</th>
+	      <th scope="row">{{core.building}}</th>
+	      <th scope="row">{{core.room}}</th>
+	      <th scope="row">{{core.start_time}}</th>
+	      <th scope="row">{{core.end_time}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/editcore/{{core.id}}'" class="btn btn-outline-info">Update</button></th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/deletecore/{{core.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+    <br><button type="button" onclick="window.location.href = '/createcore'" class="btn btn-outline-info">Create New core</button>
+{% endblock content %}

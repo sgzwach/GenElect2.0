@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+    	<form method="POST" action="">
+    		{{ form.hidden_tag() }}
+    		<fieldset class="form-group">
+    			<legend class="border-bottom mb-4">Edit Core: {{ core.name }}</legend>
+    			<div class="form-group">
+                    {{ form.name.label(class="form-control-label") }}
+
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.description.label(class="form-control-label") }}
+                    {% if form.description.errors %}
+                        {{ form.description(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.description.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.description(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.building.label(class="form-control-label") }}
+                    {% if form.building.errors %}
+                        {{ form.building(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.building.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.building(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.room.label(class="form-control-label") }}
+                    {% if form.room.errors %}
+                        {{ form.room(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.room.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.room(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.instructor.label(class="form-control-label") }}
+                    {% if form.instructor.errors %}
+                        {{ form.instructor(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.instructor.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.instructor(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.start_time.label(class="form-control-label") }}
+                    {% if form.start_time.errors %}
+                        {{ form.start_time(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.start_time.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.start_time(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.end_time.label(class="form-control-label") }}
+                    {% if form.end_time.errors %}
+                        {{ form.end_time(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.end_time.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.end_time(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+    		</fieldset>
+    		<div class="form-group">
+    			{{ form.submit(class="btn btn-outline-info") }}
+                <button type="button" onclick="window.location.href = '/allcores'" class="btn btn-outline-danger">Cancel</button>
+                <button type="button" onclick="window.location.href = '/deletecore/{{core.id}}'" class="btn btn-outline-danger">Delete</button>
+    		</div>
+    	</form>
+    </div>
+{% endblock content %}

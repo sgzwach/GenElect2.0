@@ -1,0 +1,12 @@
+div.cursor{
+    position: absolute;
+    width: 18px;
+}
+div.explodeNode{
+    display: inline-block;    
+    position: absolute;
+    width: 18px;
+    -webkit-transition: font-size 2s; /* Safari */
+    transition: font-size 2s;
+    user-select: none;
+}

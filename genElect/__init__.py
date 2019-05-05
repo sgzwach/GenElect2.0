@@ -36,6 +36,7 @@ from genElect.models import Offerings
 from genElect.models import Registrations
 from genElect.models import Completions
 from genElect.models import Prerequisites
+from genElect.models import Cores
 
 from genElect.forms import *
 
@@ -784,8 +785,17 @@ def register(offering_id):
         if completion and offering.elective.can_retake == False: #if they can't retake the elective
             flash("Elective type already completed", 'danger')
             return redirect(url_for('electives'))
+
+        #check if registered for same time period or elective
+        for registration in current_user.registrations:
+            if registration.offering.period_start == offering.period_start:
+                flash("Elective time conflict", 'danger')
+                return redirect(url_for('electives'))
+            if registration.offering.elective == offering.elective and offering.elective.can_retake == False:
+                flash("Already registered for that elective type", 'danger')
+                return redirect(url_for('electives'))
                 
-        #check if completed prerequisites (using both completed and other registrations)
+        #check if completed prerequisites (using both completed and other registrations that are before selected elective)
         for p in offering.elective.prerequisites:
             #CHECK ELECTIVES THAT HAVE BEEN COMPLETED
             #QUERY FOR COMPLETION WITH USER_ID AND THE PREREQUISITE_ELECTIVE_ID
@@ -797,15 +807,6 @@ def register(offering_id):
                     r_check = True
             if not p_check and not r_check:
                 flash("Elective prerequisites not completed", 'danger')
-                return redirect(url_for('electives'))
-        
-        #check if registered for same time period or elective
-        for registration in current_user.registrations:
-            if registration.offering.period_start == offering.period_start:
-                flash("Elective time conflict", 'danger')
-                return redirect(url_for('electives'))
-            if registration.offering.elective == offering.elective and offering.elective.can_retake == False:
-                flash("Already registered for that elective type", 'danger')
                 return redirect(url_for('electives'))
 
         if offering:
@@ -907,6 +908,102 @@ def attendance(offering_id):
 
 
 #### END OF INSTRUCTOR PAGES ####
+
+
+#### CORE CREATION EDITING AND DELETION ####
+
+#ADMIN ALL CORES PAGE
+@app.route("/allcores")
+def allcores():
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
+        cores = Cores.query.all()
+        return render_template('allcores.html', cores=cores, title="Cores")
+    else:
+        return render_template('denied.html')
+
+#CORE Creator Page
+@app.route("/createcore", methods=['GET', 'POST'])
+def createcore():
+    if current_user.is_authenticated and current_user.role == "admin":
+        form = CoreForm()
+
+        #IF FORM IS SUBMITTED AND VALID
+        if form.validate_on_submit():
+            #create the new core
+            new_core = Cores(name=form.name.data, description=form.description.data, instructor=form.instructor.data, start_time=form.start_time.data, end_time=form.end_time.data, building=form.building.data, room=form.room.data)
+            db.session.add(new_core)
+            #commit our new core
+            db.session.commit()
+
+            flash(f"Core {new_core.name} created!", 'success')
+            return redirect(url_for('allcores'))
+        return render_template('createcore.html', title='Create', form=form)
+
+    else:
+        return render_template('denied.html')
+
+
+
+#ADMIN EDIT CORE BY CORE_ID
+@app.route("/core/<core_id>", methods=['GET', 'POST'])
+@app.route("/editcore/<core_id>", methods=['GET', 'POST'])
+def editcore(core_id):
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
+        core = Cores.query.filter_by(id=int(core_id)).first()
+        if core:
+            #create the core form
+            form = CoreForm()
+
+            if form.validate_on_submit():
+                #update the core information
+                core.name = form.name.data
+                core.description = form.description.data
+                core.instructor = form.instructor.data
+                core.building = form.building.data
+                core.room = form.room.data
+                core.start_time = form.start_time.data
+                core.end_time = form.end_time.data
+
+                #commit the changes
+                db.session.commit()
+                flash("Core Info Updated", 'success')
+                return redirect(f'/core/{core_id}')
+            
+            elif request.method == 'GET':
+                form.name.data = core.name
+                form.description.data = core.description
+                form.instructor.data = core.instructor
+                form.building.data = core.building
+                form.room.data = core.room
+                form.start_time.data = core.start_time
+                form.end_time.data = core.end_time
+
+            return render_template('editcore.html', core=core, form=form, title="Core Edit")
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+
+#ADMIN DELETE CORE BY CORE_ID
+@app.route("/deletecore/<core_id>")
+@app.route("/core/<core_id>/delete")
+def deletecore(core_id):
+    if current_user.is_authenticated and current_user.role == "admin":
+        core = Cores.query.filter_by(id=core_id).first()
+        if core:
+            db.session.delete(core)
+            db.session.commit()
+            flash("Core Deleted", 'info')
+            return redirect('/allcores')
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+
+
+#### END OF THE CORE CODE ####
 
 #CONTACT PAGE
 @app.route("/contactus")
