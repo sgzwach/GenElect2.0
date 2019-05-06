@@ -71,6 +71,10 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(username=form.username.data).first() #login with username for now
+        #now try email if the username didn't work
+        if not user:
+            user = Users.query.filter_by(email=form.username.data).first()
+
         if user and form.password.data == user.password:
             login_user(user, remember=form.remember.data)
             flash(f"User {form.username.data} login successful!", 'success')
@@ -223,7 +227,7 @@ def settime():
 def createuser():
     #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
     if current_user.is_authenticated and current_user.role == "admin":
-        form = CreateUserForm()
+        form = UserForm()
         if form.validate_on_submit():
             new_user = Users(username=form.username.data, full_name=form.full_name.data, role=form.role.data, email=form.email.data, password=form.password.data)
             
@@ -260,7 +264,7 @@ def uploadusers():
                 users = file.readlines()
                 for user in users:
                     user = user.decode().strip().split(',')
-                    if len(user) != 8:
+                    if len(user) != 8 and len(user) != 5:
                         print("Bad user input")
                     else:
                         new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
@@ -270,11 +274,12 @@ def uploadusers():
                         db.session.commit()
 
                         #now add core registrations based on the last id
-                        for i in range(5,8):
-                            print(new_user.id)
-                            new_core_registration = CoreRegistrations(user_id=new_user.id, core_id=int(user[i]))
-                            print("Trying new core registrion")
-                            db.session.add(new_core_registration)
+                        if user[3] == "student":
+                            for i in range(5,8):
+                                print(new_user.id)
+                                new_core_registration = CoreRegistrations(user_id=new_user.id, core_id=int(user[i]))
+                                print("Trying new core registrion")
+                                db.session.add(new_core_registration)
 
                 #try to commit the new users
                 try:
@@ -308,12 +313,13 @@ def edituser(user_id):
     if current_user.is_authenticated and current_user.role == "admin":
         user = Users.query.filter_by(id=int(user_id)).first()
         if user:
-            form = UpdateUserForm()
+            form = UserForm()
+            
             if form.validate_on_submit():
                 user.username = form.username.data
                 user.full_name = form.full_name.data
                 user.email = form.email.data
-                user.role = form.role.data
+                user.role = form.role.data                
                 if form.password.data:
                     user.password = form.password.data
                 db.session.commit()
@@ -949,7 +955,7 @@ def createcore():
         #IF FORM IS SUBMITTED AND VALID
         if form.validate_on_submit():
             #create the new core
-            new_core = Cores(name=form.name.data, description=form.description.data, instructor=form.instructor.data, start_time=form.start_time.data, end_time=form.end_time.data, building=form.building.data, room=form.room.data)
+            new_core = Cores(name=form.name.data, description=form.description.data, instructor=form.instructor.data, core_period=int(form.core_period.data), building=form.building.data, room=form.room.data)
             db.session.add(new_core)
             #commit our new core
             db.session.commit()
@@ -980,8 +986,7 @@ def editcore(core_id):
                 core.instructor = form.instructor.data
                 core.building = form.building.data
                 core.room = form.room.data
-                core.start_time = form.start_time.data
-                core.end_time = form.end_time.data
+                core.core_period = form.core_period.data
 
                 #commit the changes
                 db.session.commit()
@@ -994,8 +999,7 @@ def editcore(core_id):
                 form.instructor.data = core.instructor
                 form.building.data = core.building
                 form.room.data = core.room
-                form.start_time.data = core.start_time
-                form.end_time.data = core.end_time
+                form.core_period.data = core.core_period
 
             return render_template('editcore.html', core=core, form=form, title="Core Edit")
         else:
@@ -1014,11 +1018,27 @@ def deletecore(core_id):
             #WE NEED TO REMOVE ALL REGISTRATIONS FOR THE CORE COURSE THAT WE ARE ABOUT TO DELETE
             for core_registration in core.registrations:
                 db.session.delete(core_registration)
-                
+
             db.session.delete(core)
             db.session.commit()
             flash("Core Deleted", 'info')
             return redirect('/allcores')
+        else:
+            return render_template('notfound.html')
+    else:
+        return render_template('denied.html')
+
+
+
+
+#GET ROLL BY CORE ID
+@app.route("/coreroll/<core_id>")
+def coreroll(core_id):
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
+        core = Cores.query.filter_by(id=core_id).first()
+        if core:
+            registrations = core.registrations
+            return render_template('coreroll.html', registrations=registrations, title='Core Roll')
         else:
             return render_template('notfound.html')
     else:

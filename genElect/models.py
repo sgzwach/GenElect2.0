@@ -76,8 +76,7 @@ class Cores(Base):
     description = db.Column(db.String(500))
     building = db.Column(db.String(100))
     room = db.Column(db.String(100))
-    start_time = db.Column(db.String(100))
-    end_time = db.Column(db.String(100))
+    core_period = db.Column(db.Integer)
     instructor = db.Column(db.String(100))
     registrations = db.relationship('CoreRegistrations', backref='core', lazy=True)
 

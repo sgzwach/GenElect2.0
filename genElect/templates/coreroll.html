@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Roll Call Page</h1>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">Full Name</th>
+	      <th scope="col">Email</th>
+	      <th scope="col">Username</th>
+	      <th scope="col">Schedule</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for registration in registrations %}
+	    <tr>
+	      <th scope="row">{{registration.user.full_name}}</th>
+	      <th scope="row">{{registration.user.email}}</th>
+	      <th scope="row">{{registration.user.username}}</th>
+	      <th scope="row"><button type="button" onclick="window.location.href = '/schedule?user_id={{registration.user_id}}'" class="btn btn-outline-info">Student Schedule</button></th>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+	<!-- <button type="button" onclick="window.location.href = '/'" class="btn btn-outline-success">Complete Offering</button> -->
+{% endblock content %}

@@ -12,12 +12,12 @@
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{core_registration.core.instructor}}</a>
-              <small class="text-muted">Start Time: {{ core_registration.core.start_time }}</small>
+              <a class="mr-2" href="#">Instructor: {{core_registration.core.instructor}}</a>
+              <small class="text-muted">Core Period: {{ core_registration.core.core_period }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ core_registration.core.name }}</a></h2>
-            <p class="article-content">{{ core_registration.core.description }}</p>
-            <p class="article-content">{{ core_registration.core.building }} {{ core_registration.core.room }}</p>
+            <h2><a class="article-title" href="#">Core Course: {{ core_registration.core.name }}</a></h2>
+            <p class="article-content">Description: {{ core_registration.core.description }}</p>
+            <p class="article-content">Location: {{ core_registration.core.building }} {{ core_registration.core.room }}</p>
           </div>
         </article>
     {% endfor %}
@@ -30,12 +30,12 @@
         <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{offering.instructor}}</a>
+              <a class="mr-2" href="#">Elective Instructor: {{offering.instructor}}</a>
               <small class="text-muted">Period: {{ offering.period_start }}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ offering.elective.name }}</a></h2>
-            <p class="article-content">{{ offering.elective.description }}</p>
-            <p class="article-content">{{ offering.building }} {{ offering.room }}</p>
+            <h2><a class="article-title" href="#">Elective Course: {{ offering.elective.name }}</a></h2>
+            <p class="article-content">Elective Description: {{ offering.elective.description }}</p>
+            <p class="article-content">Location: {{ offering.building }} {{ offering.room }}</p>
           </div>
           {% if current_user == user %}
             <div class="form-group">

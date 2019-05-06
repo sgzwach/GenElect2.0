@@ -3,26 +3,15 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
 from wtforms.validators import DataRequired, Length, EqualTo, Required
 from wtforms import widgets
 
-#Form for Creating New Users (for Administrators)
-class CreateUserForm(FlaskForm):
-	full_name = StringField('Full Name', validators=[DataRequired()])
-	email = StringField('Email', validators=[DataRequired()])
-	username = StringField('Username', validators=[DataRequired()])
-	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
-	role = SelectField('User Role', choices=choices, validators=[Required()])
-	password = PasswordField('Password', validators=[DataRequired()])
-	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-	submit = SubmitField('Create User')
-
-#Form for Updating user information (for Administrators)
-class UpdateUserForm(FlaskForm):
+#Form for User information (for Administrators)
+class UserForm(FlaskForm):
 	full_name = StringField('Full Name', validators=[DataRequired()])
 	email = StringField('Email', validators=[DataRequired()])
 	username = StringField('Username', validators=[DataRequired()])
 	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
 	role = SelectField('User Role', choices=choices, validators=[Required()])
 	password = PasswordField('Set New Password')
-	submit = SubmitField('Update User')
+	submit = SubmitField('Saver User')
 
 
 #Form for Logging In
@@ -49,8 +38,7 @@ class CoreForm(FlaskForm):
 	instructor = StringField('Instructor', validators=[DataRequired()])
 	building = StringField('Building', validators=[DataRequired()])
 	room = StringField('Room', validators=[DataRequired()])
-	start_time = StringField('Start Time', validators=[DataRequired()])
-	end_time = StringField('End Time', validators=[DataRequired()])
+	core_period = IntegerField('Core Period', validators=[DataRequired()])
 	submit = SubmitField('Save Core')
 
 

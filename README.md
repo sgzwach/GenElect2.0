@@ -38,6 +38,11 @@ To run:
 - [X] Fix change password in user update bug
 - [X] Add Favicon
 - [ ] Enable mobile app conversion and push notifications (<meta name="mobile-web-app-capable" content="yes">)
+- [X] Add core courses
+- [X] Enable core courses to be registered for by CSV upload
+- [ ] Allow admins to change a users set of core registrations
+- [X] Add roll call for the new core courses
+- [ ] Order the core courses on each students schedule by core period
 
 
 
