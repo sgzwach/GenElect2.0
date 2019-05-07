@@ -228,13 +228,46 @@ def createuser():
     #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
     if current_user.is_authenticated and current_user.role == "admin":
         form = UserForm()
+        choices1 = [] #choices for period 1 cores
+        choices2 = [] #choices for period 2 cores
+        choices3 = [] #choices for period 3 cores
+
+        cores = Cores.query.all()
+        #correctly append cores to choices for the core dropdowns
+        for core in cores:
+            if core.core_period == 1:
+                choices1.append((str(core.id),core.name))
+            elif core.core_period == 2:
+                choices2.append((str(core.id),core.name))
+            else:
+                choices3.append((str(core.id),core.name))
+
+        #setting up choices and default data
+        form.core1.choices = choices1 #set the choices
+        form.core2.choices = choices2 #set the choices
+        form.core3.choices = choices3 #set the choices
+
         if form.validate_on_submit():
             new_user = Users(username=form.username.data, full_name=form.full_name.data, role=form.role.data, email=form.email.data, password=form.password.data)
-            
+
             #add user to database and commit changes
             db.session.add(new_user)
             db.session.commit()
             flash(f"User {form.username.data} created", 'success')
+
+            #if the new user was a student we need to add the core registrations
+            if new_user.role == "student":
+                new_reg1 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core1.data))
+                new_reg2 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core2.data))
+                new_reg3 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core3.data))
+                db.session.add(new_reg1)
+                db.session.add(new_reg2)
+                db.session.add(new_reg3)
+
+                db.session.commit()
+
+                flash(f"User core registrations added", 'success')
+
             return redirect(url_for('createuser'))
         return render_template('createuser.html', title='Create User', form=form)
     
@@ -844,6 +877,20 @@ def schedule():
         core_registrations = user.core_registrations
 
         return render_template('schedule.html', registered=registered, core_registrations=core_registrations, user=user)
+
+    else:
+        flash("Please login first", 'info')
+        return redirect(url_for('login'))
+
+
+#STUDENTS VIEWING THEIR COMPLETIONS
+@app.route("/completions") #FOR STUDENT OR ADMIN USE
+def completions():
+    if current_user.is_authenticated:
+        user = current_user
+        completions = user.completed_electives #grab all user completions
+
+        return render_template('completions.html', completions=completions)
 
     else:
         flash("Please login first", 'info')
