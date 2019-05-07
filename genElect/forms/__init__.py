@@ -11,7 +11,10 @@ class UserForm(FlaskForm):
 	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
 	role = SelectField('User Role', choices=choices, validators=[Required()])
 	password = PasswordField('Set New Password')
-	submit = SubmitField('Saver User')
+	core1 = SelectField('Period 1 Core', choices=[('0','none')])
+	core2 = SelectField('Period 2 Core', choices=[('0','none')])
+	core3 = SelectField('Period 3 Core', choices=[('0','none')])
+	submit = SubmitField('Save User')
 
 
 #Form for Logging In

@@ -314,23 +314,93 @@ def edituser(user_id):
         user = Users.query.filter_by(id=int(user_id)).first()
         if user:
             form = UserForm()
+
+            #only setup core selections for users that are edited that are students
+            if user.role == "student":
+                choices1 = [] #choices for period 1 cores
+                choices2 = [] #choices for period 2 cores
+                choices3 = [] #choices for period 3 cores
+
+                #loop through and get current registered cores
+                for reg in user.core_registrations:
+                    if reg.core.core_period == 1:
+                        cur1 = reg
+                    elif reg.core.core_period == 2:
+                        cur2 = reg
+                    else:
+                        cur3 = reg
+                
+                cores = Cores.query.all()
+
+                #correctly append cores to choices for the core dropdowns
+                for core in cores:
+                    if core.core_period == 1:
+                        choices1.append((str(core.id),core.name))
+                    elif core.core_period == 2:
+                        choices2.append((str(core.id),core.name))
+                    else:
+                        choices3.append((str(core.id),core.name))
+
+                #setting up choices and default data
+                form.core1.choices = choices1 #set the choices
+                form.core2.choices = choices2 #set the choices
+                form.core3.choices = choices3 #set the choices
+
+            else:
+                form.core1.choices = form.core2.choices = form.core3.choices = [('0','none')]
+                form.core1.data = form.core2.data = form.core3.data = '0'
             
             if form.validate_on_submit():
                 user.username = form.username.data
                 user.full_name = form.full_name.data
                 user.email = form.email.data
-                user.role = form.role.data                
+                user.role = form.role.data
+                if user.role == "student":
+                    #check if core period 1 was changed
+                    if cur1.core.id != int(form.core1.data):
+                        print("The core1 was changed")
+                        db.session.delete(cur1)
+                        new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core1.data))
+                        db.session.add(new_core_reg)
+                    #check if core period 2 was changed
+                    if cur2.core.id != int(form.core2.data):
+                        print("The core2 was changed")
+                        db.session.delete(cur2)
+                        new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core2.data))
+                        db.session.add(new_core_reg)
+                    #check if core period 3 was changed
+                    if cur3.core.id != int(form.core3.data):
+                        print("The core3 was changed")
+                        db.session.delete(cur3)
+                        new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core3.data))
+                        db.session.add(new_core_reg)
+
+                #check if the password was changed
                 if form.password.data:
                     user.password = form.password.data
-                db.session.commit()
+                #attempt to commit the changes
+                try:
+                    db.session.commit()
+                except:
+                    #catch if something went wrong on the commit
+                    flash("Something went wrong", 'danger')
+                    print("something went wrong")
+
                 flash("Account Info Updated", 'success')
                 return redirect(f'/user/{user_id}')
+
             elif request.method == 'GET':
+                if user.role == "student":
+                    form.core1.data = str(cur1.core.id) #set the current registered
+                    form.core2.data = str(cur2.core.id) #set the current registered
+                    form.core3.data = str(cur3.core.id) #set the current registered
                 form.full_name.data = user.full_name
                 form.email.data = user.email
                 form.username.data = user.username
                 form.role.data = user.role
-                form.password.password = user.password
+            else:
+                print("weird")
+
             return render_template('edituser.html', user=user, form=form, title="User Edit")
         else:
             return redirect(url_for('index'))
