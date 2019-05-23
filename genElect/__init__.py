@@ -174,30 +174,30 @@ def completeall():
             offering.current_count = 0 
 
         db.session.commit()
-        flash(f"Completions set", 'success')
+        flash(f"Registrations removed and Completions set", 'success')
         return redirect(url_for('admin'))
     else:
         return render_template('denied.html')
 
-#ADMIN RESET REGISTRATIONS
-@app.route("/reset")
-def reset():
-    if current_user.is_authenticated and current_user.role == "admin":
-        #reset registrations
-        registrations = Registrations.query.all()
-        for registration in registrations:
-            db.session.delete(registration)
+#ADMIN RESET REGISTRATIONS (complete should do this also)
+# @app.route("/reset")
+# def reset():
+#     if current_user.is_authenticated and current_user.role == "admin":
+#         #reset registrations
+#         registrations = Registrations.query.all()
+#         for registration in registrations:
+#             db.session.delete(registration)
 
-        #set student count to 0 for all offerings
-        offerings = Offerings.query.all()
-        for offering in offerings:
-            offering.current_count = 0
+#         #set student count to 0 for all offerings
+#         offerings = Offerings.query.all()
+#         for offering in offerings:
+#             offering.current_count = 0
 
-        db.session.commit()
-        flash(f"Registrations reset", 'success')
-        return redirect(url_for('admin'))
-    else:
-        return render_template('denied.html')
+#         db.session.commit()
+#         flash(f"Registrations reset", 'success')
+#         return redirect(url_for('admin'))
+#     else:
+#         return render_template('denied.html')
 
 
 #ADMIN SET REGISTRATION TIME
@@ -228,9 +228,9 @@ def createuser():
     #ONLY ALLOW ACCESS IF ADMIN ACCOUNT
     if current_user.is_authenticated and current_user.role == "admin":
         form = UserForm()
-        choices1 = [] #choices for period 1 cores
-        choices2 = [] #choices for period 2 cores
-        choices3 = [] #choices for period 3 cores
+        choices1 = [('-1', 'None')] #choices for period 1 cores
+        choices2 = [('-1', 'None')] #choices for period 2 cores
+        choices3 = [('-1', 'None')] #choices for period 3 cores
 
         cores = Cores.query.all()
         #correctly append cores to choices for the core dropdowns
@@ -257,12 +257,15 @@ def createuser():
 
             #if the new user was a student we need to add the core registrations
             if new_user.role == "student":
-                new_reg1 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core1.data))
-                new_reg2 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core2.data))
-                new_reg3 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core3.data))
-                db.session.add(new_reg1)
-                db.session.add(new_reg2)
-                db.session.add(new_reg3)
+                if form.core1.data != '-1':
+                    new_reg1 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core1.data))
+                    db.session.add(new_reg1)
+                if form.core2.data != '-1':
+                    new_reg2 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core2.data))
+                    db.session.add(new_reg2)
+                if form.core3.data != '-1':
+                    new_reg3 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core3.data))
+                    db.session.add(new_reg3)
 
                 db.session.commit()
 
@@ -293,12 +296,11 @@ def uploadusers():
                 return redirect(request.url)
             if file: #if file data is found
                 filename = file.filename
-                print(f"Users found in file {filename}")
                 users = file.readlines()
                 for user in users:
                     user = user.decode().strip().split(',')
                     if len(user) != 8 and len(user) != 5:
-                        print("Bad user input")
+                        flash("Bad user input", 'danger')
                     else:
                         new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
                         db.session.add(new_user)
@@ -309,9 +311,7 @@ def uploadusers():
                         #now add core registrations based on the last id
                         if user[3] == "student":
                             for i in range(5,8):
-                                print(new_user.id)
                                 new_core_registration = CoreRegistrations(user_id=new_user.id, core_id=int(user[i]))
-                                print("Trying new core registrion")
                                 db.session.add(new_core_registration)
 
                 #try to commit the new users
@@ -319,7 +319,6 @@ def uploadusers():
                     db.session.commit()
                     flash("Users uploaded!", 'success')
                 except:
-                    print("Fail happened (repeat on unique values?)")
                     flash("Something went wrong, unique value repeat?", 'danger')
 
                 return redirect('/allusers')
@@ -348,20 +347,26 @@ def edituser(user_id):
         if user:
             form = UserForm()
 
-            #only setup core selections for users that are edited that are students
             if user.role == "student":
-                choices1 = [] #choices for period 1 cores
-                choices2 = [] #choices for period 2 cores
-                choices3 = [] #choices for period 3 cores
+                #setup for core registrations (note these are only really used for students)
+                choices1 = [('-1',"None")] #choices for period 1 cores
+                choices2 = [('-1',"None")] #choices for period 2 cores
+                choices3 = [('-1',"None")] #choices for period 3 cores
 
                 #loop through and get current registered cores
+
+                #set defaults in case
+                cur1 = -1
+                cur2 = -1
+                cur3 = -1
+
                 for reg in user.core_registrations:
                     if reg.core.core_period == 1:
-                        cur1 = reg
+                        cur1 = reg.core.id
                     elif reg.core.core_period == 2:
-                        cur2 = reg
+                        cur2 = reg.core.id
                     else:
-                        cur3 = reg
+                        cur3 = reg.core.id
                 
                 cores = Cores.query.all()
 
@@ -380,63 +385,105 @@ def edituser(user_id):
                 form.core3.choices = choices3 #set the choices
 
             else:
-                form.core1.choices = form.core2.choices = form.core3.choices = [('0','none')]
-                form.core1.data = form.core2.data = form.core3.data = '0'
+                form.core1.data = form.core2.data = form.core3.data = "0" 
             
             if form.validate_on_submit():
                 user.username = form.username.data
                 user.full_name = form.full_name.data
                 user.email = form.email.data
-                user.role = form.role.data
-                if user.role == "student":
-                    #check if core period 1 was changed
-                    if cur1.core.id != int(form.core1.data):
-                        print("The core1 was changed")
-                        db.session.delete(cur1)
-                        new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core1.data))
-                        db.session.add(new_core_reg)
-                    #check if core period 2 was changed
-                    if cur2.core.id != int(form.core2.data):
-                        print("The core2 was changed")
-                        db.session.delete(cur2)
-                        new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core2.data))
-                        db.session.add(new_core_reg)
-                    #check if core period 3 was changed
-                    if cur3.core.id != int(form.core3.data):
-                        print("The core3 was changed")
-                        db.session.delete(cur3)
-                        new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core3.data))
-                        db.session.add(new_core_reg)
+
+                #check role is changed to or from a student
+                if form.role.data != user.role:
+                    #changing from a student we must dump all core registrations and elective registrations
+                    if user.role == "student":
+                        #remove all core registrations
+                        for core in user.core_registrations:
+                            db.session.delete(core)
+
+                        #remove all elective registrations
+                        for elective in user.registrations:
+                            db.session.delete(elective)
+                        
+                        db.session.commit()
+
+                    user.role = form.role.data
+
+                #only make these student updates if there wasn't a role change also
+                elif user.role == "student":
+                    #check if core period 1 was changed or removed
+                    if cur1 != int(form.core1.data):
+                        #if the current registration wasn't empty we have to remove it
+                        if cur1 != -1:
+                            #find registration with core_id and user_id
+                            corereg = CoreRegistrations.query.filter_by(user_id=user.id,core_id=cur1).first()
+                            #check before deletion
+                            if corereg:
+                                db.session.delete(corereg)
+
+                        #now add new registration if there should be one
+                        if int(form.core1.data) != -1:
+                            #otherwise create the new core registration
+                            new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core1.data))
+                            db.session.add(new_core_reg)
+
+
+                    #check if core period 2 was changed or removed
+                    if cur2 != int(form.core2.data):
+                        #if the current registration wasn't empty we have to remove it
+                        if cur2 != -1:
+                            corereg = CoreRegistrations.query.filter_by(user_id=user.id,core_id=cur2).first()
+                            #check before deletion
+                            if corereg:
+                                db.session.delete(corereg)
+
+                        #now add new registration is there should be one
+                        if int(form.core2.data) != -1:
+                            #otherwise create the new core registration
+                            new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core2.data))
+                            db.session.add(new_core_reg)
+
+
+                    #check if core period 3 was changed or removed
+                    if cur3 != int(form.core3.data):
+                        #if the current registration wasn't empty we have to remove it
+                        if cur3 != -1:
+                            corereg = CoreRegistrations.query.filter_by(user_id=user.id,core_id=cur3).first()
+                            if corereg:
+                                db.session.delete(corereg)
+
+                        #now add new registration is there should be one
+                        if int(form.core3.data) != -1:
+                            #otherwise create the new core registration
+                            new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core3.data))
+                            db.session.add(new_core_reg)
 
                 #check if the password was changed
                 if form.password.data:
                     user.password = form.password.data
+                    flash("New password set", 'success')
                 #attempt to commit the changes
                 try:
                     db.session.commit()
                 except:
                     #catch if something went wrong on the commit
-                    flash("Something went wrong", 'danger')
-                    print("something went wrong")
+                    flash("Something went wrong, try again but confirm data input", 'danger')
 
                 flash("Account Info Updated", 'success')
                 return redirect(f'/user/{user_id}')
 
             elif request.method == 'GET':
                 if user.role == "student":
-                    form.core1.data = str(cur1.core.id) #set the current registered
-                    form.core2.data = str(cur2.core.id) #set the current registered
-                    form.core3.data = str(cur3.core.id) #set the current registered
+                    form.core1.data = str(cur1) #set the current registered
+                    form.core2.data = str(cur2) #set the current registered
+                    form.core3.data = str(cur3) #set the current registered
                 form.full_name.data = user.full_name
                 form.email.data = user.email
                 form.username.data = user.username
                 form.role.data = user.role
-            else:
-                print("weird")
 
             return render_template('edituser.html', user=user, form=form, title="User Edit")
         else:
-            return redirect(url_for('index'))
+            return render_template('notfound.html')
     else:
         return render_template('denied.html')
 
@@ -863,7 +910,7 @@ def schedule():
         registered = [] #to build out registered offerings
 
         #WEIRD WAY TO SORT REGISTERED OFFERINGS SINCE sorted() DOESN'T WORK ON TYPE OFFERINGS
-        #TODO: BETTERE SORTING MECHANISM
+        #TODO: BETTER SORTING MECHANISM
         for registration in registrations:
             if registration.offering.period_start == 1:
                 registered.append(registration.offering)
@@ -874,7 +921,18 @@ def schedule():
             if registration.offering.period_start == 3:
                 registered.append(registration.offering)
 
-        core_registrations = user.core_registrations
+        #SAME WEIRD WAY TO SORT CORE REGISTRATIONS
+        #TODO: REALLY FIX THIS
+        core_registrations = []
+        for core_reg in user.core_registrations:
+            if core_reg.core.core_period == 1:
+                core_registrations.append(core_reg)
+        for core_reg in user.core_registrations:
+            if core_reg.core.core_period == 2:
+                core_registrations.append(core_reg)
+        for core_reg in user.core_registrations:
+            if core_reg.core.core_period == 3:
+                core_registrations.append(core_reg)
 
         return render_template('schedule.html', registered=registered, core_registrations=core_registrations, user=user)
 

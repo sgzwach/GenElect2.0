@@ -24,7 +24,7 @@ To run:
 - [X] Student Elective search box
 - [X] Non-registered user list
 - [X] Stats Page (possibly featuring: # of registered/unregistered students, # of open seats, full electives, etc)
-- [ ] Overall Camp Schedule
+- [X] Overall Camp Schedule
 - [X] Redirect correctly after editing feature or dropping from elective
 - [X] Show registered electives when looking at a students information, add schedule button
 - [X] Solve same day registered prereq situations (registered but not completed a prereq)
@@ -40,9 +40,11 @@ To run:
 - [ ] Enable mobile app conversion and push notifications (<meta name="mobile-web-app-capable" content="yes">)
 - [X] Add core courses
 - [X] Enable core courses to be registered for by CSV upload
-- [ ] Allow admins to change a users set of core registrations
+- [X] Allow admins to change a users set of core registrations
 - [X] Add roll call for the new core courses
-- [ ] Order the core courses on each students schedule by core period
+- [X] Order the core courses on each students schedule by core period
+- [X] Add link to campus map
+- [X] Fix core errors when changing user roles (students to admins primarily)
 
 
 

@@ -27,6 +27,7 @@ class Users(Base, UserMixin):
     registrations = db.relationship('Registrations', backref='user', lazy=True)
     core_registrations = db.relationship('CoreRegistrations', backref='user', lazy=True)
     completed_electives = db.relationship('Completions', backref='user', lazy=True)
+#    completed_badge_portions = db.relationship('BadgePortions', backref='user', lazy=True)
 
     # # Future VIP registration option
     # early_reg = db.Column(db.Boolean)
@@ -93,5 +94,17 @@ class Prerequisites(Base):
     prerequisite_elective_id = db.Column(db.Integer, nullable=False)
 
 
-# class Cores(Base):
-#     __tablename__ = ""
+#### PLAYING WITH THE IDEA OF HAVING BADGES
+
+class Badges(Base):
+    __tablename__ = 'badges'
+    name = db.Column(db.String(100))
+    description = db.Column(db.String(500))
+    portions = db.relationship('BadgePortions', backref='badge', lazy=True)
+
+#THIS WILL MAP BADGE PARTS (like have to complete python 1 and 2 for the python badge)
+class BadgePortions(Base):
+    __tablename__ = 'badgeportions'
+    badge_id = db.Column(db.Integer, db.ForeignKey('badges.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
