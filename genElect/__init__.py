@@ -252,8 +252,12 @@ def createuser():
 
             #add user to database and commit changes
             db.session.add(new_user)
-            db.session.commit()
-            flash(f"User {form.username.data} created", 'success')
+            try:
+                db.session.commit()
+                flash(f"User {form.username.data} created", 'success')
+            except:
+                flash("User creation failed, possibly from repeated user data", 'danger')
+                return redirect(url_for('createuser'))
 
             #if the new user was a student we need to add the core registrations
             if new_user.role == "student":
@@ -267,9 +271,11 @@ def createuser():
                     new_reg3 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core3.data))
                     db.session.add(new_reg3)
 
-                db.session.commit()
-
-                flash(f"User core registrations added", 'success')
+                try:
+                    db.session.commit()
+                    flash(f"User core registrations added", 'success')
+                except:
+                    flash("Failure occurred, could possibly come from repeated user data", 'danger')
 
             return redirect(url_for('createuser'))
         return render_template('createuser.html', title='Create User', form=form)
@@ -388,13 +394,22 @@ def edituser(user_id):
                 form.core1.data = form.core2.data = form.core3.data = "0" 
             
             if form.validate_on_submit():
-                user.username = form.username.data
+                if user.username != "admin":
+                    if form.username.data == "admin":
+                        flash("Username cannot be made admin", 'danger')
+                    else:
+                        user.username = form.username.data
+                else:
+                    if form.username.data != user.username:
+                        flash("Admin username must not be changed", 'danger')
+
                 user.full_name = form.full_name.data
                 user.email = form.email.data
 
                 #check role is changed to or from a student
                 if form.role.data != user.role:
                     #changing from a student we must dump all core registrations and elective registrations
+                    
                     if user.role == "student":
                         #remove all core registrations
                         for core in user.core_registrations:
@@ -406,7 +421,11 @@ def edituser(user_id):
                         
                         db.session.commit()
 
-                    user.role = form.role.data
+                    #make change insuring that admin account is not adjusted
+                    if user.username != "admin":
+                        user.role = form.role.data
+                    else:
+                        flash("Admin account does not allow role change", 'danger')
 
                 #only make these student updates if there wasn't a role change also
                 elif user.role == "student":
