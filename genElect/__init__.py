@@ -437,6 +437,7 @@ def edituser(user_id):
                             corereg = CoreRegistrations.query.filter_by(user_id=user.id,core_id=cur1).first()
                             #check before deletion
                             if corereg:
+                                flash(f"Removed core {corereg.core.name}", 'info')
                                 db.session.delete(corereg)
 
                         #now add new registration if there should be one
@@ -444,6 +445,9 @@ def edituser(user_id):
                             #otherwise create the new core registration
                             new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core1.data))
                             db.session.add(new_core_reg)
+                            db.session.commit()
+                            #must add the new_core_reg to the current session for the association to be made
+                            flash(f"Added core {new_core_reg.core.name}", 'info')
 
 
                     #check if core period 2 was changed or removed
@@ -453,6 +457,7 @@ def edituser(user_id):
                             corereg = CoreRegistrations.query.filter_by(user_id=user.id,core_id=cur2).first()
                             #check before deletion
                             if corereg:
+                                flash(f"Removed core {corereg.core.name}", 'info')
                                 db.session.delete(corereg)
 
                         #now add new registration is there should be one
@@ -460,6 +465,9 @@ def edituser(user_id):
                             #otherwise create the new core registration
                             new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core2.data))
                             db.session.add(new_core_reg)
+                            db.session.commit()
+                            #must add the new_core_reg to the current session for the association to be made
+                            flash(f"Added core {new_core_reg.core.name}", 'info')
 
 
                     #check if core period 3 was changed or removed
@@ -468,6 +476,7 @@ def edituser(user_id):
                         if cur3 != -1:
                             corereg = CoreRegistrations.query.filter_by(user_id=user.id,core_id=cur3).first()
                             if corereg:
+                                flash(f"Removed core {corereg.core.name}", 'info')
                                 db.session.delete(corereg)
 
                         #now add new registration is there should be one
@@ -475,11 +484,16 @@ def edituser(user_id):
                             #otherwise create the new core registration
                             new_core_reg = CoreRegistrations(user_id=user.id,core_id=int(form.core3.data))
                             db.session.add(new_core_reg)
+                            db.session.commit()
+                            #must add the new_core_reg to the current session for the association to be made
+                            flash(f"Added core {new_core_reg.core.name}", 'info')
+
 
                 #check if the password was changed
                 if form.password.data:
                     user.password = form.password.data
                     flash("New password set", 'success')
+
                 #attempt to commit the changes
                 try:
                     db.session.commit()

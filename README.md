@@ -37,7 +37,8 @@ To run:
 - [X] Decide if registrations should be manually or automatically converted to completions (currently manual, see 'Complete' button within allofferings view)
 - [X] Fix change password in user update bug
 - [X] Add Favicon
-- [ ] Enable mobile app conversion and push notifications (<meta name="mobile-web-app-capable" content="yes">)
+- [X] Allow mobile users to add page to homescreen using: mobile-web-app-capable and apple-mobile-web-app-capable
+- [ ] Enable mobile app push notificaitons (possibly something for next year)
 - [X] Add core courses
 - [X] Enable core courses to be registered for by CSV upload
 - [X] Allow admins to change a users set of core registrations
