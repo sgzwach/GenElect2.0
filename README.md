@@ -46,6 +46,7 @@ To run:
 - [X] Order the core courses on each students schedule by core period
 - [X] Add link to campus map
 - [X] Fix core errors when changing user roles (students to admins primarily)
+- [X] Make instructor page so that student helpers know what they can do
 
 
 

@@ -95,6 +95,15 @@ def account():
         return redirect(url_for('login'))
 
 
+#INSTRUCTOR PAGE
+@app.route("/instructor")
+def instructor():
+    if current_user.is_authenticated and current_user.role == "admin" or current_user.role == "instructor":
+        return render_template('instructor.html')
+    else:
+        return render_template('denied.html')       
+
+
 #ADMIN PAGE
 @app.route("/admin")
 def admin():
@@ -107,7 +116,7 @@ def admin():
 #ADMIN STAT PAGE
 @app.route("/stats")
 def stats():
-    if current_user.is_authenticated and current_user.role == "admin":
+    if current_user.is_authenticated and current_user.role == "admin" or current_user.role == "instructor":
         empty = []
         full = []
 

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Instructor Page</h1>
+    <br>
+    <button type="button" onclick="window.location.href = '/allcores'" class="btn btn-outline-info">Cores</button>
+    <button type="button" onclick="window.location.href = '/createcore'" class="btn btn-outline-info">Create New Core</button>
+    <br><br><br>
+    <button type="button" onclick="window.location.href = '/allelectives'" class="btn btn-outline-info">Electives</button>
+    <button type="button" onclick="window.location.href = '/createelective'" class="btn btn-outline-info">Create New Elective</button>
+    <br><br><br>
+    <button type="button" onclick="window.location.href = '/allofferings'" class="btn btn-outline-info">Offerings</button>
+    <button type="button" onclick="window.location.href = '/createoffering'" class="btn btn-outline-info">Create New Offering</button>
+    <br><br><br>
+    <button type="button" onclick="window.location.href = '/stats'" class="btn btn-outline-info">Stats Page</button>
+
+{% endblock content %}
