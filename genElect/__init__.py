@@ -71,6 +71,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(username=form.username.data).first() #login with username for now
+        
         #now try email if the username didn't work
         if not user:
             user = Users.query.filter_by(email=form.username.data).first()
@@ -268,21 +269,29 @@ def createuser():
                 flash("User creation failed, possibly from repeated user data", 'danger')
                 return redirect(url_for('createuser'))
 
-            #if the new user was a student we need to add the core registrations
+            #if the new user was a student we need to add the core registrations if there are any set
             if new_user.role == "student":
                 if form.core1.data != '-1':
                     new_reg1 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core1.data))
                     db.session.add(new_reg1)
+                    db.session.commit()
+                    #flash success on the new registration
+                    flash(f"Student registered for {new_reg1.core.name}", 'success')
                 if form.core2.data != '-1':
                     new_reg2 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core2.data))
                     db.session.add(new_reg2)
+                    db.session.commit()
+                    #flash success on the new registration
+                    flash(f"Student registered for {new_reg2.core.name}", 'success')
                 if form.core3.data != '-1':
                     new_reg3 = CoreRegistrations(user_id=new_user.id,core_id=int(form.core3.data))
                     db.session.add(new_reg3)
+                    db.session.commit()
+                    #flash success on the new registration
+                    flash(f"Student registered for {new_reg3.core.name}", 'success')
 
                 try:
                     db.session.commit()
-                    flash(f"User core registrations added", 'success')
                 except:
                     flash("Failure occurred, could possibly come from repeated user data", 'danger')
 
@@ -315,13 +324,17 @@ def uploadusers():
                 for user in users:
                     user = user.decode().strip().split(',')
                     if len(user) != 8 and len(user) != 5:
-                        flash("Bad user input", 'danger')
+                        flash("Bad user input, skipping user", 'danger')
                     else:
                         new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
                         db.session.add(new_user)
 
-                        #just trying (to get the id for the user)
-                        db.session.commit()
+                        #have to commit to get id (put in try in case there is repeat or value error)
+                        try:
+                            db.session.commit()
+                        except:
+                            flash("Something went wrong (unique value repeat), skipping user", 'danger')
+                            continue
 
                         #now add core registrations based on the last id
                         if user[3] == "student":
@@ -329,7 +342,10 @@ def uploadusers():
                                 new_core_registration = CoreRegistrations(user_id=new_user.id, core_id=int(user[i]))
                                 db.session.add(new_core_registration)
 
-                #try to commit the new users
+                            #commit the new CoreRegistrations that were added
+                            db.session.commit()
+
+                #try to commit the new users (this is actually not needed but keeping in case some weird error happens)
                 try:
                     db.session.commit()
                     flash("Users uploaded!", 'success')
