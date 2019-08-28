@@ -50,6 +50,7 @@ To run:
 - [X] Add difficulty drop-downs for electives and cores
 - [X] Add a learning objective for each elective
 - [X] Move buttons to create new items to the top of each admin page (so scrolling isn't necessary)
+- [X] Hash the stored passwords for all users
 
 
 

@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, flash, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
+import hashlib #for hashing passwords
 import datetime #for registration time set
 
 #set app to flask instance
@@ -76,7 +77,10 @@ def login():
         if not user:
             user = Users.query.filter_by(email=form.username.data).first()
 
-        if user and form.password.data == user.password:
+        #get the hash of the input password
+        password_attempt = hashlib.sha512(form.password.data.encode()).hexdigest()
+        #compare the hashes
+        if user and password_attempt == user.password:
             login_user(user, remember=form.remember.data)
             flash(f"User {form.username.data} login successful!", 'success')
             return redirect(url_for('index'))
@@ -258,7 +262,8 @@ def createuser():
         form.core3.choices = choices3 #set the choices
 
         if form.validate_on_submit():
-            new_user = Users(username=form.username.data, full_name=form.full_name.data, role=form.role.data, email=form.email.data, password=form.password.data)
+            password = hashlib.sha512(form.password.data.encode()).hexdigest()
+            new_user = Users(username=form.username.data, full_name=form.full_name.data, role=form.role.data, email=form.email.data, password=password)
 
             #add user to database and commit changes
             db.session.add(new_user)
