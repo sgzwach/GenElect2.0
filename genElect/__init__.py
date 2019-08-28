@@ -42,7 +42,7 @@ from genElect.models import CoreRegistrations
 from genElect.forms import *
 
 global registration_start_time
-global egistration_end_time
+global registration_end_time
 
 registration_start_time = "00:00:00"
 registration_end_time = "23:59:59"
