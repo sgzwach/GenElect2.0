@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>All Users Page</h1>
+    <h1>All Users Page &nbsp
+		<button type="button" onclick="window.location.href = '/createuser'" class="btn btn-outline-info">Create New User</button>
+	    <button type="button" onclick="window.location.href = '/uploadusers'" class="btn btn-outline-info">Upload User CSV File</button>
+	    <button type="button" onclick="window.location.href = '/notregistered'" class="btn btn-outline-info">List Unregistered Users</button>
+    </h1><br>
 	<table class="table">
 	  <thead>
 	    <tr>
@@ -34,8 +38,8 @@
 	    {% endfor %}
 	  </tbody>
 	</table>
-    <br><button type="button" onclick="window.location.href = '/createuser'" class="btn btn-outline-info">Create New User</button>
+    <!-- <button type="button" onclick="window.location.href = '/createuser'" class="btn btn-outline-info">Create New User</button>
     <button type="button" onclick="window.location.href = '/uploadusers'" class="btn btn-outline-info">Upload User CSV File</button>
-    <button type="button" onclick="window.location.href = '/notregistered'" class="btn btn-outline-info">Unregistered Users</button>
+    <button type="button" onclick="window.location.href = '/notregistered'" class="btn btn-outline-info">Unregistered Users</button> -->
 
 {% endblock content %}

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>All Electives Page</h1>
+    <h1>All Electives Page &nbsp<button type="button" onclick="window.location.href = '/createelective'" class="btn btn-outline-info">Create New Elective</button></h1><br>
 	<table class="table">
 	  <thead>
 	    <tr>
@@ -25,5 +25,5 @@
 	    {% endfor %}
 	  </tbody>
 	</table>
-    <br><button type="button" onclick="window.location.href = '/createelective'" class="btn btn-outline-info">Create New Elective</button>
+    <!-- <br><button type="button" onclick="window.location.href = '/createelective'" class="btn btn-outline-info">Create New Elective</button> -->
 {% endblock content %}

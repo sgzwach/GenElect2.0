@@ -49,7 +49,7 @@ To run:
 - [X] Make instructor page so that student helpers know what they can do
 - [X] Add difficulty drop-downs for electives and cores
 - [X] Add a learning objective for each elective
-
+- [X] Move buttons to create new items to the top of each admin page (so scrolling isn't necessary)
 
 
 

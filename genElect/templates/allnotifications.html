@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>All Notifications Page</h1>
+    <h1>All Notifications Page &nbsp<button type="button" onclick="window.location.href = '/createnotification'" class="btn btn-outline-info">Create New Notification</button></h1><br>
 	<table class="table">
 	  <thead>
 	    <tr>
@@ -23,6 +23,5 @@
 	    {% endfor %}
 	  </tbody>
 	</table>
-    <br>
-    <button type="button" onclick="window.location.href = '/createnotification'" class="btn btn-outline-info">Create New Notification</button>
+    <!-- <button type="button" onclick="window.location.href = '/createnotification'" class="btn btn-outline-info">Create New Notification</button> -->
 {% endblock content %}
