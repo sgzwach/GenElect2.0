@@ -30,6 +30,8 @@ class ElectiveForm(FlaskForm):
 	name = StringField('Elective Name', validators=[DataRequired()])
 	description = StringField('Description', validators=[DataRequired()])
 	prerequisites = SelectMultipleField('Prerequisites', choices = []) #fill dynamically
+	diff_choices = [('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')]
+	difficulty = SelectField('Elective Difficulty', choices=diff_choices, validators=[Required()])
 	can_retake = BooleanField('Allow users to take several times')
 	submit = SubmitField('Save Elective')
 
@@ -42,6 +44,8 @@ class CoreForm(FlaskForm):
 	building = StringField('Building', validators=[DataRequired()])
 	room = StringField('Room', validators=[DataRequired()])
 	core_period = IntegerField('Core Period', validators=[DataRequired()])
+	diff_choices = [('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')]
+	difficulty = SelectField('Elective Difficulty', choices=diff_choices, validators=[Required()])
 	submit = SubmitField('Save Core')
 
 

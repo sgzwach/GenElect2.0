@@ -40,6 +40,7 @@
             <p class="article-content">Description: {{ offering.elective.description }}</p>
             <p class="article-content">Location: {{ offering.building }} {{ offering.room }}</p>
             <p class="article-content">Capacity: {{ offering.capacity }}</p>
+            <p class="article-content">Difficulty: {{ offering.elective.elective_difficulty }}</p>
             <p class="article-content">Current Student Count: {{ offering.current_count }}</p>
             <p class="article-content">Period: {{ offering.period_start }}</p>
             {% if offering.elective.prerequisites %}

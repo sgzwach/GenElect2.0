@@ -47,6 +47,7 @@ To run:
 - [X] Add link to campus map
 - [X] Fix core errors when changing user roles (students to admins primarily)
 - [X] Make instructor page so that student helpers know what they can do
+- [X] Add difficulty drop-downs for electives and cores
 
 
 

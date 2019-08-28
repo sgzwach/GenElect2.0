@@ -386,7 +386,7 @@ def edituser(user_id):
 
                 #loop through and get current registered cores
 
-                #set defaults in case
+                #set defaults in case no registrations are found
                 cur1 = -1
                 cur2 = -1
                 cur3 = -1
@@ -599,7 +599,7 @@ def createelective():
 
         #IF FORM IS SUBMITTED AND VALID
         if form.validate_on_submit():
-            new_elective = Electives(name=form.name.data, description=form.description.data, can_retake=form.can_retake.data)
+            new_elective = Electives(name=form.name.data, description=form.description.data, can_retake=form.can_retake.data, elective_difficulty=form.difficulty.data)
             db.session.add(new_elective)
             #commit our new elective (have to do this to get new_elective's id)
             db.session.commit()
@@ -633,6 +633,7 @@ def allelectives():
 @app.route("/elective/<elective_id>", methods=['GET', 'POST'])
 @app.route("/editelective/<elective_id>", methods=['GET', 'POST'])
 def editelective(elective_id):
+    #ALLOW ADMINS AND INSTRUCTORS TO EDIT ELECTIVES
     if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         elective = Electives.query.filter_by(id=int(elective_id)).first()
         if elective:
@@ -651,6 +652,7 @@ def editelective(elective_id):
                 elective.name = form.name.data
                 elective.description = form.description.data
                 elective.can_retake = form.can_retake.data
+                elective.elective_difficulty = form.difficulty.data
 
                 #NOW UPDATE ALL PREREQUISITES THAT WERE SELECTED
                 for prerequisite in elective.prerequisites:
@@ -669,6 +671,7 @@ def editelective(elective_id):
                 form.name.data = elective.name
                 form.description.data = elective.description
                 form.can_retake.data = elective.can_retake
+                form.difficulty.data = elective.elective_difficulty
                 #CREATE THE DATA LIST OF CHOICES
                 picked = []
                 for p in elective.prerequisites:
@@ -781,7 +784,8 @@ def createoffering():
 @app.route("/offering/<offering_id>", methods=['GET', 'POST'])
 @app.route("/editoffering/<offering_id>", methods=['GET', 'POST'])
 def editoffering(offering_id):
-    if current_user.is_authenticated and current_user.role == "admin":
+    #ALLOW ADMINS OR INSTRUCTORS TO EDIT OFFERINGS
+    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         offering = Offerings.query.filter_by(id=int(offering_id)).first()
         if offering:
             form = OfferingForm()

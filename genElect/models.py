@@ -70,6 +70,7 @@ class Electives(Base):
     offerings = db.relationship('Offerings', backref='elective', lazy=True)
     completed_users = db.relationship('Completions', backref='elective', lazy=True)
     can_retake = db.Column(db.Boolean)
+    elective_difficulty = db.Column(db.String(100))
 
 class Cores(Base):
     __tablename__ = 'cores'
@@ -78,6 +79,7 @@ class Cores(Base):
     building = db.Column(db.String(100))
     room = db.Column(db.String(100))
     core_period = db.Column(db.Integer)
+    core_difficulty = db.Column(db.String(100))
     instructor = db.Column(db.String(100))
     registrations = db.relationship('CoreRegistrations', backref='core', lazy=True)
 
@@ -94,7 +96,8 @@ class Prerequisites(Base):
     prerequisite_elective_id = db.Column(db.Integer, nullable=False)
 
 
-#### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW SOFTWARE
+#### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW 
+#### COULD BE COOL TO ALSO EXPORT AND IMPORT THE DIFFERENT BADGES THAT STUDENTS EARN
 
 # class Badges(Base):
 #     __tablename__ = 'badges'

@@ -45,6 +45,19 @@
                         {{ form.prerequisites(class="form-control form-control-lg") }}
                     {% endif %}
     			</div>
+                <div class="form-group">
+                    {{ form.difficulty.label(class="form-control-label") }}
+                    {% if form.difficulty.errors %}
+                        {{ form.difficulty(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.prerequisites.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.difficulty(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
                 <div class="form-check">
                     {{ form.can_retake(class="form-check-input") }}
                     {{ form.can_retake.label(class="form-check-label") }}
