@@ -599,7 +599,7 @@ def createelective():
 
         #IF FORM IS SUBMITTED AND VALID
         if form.validate_on_submit():
-            new_elective = Electives(name=form.name.data, description=form.description.data, can_retake=form.can_retake.data, elective_difficulty=form.difficulty.data)
+            new_elective = Electives(name=form.name.data, description=form.description.data, can_retake=form.can_retake.data, elective_difficulty=form.difficulty.data, learning_objective=form.learning_objective.data)
             db.session.add(new_elective)
             #commit our new elective (have to do this to get new_elective's id)
             db.session.commit()
@@ -653,6 +653,7 @@ def editelective(elective_id):
                 elective.description = form.description.data
                 elective.can_retake = form.can_retake.data
                 elective.elective_difficulty = form.difficulty.data
+                elective.learning_objective = form.learning_objective.data
 
                 #NOW UPDATE ALL PREREQUISITES THAT WERE SELECTED
                 for prerequisite in elective.prerequisites:
@@ -668,10 +669,12 @@ def editelective(elective_id):
                 return redirect(f'/elective/{elective_id}')
             
             elif request.method == 'GET':
+                #SET THE FORM WITH THE VALUES THAT ARE ALREADY SET
                 form.name.data = elective.name
                 form.description.data = elective.description
                 form.can_retake.data = elective.can_retake
                 form.difficulty.data = elective.elective_difficulty
+                form.learning_objective.data = elective.learning_objective
                 #CREATE THE DATA LIST OF CHOICES
                 picked = []
                 for p in elective.prerequisites:

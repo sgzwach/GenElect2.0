@@ -66,6 +66,7 @@ class Electives(Base):
     __tablename__ = 'electives'
     name = db.Column(db.String(100)) 
     description = db.Column(db.String(500))
+    learning_objective = db.Column(db.String(500))
     prerequisites = db.relationship('Prerequisites', backref='elective', lazy=True)
     offerings = db.relationship('Offerings', backref='elective', lazy=True)
     completed_users = db.relationship('Completions', backref='elective', lazy=True)

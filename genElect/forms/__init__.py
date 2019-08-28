@@ -29,6 +29,7 @@ class LoginForm(FlaskForm):
 class ElectiveForm(FlaskForm):
 	name = StringField('Elective Name', validators=[DataRequired()])
 	description = StringField('Description', validators=[DataRequired()])
+	learning_objective = StringField('Learning Objective', validators=[DataRequired()])
 	prerequisites = SelectMultipleField('Prerequisites', choices = []) #fill dynamically
 	diff_choices = [('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')]
 	difficulty = SelectField('Elective Difficulty', choices=diff_choices, validators=[Required()])

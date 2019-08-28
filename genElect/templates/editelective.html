@@ -33,6 +33,19 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
+                    {{ form.learning_objective.label(class="form-control-label") }}
+                    {% if form.learning_objective.errors %}
+                        {{ form.learning_objective(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.learning_objective.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor%}
+                        </div>
+                    {% else %}
+                        {{ form.learning_objective(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
                     {{ form.prerequisites.label(class="form-control-label") }}
                     {% if form.prerequisites.errors %}
                         {{ form.prerequisites(class="form-control form-control-lg is-invalid") }}
