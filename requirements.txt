@@ -42,7 +42,7 @@ Pillow==5.1.0
 pluggy==0.9.0
 psutil==5.4.2
 ptyprocess==0.6.0
-py==1.8.0
+py==1.10.0
 pycparser==2.19
 pycrypto==2.6.1
 pyfiglet==0.8.post1
