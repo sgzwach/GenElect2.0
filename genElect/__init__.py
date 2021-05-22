@@ -151,7 +151,6 @@ def notregistered():
 
 
 #ADMIN COMPLETE A SINGLE OFFERING
-@app.route("/complete/")
 @app.route("/complete/<offering_id>")
 def complete(offering_id=None):
     if current_user.is_authenticated and current_user.role == "admin":
@@ -169,16 +168,9 @@ def complete(offering_id=None):
                     db.session.add(new_completion)
                     db.session.delete(registration)
                 flash('Offering completed', 'success')
+            db.session.commit()
         else:
-            for offering in Offerings.query.all():
-                offering.current_count = 0
-                for registration in offering.registrations:
-                    #LOOP THROUGH REGISTRATIONS FOR THIS OFFERING AND MAKE A COMPLETION AND DUMP THE REGISTRATION
-                    new_completion = Completions(elective_id=offering.elective_id, user_id=registration.user_id)
-                    db.session.add(new_completion)
-                    db.session.delete(registration)
-            flash('All offerings completed')
-        db.session.commit()
+            flash('Offering not specified', 'danger')
         return redirect(url_for('allofferings'))
     else:
         return render_template('denied.html')
