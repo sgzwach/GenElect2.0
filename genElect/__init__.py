@@ -39,14 +39,49 @@ from genElect.models import Completions
 from genElect.models import Prerequisites
 from genElect.models import Cores
 from genElect.models import CoreRegistrations
+from genElect.models import Configs
 
 from genElect.forms import *
 
-global registration_start_time
-global registration_end_time
+# global registration_start_time
+# global registration_end_time
 
-registration_start_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S")
-registration_end_time = datetime.datetime.strptime("23:59:59", "%H:%M:%S")
+# registration_start_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S")
+# registration_end_time = datetime.datetime.strptime("23:59:59", "%H:%M:%S")
+
+#CONFIG FETCH UTILITY
+def get_config(key):
+    c = Configs.query.filter_by(key=key).first()
+    if c:
+        return c.value
+    return None
+
+def set_config(key, value):
+    c = Configs.query.filter_by(key=key).first()
+    if not c:
+        c = Configs(key=key, value=value)
+        db.session.add(c)
+    else:
+        c.value = value
+    try:
+        db.session.commit()
+        flash("Updated config for " + str(key), "success")
+    except:
+        flash("Unable to update config for " + str(key))
+
+def getStartTime():
+    t = get_config("regstart")
+    try:
+        return datetime.datetime.strptime(t, "%Y-%m-%d %H:%M:%S")
+    except:
+        return datetime.datetime.now()
+
+def getEndTime():
+    t = get_config("regend")
+    try:
+        return datetime.datetime.strptime(t, "%Y-%m-%d %H:%M:%S")
+    except:
+        return datetime.datetime.now()
 
 #INDEX PAGE
 @app.route("/")
@@ -222,16 +257,22 @@ def completeall():
 def settime():
     if current_user.is_authenticated and current_user.role == "admin":
         form = TimeSetForm()
-        global registration_start_time
-        global registration_end_time
+        # global registration_start_time
+        # global registration_end_time
         if form.validate_on_submit():
-            registration_start_time = datetime.datetime.strptime(form.start_time.data, "%Y-%m-%d %H:%M:%S")
-            registration_end_time = datetime.datetime.strptime(form.end_time.data, "%Y-%m-%d %H:%M:%S")
+            try:
+                s = datetime.datetime.strptime(form.start_time.data, "%Y-%m-%d %H:%M:%S")
+                e = datetime.datetime.strptime(form.end_time.data, "%Y-%m-%d %H:%M:%S")
+            except:
+                flash("Invalid date string entered", "danger")
+                return redirect('settime')
+            set_config("regstart", form.start_time.data)
+            set_config("regend", form.end_time.data)
             flash("Registration time set", 'success')
             return redirect(f'settime')
         elif request.method == 'GET':
-            form.start_time.data = registration_start_time
-            form.end_time.data = registration_end_time
+            form.start_time.data = getStartTime()
+            form.end_time.data = getEndTime()
         return render_template('settime.html', title='Set Registration Time', form=form)
     else:
         return render_template('denied.html')
@@ -962,7 +1003,7 @@ def electives():
         for registration in registrations:
             registered.append(registration.offering)
 
-    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives, period=period, reg_start=registration_start_time, reg_end=registration_end_time)
+    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives, period=period, reg_start=getStartTime(), reg_end=getEndTime())
 
 
 
@@ -1033,6 +1074,8 @@ def completions():
 @app.route("/register/<offering_id>")
 def register(offering_id):
     currTime = datetime.datetime.now()#.strftime("%H:%M:%S")
+    registration_start_time=getStartTime()
+    registration_end_time=getEndTime()
     if currTime < registration_start_time or currTime > registration_end_time:
         flash(f"It is {currTime} and Registration time is from {registration_start_time} to {registration_end_time}", 'danger')
         return redirect(url_for('electives'))

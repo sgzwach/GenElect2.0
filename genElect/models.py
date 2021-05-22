@@ -17,7 +17,7 @@ class Notifications(Base):
     title = db.Column(db.String(100))
     notification = db.Column(db.String(1000))
 
-class Users(Base, UserMixin): 
+class Users(Base, UserMixin):
     __tablename__ = 'users'
     username = db.Column(db.String(100), unique=True)
     full_name = db.Column(db.String(100))
@@ -64,7 +64,7 @@ class Offerings(Base):
 
 class Electives(Base):
     __tablename__ = 'electives'
-    name = db.Column(db.String(100)) 
+    name = db.Column(db.String(100))
     description = db.Column(db.String(500))
     learning_objective = db.Column(db.String(500))
     prerequisites = db.relationship('Prerequisites', backref='elective', lazy=True)
@@ -96,8 +96,12 @@ class Prerequisites(Base):
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
     prerequisite_elective_id = db.Column(db.Integer, nullable=False)
 
+class Configs(Base):
+    __tablename__ = 'configs'
+    key = db.Column(db.Text)
+    value = db.Column(db.Text)
 
-#### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW 
+#### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW
 #### COULD BE COOL TO ALSO EXPORT AND IMPORT THE DIFFERENT BADGES THAT STUDENTS EARN
 
 # class Badges(Base):
@@ -111,4 +115,3 @@ class Prerequisites(Base):
 #     __tablename__ = 'badgeportions'
 #     badge_id = db.Column(db.Integer, db.ForeignKey('badges.id'), nullable=False)
 #     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-

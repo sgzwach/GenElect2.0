@@ -85,11 +85,20 @@
         }
         else if (start <= now && end > now)
         {
-          str = "Registration is Active";
+          str = "Registration is active for another ";
+          diff = end - now;
+          var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          if (days > 0)
+            str += days + "d " + hours + "h " + minutes + "m " + seconds + "s"
+          else
+            str += hours + "h " + minutes + "m " + seconds + "s"
         }
         else
         {
-          str = "Registration is Inactive";
+          str = "Registration is inactive";
         }
         document.getElementById('countdown').textContent = str;
       }
