@@ -45,8 +45,8 @@ from genElect.forms import *
 global registration_start_time
 global registration_end_time
 
-registration_start_time = "00:00:00"
-registration_end_time = "23:59:59"
+registration_start_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S")
+registration_end_time = datetime.datetime.strptime("23:59:59", "%H:%M:%S")
 
 #INDEX PAGE
 @app.route("/")
@@ -72,7 +72,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(username=form.username.data).first() #login with username for now
-        
+
         #now try email if the username didn't work
         if not user:
             user = Users.query.filter_by(email=form.username.data).first()
@@ -86,7 +86,7 @@ def login():
             return redirect(url_for('index'))
         else:
             flash("Login failed, try again", 'danger')
-    
+
     return render_template('login.html', title='Login', form=form)
 
 
@@ -106,7 +106,7 @@ def instructor():
     if current_user.is_authenticated and current_user.role == "admin" or current_user.role == "instructor":
         return render_template('instructor.html')
     else:
-        return render_template('denied.html')       
+        return render_template('denied.html')
 
 
 #ADMIN PAGE
@@ -151,24 +151,35 @@ def notregistered():
 
 
 #ADMIN COMPLETE A SINGLE OFFERING
+@app.route("/complete/")
 @app.route("/complete/<offering_id>")
-def complete(offering_id):
+def complete(offering_id=None):
     if current_user.is_authenticated and current_user.role == "admin":
-        offering = Offerings.query.filter_by(id=offering_id).first()
-        if not offering:
-            flash('Offering not found to complete', 'danger')
-            return redirect(url_for('allofferings'))
+        if offering_id:
+            offering = Offerings.query.filter_by(id=offering_id).first()
+            if not offering:
+                flash('Offering not found to complete', 'danger')
+                return redirect(url_for('allofferings'))
+            else:
+                #RESET THE STUDENT COUNT BEFORE COMPLETING THE OFFERING
+                offering.current_count = 0
+                for registration in offering.registrations:
+                    #LOOP THROUGH REGISTRATIONS FOR THIS OFFERING AND MAKE A COMPLETION AND DUMP THE REGISTRATION
+                    new_completion = Completions(elective_id=offering.elective_id, user_id=registration.user_id)
+                    db.session.add(new_completion)
+                    db.session.delete(registration)
+                flash('Offering completed', 'success')
         else:
-            #RESET THE STUDENT COUNT BEFORE COMPLETING THE OFFERING
-            offering.current_count = 0
-            for registration in offering.registrations:
-                #LOOP THROUGH REGISTRATIONS FOR THIS OFFERING AND MAKE A COMPLETION AND DUMP THE REGISTRATION
-                new_completion = Completions(elective_id=offering.elective_id, user_id=registration.user_id)
-                db.session.add(new_completion)
-                db.session.delete(registration)
-            db.session.commit()
-            flash('Offering completed', 'success')
-            return redirect(url_for('allofferings'))
+            for offering in Offerings.query.all():
+                offering.current_count = 0
+                for registration in offering.registrations:
+                    #LOOP THROUGH REGISTRATIONS FOR THIS OFFERING AND MAKE A COMPLETION AND DUMP THE REGISTRATION
+                    new_completion = Completions(elective_id=offering.elective_id, user_id=registration.user_id)
+                    db.session.add(new_completion)
+                    db.session.delete(registration)
+            flash('All offerings completed')
+        db.session.commit()
+        return redirect(url_for('allofferings'))
     else:
         return render_template('denied.html')
 
@@ -185,7 +196,7 @@ def completeall():
             db.session.add(completion)
 
         for offering in offerings: #reset offering student count
-            offering.current_count = 0 
+            offering.current_count = 0
 
         db.session.commit()
         flash(f"Registrations removed and Completions set", 'success')
@@ -222,8 +233,8 @@ def settime():
         global registration_start_time
         global registration_end_time
         if form.validate_on_submit():
-            registration_start_time = form.start_time.data
-            registration_end_time = form.end_time.data
+            registration_start_time = datetime.datetime.strptime(form.start_time.data, "%Y-%m-%d %H:%M:%S")
+            registration_end_time = datetime.datetime.strptime(form.end_time.data, "%Y-%m-%d %H:%M:%S")
             flash("Registration time set", 'success')
             return redirect(f'settime')
         elif request.method == 'GET':
@@ -302,7 +313,7 @@ def createuser():
 
             return redirect(url_for('createuser'))
         return render_template('createuser.html', title='Create User', form=form)
-    
+
     else:
         return render_template('denied.html')
 
@@ -331,7 +342,7 @@ def uploadusers():
                     if len(user) != 8 and len(user) != 5:
                         flash("Bad user input, skipping user", 'danger')
                     else:
-                        new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=user[4])
+                        new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=hashlib.sha512(user[4].encode()).hexdigest())
                         db.session.add(new_user)
 
                         #have to commit to get id (put in try in case there is repeat or value error)
@@ -403,7 +414,7 @@ def edituser(user_id):
                         cur2 = reg.core.id
                     else:
                         cur3 = reg.core.id
-                
+
                 cores = Cores.query.all()
 
                 #correctly append cores to choices for the core dropdowns
@@ -421,8 +432,8 @@ def edituser(user_id):
                 form.core3.choices = choices3 #set the choices
 
             else:
-                form.core1.data = form.core2.data = form.core3.data = "0" 
-            
+                form.core1.data = form.core2.data = form.core3.data = "0"
+
             if form.validate_on_submit():
                 if user.username != "admin":
                     if form.username.data == "admin":
@@ -439,7 +450,7 @@ def edituser(user_id):
                 #check role is changed to or from a student
                 if form.role.data != user.role:
                     #changing from a student we must dump all core registrations and elective registrations
-                    
+
                     if user.role == "student":
                         #remove all core registrations
                         for core in user.core_registrations:
@@ -448,7 +459,7 @@ def edituser(user_id):
                         #remove all elective registrations
                         for elective in user.registrations:
                             db.session.delete(elective)
-                        
+
                         db.session.commit()
 
                     #make change insuring that admin account is not adjusted
@@ -521,7 +532,7 @@ def edituser(user_id):
 
                 #check if the password was changed
                 if form.password.data:
-                    user.password = form.password.data
+                    user.password = hashlib.sha512(form.password.data.encode()).hexdigest()
                     flash("New password set", 'success')
 
                 #attempt to commit the changes
@@ -672,7 +683,7 @@ def editelective(elective_id):
                 db.session.commit()
                 flash("Elective Info Updated", 'success')
                 return redirect(f'/elective/{elective_id}')
-            
+
             elif request.method == 'GET':
                 #SET THE FORM WITH THE VALUES THAT ARE ALREADY SET
                 form.name.data = elective.name
@@ -721,7 +732,7 @@ def deleteelective(elective_id):
                 for registration in offering.registrations:
                     db.session.delete(registration)
                 db.session.delete(offering)
-            
+
             #SAVE DELETIONS
             db.session.delete(elective)
             db.session.commit()
@@ -773,7 +784,7 @@ def createoffering():
                 if not template_offering: #if the offering template is not found
                     flash("Offering template not found", 'danger')
                     return redirect(url_for('allofferings'))
-                else: #fill the new elective with the template information 
+                else: #fill the new elective with the template information
                     form.building.data = template_offering.building
                     form.room.data = template_offering.room
                     form.instructor.data = template_offering.instructor
@@ -925,9 +936,9 @@ def deletenotification(notification_id):
 
 
 #CAMP SCHEDULE PAGE
-@app.route("/campschedule")
-def campschedule():
-    return render_template('campschedule.html')
+# @app.route("/campschedule")
+# def campschedule():
+#     return render_template('campschedule.html')
 
 
 #### STUDENT PAGES ####
@@ -940,7 +951,7 @@ def electives():
         period = int(request.args.get('period'))
     except:
         period = 0
-    
+
     search = request.args.get('search')
 
     if search is None:
@@ -971,7 +982,7 @@ def schedule():
             user = Users.query.filter_by(id=user_id).first()
             if not user:
                 flash("User schedule not found", 'danger')
-                return redirect(url_for('allusers'))   
+                return redirect(url_for('allusers'))
         else:
             user = current_user
             user_id = user.id
@@ -1028,7 +1039,7 @@ def completions():
 #STUDENTS REGISTER FOR AN OFFERING
 @app.route("/register/<offering_id>")
 def register(offering_id):
-    currTime = datetime.datetime.now().strftime("%H:%M:%S")
+    currTime = datetime.datetime.now()#.strftime("%H:%M:%S")
     if currTime < registration_start_time or currTime > registration_end_time:
         flash(f"It is {currTime} and Registration time is from {registration_start_time} to {registration_end_time}", 'danger')
         return redirect(url_for('electives'))
@@ -1064,13 +1075,13 @@ def register(offering_id):
             if registration.offering.elective == offering.elective and offering.elective.can_retake == False:
                 flash("Already registered for that elective type", 'danger')
                 return redirect(url_for('electives'))
-                
+
         #check if completed prerequisites (using both completed and other registrations that are before selected elective)
         for p in offering.elective.prerequisites:
             #CHECK ELECTIVES THAT HAVE BEEN COMPLETED
             #QUERY FOR COMPLETION WITH USER_ID AND THE PREREQUISITE_ELECTIVE_ID
             p_check = Completions.query.filter_by(user_id=current_user.id, elective_id=p.prerequisite_elective_id).first()
-            #CHECK ELECTIVES REGISTERED NOW THAT WILL TAKE PLACE BEFORE THIS ELECTIVE 
+            #CHECK ELECTIVES REGISTERED NOW THAT WILL TAKE PLACE BEFORE THIS ELECTIVE
             r_check = False
             for registration in current_user.registrations:
                 if registration.offering.elective_id == p.prerequisite_elective_id and registration.offering.period_start < offering.period_start:
@@ -1237,7 +1248,7 @@ def editcore(core_id):
                 db.session.commit()
                 flash("Core Info Updated", 'success')
                 return redirect(f'/core/{core_id}')
-            
+
             elif request.method == 'GET':
                 form.name.data = core.name
                 form.description.data = core.description
@@ -1306,4 +1317,3 @@ def logout():
     logout_user()
     flash("Logout successful", 'success')
     return redirect(url_for('index'))
-
