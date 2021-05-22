@@ -53,7 +53,7 @@ python-debian==0.1.32
 python-debianbts==2.7.2
 python-editor==1.0.4
 pyxdg==0.25
-PyYAML==3.12
+PyYAML==5.4
 qrcode==6.1
 qrtools==0.0.2
 reportlab==3.4.0
