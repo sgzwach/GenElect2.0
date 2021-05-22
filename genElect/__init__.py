@@ -961,7 +961,8 @@ def electives():
         registrations = current_user.registrations
         for registration in registrations:
             registered.append(registration.offering)
-    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives, period=period)
+
+    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives, period=period, reg_start=registration_start_time, reg_end=registration_end_time)
 
 
 

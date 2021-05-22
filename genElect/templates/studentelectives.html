@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Electives:</h1>
+    <h1>Electives (<span id="countdown"></span>)</h1>
     <br>
     <form class="example" action="" method="get">
       <input type="text" placeholder="Search.." name="search" class="form-control">
@@ -59,4 +59,39 @@
         </div>
         </article>
     {% endfor %}
+    <script type='text/javascript'>
+      start = new Date ("{{reg_start}}");
+      end = new Date("{{reg_end}}");
+
+      updateHeading();
+      setInterval(updateHeading, 1000);
+
+      function updateHeading()
+      {
+        now = new Date();
+        str = ""
+        if (start > now && end > now)
+        {
+          str = "Registration starts in ";
+          diff = start - now;
+          var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          if (days > 0)
+            str += days + "d " + hours + "h " + minutes + "m " + seconds + "s"
+          else
+            str += hours + "h " + minutes + "m " + seconds + "s"
+        }
+        else if (start <= now && end > now)
+        {
+          str = "Registration is Active";
+        }
+        else
+        {
+          str = "Registration is Inactive";
+        }
+        document.getElementById('countdown').textContent = str;
+      }
+    </script>
 {% endblock content %}
