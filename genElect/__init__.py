@@ -2,8 +2,8 @@ from flask import Flask, render_template, url_for, flash, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
-import hashlib #for hashing passwords
 import datetime #for registration time set
+import bcrypt # new password hashes
 
 #set app to flask instance
 app = Flask(__name__, template_folder='templates')
@@ -112,10 +112,8 @@ def login():
         if not user:
             user = Users.query.filter_by(email=form.username.data).first()
 
-        #get the hash of the input password
-        password_attempt = hashlib.sha512(form.password.data.encode()).hexdigest()
         #compare the hashes
-        if user and password_attempt == user.password:
+        if user and bcrypt.checkpw(form.password.data.encode(), user.password):
             login_user(user, remember=form.remember.data)
             flash(f"User {form.username.data} login successful!", 'success')
             return redirect(url_for('index'))
@@ -306,7 +304,7 @@ def createuser():
         form.core3.choices = choices3 #set the choices
 
         if form.validate_on_submit():
-            password = hashlib.sha512(form.password.data.encode()).hexdigest()
+            password = bcrypt.hashpw(form.password.data.encode(), bcrypt.gensalt())
             new_user = Users(username=form.username.data, full_name=form.full_name.data, role=form.role.data, email=form.email.data, password=password)
 
             #add user to database and commit changes
@@ -375,7 +373,7 @@ def uploadusers():
                     if len(user) != 8 and len(user) != 5:
                         flash("Bad user input, skipping user", 'danger')
                     else:
-                        new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=hashlib.sha512(user[4].encode()).hexdigest())
+                        new_user = Users(username=user[0],full_name=user[1],email=user[2],role=user[3],password=bcrypt.hashpw(user[4].encode(), bcrypt.gensalt()))
                         db.session.add(new_user)
 
                         #have to commit to get id (put in try in case there is repeat or value error)
@@ -568,7 +566,7 @@ def edituser(user_id):
 
                 #check if the password was changed
                 if form.password.data:
-                    user.password = hashlib.sha512(form.password.data.encode()).hexdigest()
+                    user.password = bcrypt.hashpw(form.password.data.encode(), bcrypt.gensalt())
                     flash("New password set", 'success')
 
                 #attempt to commit the changes
