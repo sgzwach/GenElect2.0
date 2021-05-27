@@ -2,6 +2,7 @@
 {% block content %}
     <h1>All Offerings Page &nbsp
       <button type="button" onclick="window.location.href = '/createoffering'" class="btn btn-outline-info">Create New Offering</button>
+      <button type="button" data-toggle="modal" data-target="#completeModal" class="btn btn-outline-info">Complete Registrations</button>
     </h1><br>
 	<table class="table">
 	  <thead>
@@ -41,5 +42,21 @@
 	    {% endfor %}
 	  </tbody>
 	</table>
+  <div class="modal fade" id="completeModal" tabindex="-1" role="dialog" aria-labelledby="completeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="completeModalLabel">Complete Registrations?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-info" onclick="window.location.href = '/completeall'">Complete</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
     <!-- <button type="button" onclick="window.location.href = '/createoffering'" class="btn btn-outline-info">Create New Offering</button> -->
 {% endblock content %}

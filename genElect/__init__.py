@@ -133,7 +133,7 @@ def instructor():
 @app.route("/admin")
 def admin():
     if current_user.is_authenticated and current_user.role == "admin":
-        return render_template('admin.html')
+        return redirect('/')
     else:
         return render_template('denied.html')
 
@@ -212,7 +212,7 @@ def completeall():
 
         db.session.commit()
         flash(f"Registrations removed and Completions set", 'success')
-        return redirect(url_for('admin'))
+        return redirect(url_for('allofferings'))
     else:
         return render_template('denied.html')
 
@@ -888,7 +888,7 @@ def createnotification():
             db.session.add(new_post)
             db.session.commit()
             flash(f"Notification {form.title.data} created!", 'success')
-            return redirect(url_for('admin'))
+            return redirect(url_for('allnotifications'))
         return render_template('createnotification.html', title='New Notification', form=form)
 
     else:
