@@ -37,12 +37,12 @@ class Users(Base, UserMixin):
     #     self.early_reg = True
 
 class Registrations(Base):
-    __tablesname__ = 'registrations'
+    __tablename__ = 'registrations'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     offering_id = db.Column(db.Integer, db.ForeignKey('offerings.id'), nullable=False)
 
 class CoreRegistrations(Base):
-    __tablesname__ = 'registrations'
+    __tablename__ = 'coreregistrations'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     core_id = db.Column(db.Integer, db.ForeignKey('cores.id'), nullable=False)
 
@@ -100,6 +100,26 @@ class Configs(Base):
     __tablename__ = 'configs'
     key = db.Column(db.Text)
     value = db.Column(db.Text)
+
+class Building(Base):
+    __tablename__ = 'buildings'
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    rooms = db.relationship('Room', backref='building', lazy=True, cascade="all,delete")
+
+class Room(Base):
+    __tablename__ = 'rooms'
+    name = db.Column(db.String(50), nullable=False)
+    building_id = db.Column(db.Integer, db.ForeignKey('buildings.id'))
+    events = db.relationship('Events', backref='room', lazy=True, cascade="all,delete")
+
+class Events(Base):
+    __tablename__ = 'events'
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
+    description = db.Column(db.String(250), nullable=False)
+
 
 #### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW
 #### COULD BE COOL TO ALSO EXPORT AND IMPORT THE DIFFERENT BADGES THAT STUDENTS EARN

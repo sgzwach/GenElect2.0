@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>All Rooms &nbsp
+      <a href="{{url_for('room')}}" class="btn btn-outline-info">New Room</a>
+    </h1><br>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">ID</th>
+        <th scope="col">Building</th>
+	      <th scope="col">Name</th>
+        <th scope="col">Edit</th>
+	      <th scope="col">Delete</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for room in rooms|sort(attribute='building.name') %}
+	    <tr>
+	      <td scope="row">{{room.id}}</td>
+        <td scope="row">{{room.building.name}}</td>
+	      <td scope="row">{{room.name}}</td>
+        <td scope="row"><a href="{{url_for('room', id=room.id)}}" class="btn btn-outline-info">Edit</a></td>
+        <td scope="row">
+          <form action="{{url_for('deleteRoom', id=room.id)}}" method="post">
+            <input type="submit" class="btn btn-outline-danger" value="Delete"></input>
+          </form>
+        </td>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+{% endblock content %}

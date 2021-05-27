@@ -86,3 +86,12 @@ class TimeSetForm(FlaskForm):
 	def validate_end_time(form, field):
 		if field.data < form.start_time.data:
 			raise ValidationError("End time must fall after start time")
+
+class BuildingForm(FlaskForm):
+	name = StringField('Building Name', validators=[DataRequired(), Length(3,100)], render_kw={"autofocus": True})
+	submit = SubmitField('Save Building')
+
+class RoomForm(FlaskForm):
+	building = SelectField('Building', validators=[Required()], coerce=int, render_kw={"autofocus": True})
+	name = StringField('Room Name', validators=[DataRequired(), Length(3,100)])
+	submit = SubmitField('Save Room')

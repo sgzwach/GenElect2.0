@@ -40,6 +40,7 @@ from genElect.models import Prerequisites
 from genElect.models import Cores
 from genElect.models import CoreRegistrations
 from genElect.models import Configs
+from genElect.models import Building, Room, Events
 
 from genElect.forms import *
 
@@ -960,6 +961,131 @@ def api_schedule(uid=None):
     ]
     return jsonify(events)
 
+@app.route("/createevent")
+def createevent():
+    return "Made it"
+
+@app.route("/building", methods=['GET', 'POST'])
+@app.route("/building/<int:id>", methods=['GET', 'POST'])
+def building(id=None):
+    if current_user.is_authenticated and current_user.role == "admin":
+        form = BuildingForm()
+        loc = None
+        op = 'Create'
+        if id:
+            loc = Building.query.filter_by(id=id).first()
+        if request.method == 'POST': # creating new location in this case
+            if form.validate_on_submit():
+                if not loc:
+                    loc = Building(name=form.name.data)
+                    db.session.add(loc)
+                    flash(f"Building created {loc.name}", "success")
+                    rp = url_for('building')
+                else:
+                    loc.name = form.name.data
+                    flash("Building updated", "success")
+                    rp = url_for('buildings')
+                db.session.commit()
+                return redirect(rp)
+            else:
+                flash("Invalid building info", "danger")
+        elif request.method == 'GET':
+            if loc:
+                form.name.data = loc.name
+                op = 'Update'
+        return render_template("building.html", form=form, op=op)
+    else:
+        return render_template('denied.html'), 403
+
+@app.route("/buildings")
+def buildings():
+    if current_user.is_authenticated and current_user.role == 'admin':
+        b = Building.query.order_by(Building.name).all()
+        return render_template('allbuildings.html', buildings=b)
+    else:
+        return render_template('denied.html'), 403
+
+@app.route("/building/delete/<int:id>", methods=['POST'])
+def deleteBuilding(id=None):
+    if current_user.is_authenticated and current_user.role == 'admin':
+        if not id:
+            flash("No valid building id provided", "danger")
+            return redirect(url_for('buildings'))
+        b = Building.query.filter_by(id=id).first()
+        if not b:
+            flash("Invalid building id", "danger")
+            return redirect(url_for('buildings'))
+        db.session.delete(b)
+        db.session.commit()
+        flash("Deleted building", "success")
+        return redirect(url_for('buildings'))
+    else:
+        return render_template("denied.html"),403
+
+@app.route("/room", methods=['GET', 'POST'])
+@app.route("/room/<int:id>", methods=['GET', 'POST'])
+def room(id=None):
+    if current_user.is_authenticated and current_user.role == "admin":
+        blds = [(b.id, b.name) for b in Building.query.order_by(Building.name).all()]
+        form = RoomForm()
+        form.building.choices = blds
+        loc = None
+        op = 'Create'
+        if id:
+            loc = Room.query.filter_by(id=id).first()
+        if request.method == 'POST': # creating new location in this case
+            if form.validate_on_submit():
+                bld = Building.query.filter_by(id=form.building.data).first()
+                if not bld:
+                    flash("Unable to find building", "danger")
+                if not loc:
+                    if bld:
+                        rm = Room(name=form.name.data, building=bld)
+                        db.session.add(rm)
+                        form.name.data = ""
+                        flash("Room created", "success")
+                        rp = url_for('room')
+                elif bld:
+                    loc.name = form.name.data
+                    loc.building = bld
+                    flash("Room updated", "success")
+                    rp = url_for('rooms')
+                db.session.commit()
+                return redirect(rp)
+            else:
+                flash("Invalid room info", "danger")
+        elif request.method == 'GET':
+            if loc:
+                form.name.data = loc.name
+                op = 'Update'
+        return render_template("room.html", form=form, op=op)
+    else:
+        return render_template('denied.html'), 403
+
+@app.route("/rooms")
+def rooms():
+    if current_user.is_authenticated and current_user.role == 'admin':
+        r = Room.query.order_by(Room.name).all()
+        return render_template('allrooms.html', rooms=r)
+    else:
+        return render_template('denied.html'), 403
+
+@app.route("/room/delete/<int:id>", methods=['POST'])
+def deleteRoom(id=None):
+    if current_user.is_authenticated and current_user.role == 'admin':
+        if not id:
+            flash("No valid room id provided", "danger")
+            return redirect(url_for('rooms'))
+        b = Room.query.filter_by(id=id).first()
+        if not b:
+            flash("Invalid room id", "danger")
+            return redirect(url_for('rooms'))
+        db.session.delete(b)
+        db.session.commit()
+        flash("Deleted room", "success")
+        return redirect(url_for('rooms'))
+    else:
+        return render_template("denied.html"),403
 
 #### STUDENT PAGES ####
 

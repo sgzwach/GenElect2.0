@@ -48,6 +48,8 @@
                   <a class="nav-item nav-link" href="{{ url_for('allcores') }}">Cores</a>
                   <a class="nav-item nav-link" href="{{ url_for('allelectives') }}">Electives</a>
                   <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
+                  <a class="nav-item nav-link" href="{{ url_for('buildings') }}">Buildings</a>
+                  <a class="nav-item nav-link" href="{{ url_for('rooms') }}">Rooms</a>
                 {% endif %}
                 {% if current_user.role == "instructor" %}
                   <a class="nav-item nav-link" href="{{ url_for('instructor') }}">Instructor Panel</a>
