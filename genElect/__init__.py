@@ -43,12 +43,6 @@ from genElect.models import Configs
 
 from genElect.forms import *
 
-# global registration_start_time
-# global registration_end_time
-
-# registration_start_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S")
-# registration_end_time = datetime.datetime.strptime("23:59:59", "%H:%M:%S")
-
 #CONFIG FETCH UTILITY
 def get_config(key):
     c = Configs.query.filter_by(key=key).first()
@@ -69,15 +63,8 @@ def set_config(key, value):
     except:
         flash("Unable to update config for " + str(key))
 
-def getStartTime():
-    t = get_config("regstart")
-    try:
-        return datetime.datetime.strptime(t, "%Y-%m-%d %H:%M:%S")
-    except:
-        return datetime.datetime.now()
-
-def getEndTime():
-    t = get_config("regend")
+def get_time_config(key):
+    t = get_config(key)
     try:
         return datetime.datetime.strptime(t, "%Y-%m-%d %H:%M:%S")
     except:
@@ -269,8 +256,8 @@ def settime():
             flash("Registration time set", 'success')
             return redirect(f'settime')
         elif request.method == 'GET':
-            form.start_time.data = getStartTime()
-            form.end_time.data = getEndTime()
+            form.start_time.data = get_time_config("regstart")
+            form.end_time.data = get_time_config("regend")
         return render_template('settime.html', title='Set Registration Time', form=form)
     else:
         return render_template('denied.html')
@@ -1004,7 +991,7 @@ def electives():
         for registration in registrations:
             registered.append(registration.offering)
 
-    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives, period=period, reg_start=getStartTime(), reg_end=getEndTime())
+    return render_template('studentelectives.html', offerings=offerings, registered=registered, Electives=Electives, period=period, reg_start=get_time_config("regstart"), reg_end=get_time_config("regend"))
 
 
 
@@ -1075,8 +1062,8 @@ def completions():
 @app.route("/register/<offering_id>")
 def register(offering_id):
     currTime = datetime.datetime.now()#.strftime("%H:%M:%S")
-    registration_start_time=getStartTime()
-    registration_end_time=getEndTime()
+    registration_start_time=get_time_config("regstart")
+    registration_end_time=get_time_config("regend")
     if currTime < registration_start_time or currTime > registration_end_time:
         flash(f"It is {currTime} and Registration time is from {registration_start_time} to {registration_end_time}", 'danger')
         return redirect(url_for('electives'))
@@ -1206,8 +1193,8 @@ def drop(offering_id):
 @app.route("/api/regtime")
 def api_regtime():
     res = {
-        'starttime': str(getStartTime()),
-        'endtime': str(getEndTime())
+        'starttime': str(get_time_config("regstart")),
+        'endtime': str(get_time_config("regend"))
     }
     return jsonify(res)
 
