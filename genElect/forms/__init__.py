@@ -5,12 +5,12 @@ from wtforms import widgets
 
 #Form for User information (for Administrators)
 class UserForm(FlaskForm):
-	full_name = StringField('Full Name', validators=[DataRequired()])
+	full_name = StringField('Full Name', validators=[DataRequired()], render_kw={"autofocus": True, "autocomplete": "off"})
 	email = StringField('Email', validators=[DataRequired()])
 	username = StringField('Username', validators=[DataRequired()])
 	choices = [('student','Student'), ('instructor','Instructor'), ('admin','Admin')]
 	role = SelectField('User Role', choices=choices, validators=[Required()])
-	password = PasswordField('Set New Password')
+	password = PasswordField('Set New Password', render_kw={"autocomplete": "off"})
 	core1 = SelectField('Period 1 Core', choices=[('0','none')])
 	core2 = SelectField('Period 2 Core', choices=[('0','none')])
 	core3 = SelectField('Period 3 Core', choices=[('0','none')])
@@ -19,15 +19,15 @@ class UserForm(FlaskForm):
 
 #Form for Logging In
 class LoginForm(FlaskForm):
-	username = StringField('Username', validators=[DataRequired()])
-	password = PasswordField('Password', validators=[DataRequired()])
+	username = StringField('Username', validators=[DataRequired()], render_kw={"autocomplete": "off", "autofocus": True})
+	password = PasswordField('Password', validators=[DataRequired()], render_kw={"autocomplete": "off"})
 	remember = BooleanField('Remember Me')
 	submit = SubmitField('Login')
 
 
 #Form for creating and updating electives
 class ElectiveForm(FlaskForm):
-	name = StringField('Elective Name', validators=[DataRequired()])
+	name = StringField('Elective Name', validators=[DataRequired()], render_kw={"autofocus": True})
 	description = StringField('Description', validators=[DataRequired()])
 	learning_objective = StringField('Learning Objective', validators=[DataRequired()])
 	prerequisites = SelectMultipleField('Prerequisites', choices = []) #fill dynamically
@@ -39,7 +39,7 @@ class ElectiveForm(FlaskForm):
 
 #Form for creating and updating electives
 class CoreForm(FlaskForm):
-	name = StringField('Core Name', validators=[DataRequired()])
+	name = StringField('Core Name', validators=[DataRequired()], render_kw={"autofocus": True})
 	description = StringField('Description', validators=[DataRequired()])
 	instructor = StringField('Instructor', validators=[DataRequired()])
 	building = StringField('Building', validators=[DataRequired()])
@@ -52,7 +52,7 @@ class CoreForm(FlaskForm):
 
 #Form for creating and updating offerings
 class OfferingForm(FlaskForm):
-	building = StringField('Building', validators=[DataRequired()])
+	building = StringField('Building', validators=[DataRequired()], render_kw={"autofocus": True})
 	room = StringField('Room', validators=[DataRequired()])
 	instructor = StringField('Instructor', validators=[DataRequired()])
 	choices = [] #to be filled dynamically
@@ -66,13 +66,13 @@ class OfferingForm(FlaskForm):
 
 #Form for creating and updating notifications
 class NotificationForm(FlaskForm):
-	title = StringField('Title', validators=[DataRequired()])
+	title = StringField('Title', validators=[DataRequired()], render_kw={"autofocus": True})
 	notification = StringField('Notification', validators=[DataRequired()])
 	submit = SubmitField('Save Notification')
 
 
 #Form for setting the registration time period
 class TimeSetForm(FlaskForm):
-	start_time = StringField('Start Time', validators=[DataRequired()])
+	start_time = StringField('Start Time', validators=[DataRequired()], render_kw={"autofocus": True})
 	end_time = StringField('End Time', validators=[DataRequired()])
 	submit = SubmitField('Set Time')

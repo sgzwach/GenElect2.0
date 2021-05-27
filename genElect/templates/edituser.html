@@ -85,8 +85,12 @@
     		</fieldset>
     		<div class="form-group">
     			{{ form.submit(class="btn btn-outline-info") }}
-                <button type="button" onclick="window.location.href = '/allusers'" class="btn btn-outline-danger">Cancel</button>
-            </div>
+          {% if current_user.role == "admin" %}
+            <button type="button" onclick="window.location.href = '/allusers'" class="btn btn-outline-danger">Cancel</button>
+          {% else %}
+            <a class="btn btn-outline-danger" href="{{ url_for('instructor') }}">Cancel</a>
+          {% endif %}
+        </div>
     	</form>
     </div>
 </div>
