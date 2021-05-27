@@ -4,7 +4,7 @@
     	<form method="POST" action="">
     		{{ form.hidden_tag() }}
     		<fieldset class="form-group">
-    			<legend class="border-bottom mb-4">Edit Registration Time:</legend>
+    			<legend class="border-bottom mb-4">Edit Registration Time (format: %Y-%m-%d %H:%M:%S):</legend>
                 {{ form.start_time.label(class="form-control-label") }}
                 {{ form.start_time (class="form-control form-control-lg") }}
                 {{ form.end_time.label(class="form-control-label") }}
