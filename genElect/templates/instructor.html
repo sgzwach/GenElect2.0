@@ -2,6 +2,8 @@
 {% block content %}
     <h1>Instructor Page</h1>
     <br>
+    <a type="button" href='{{ url_for("edituser", user_id=current_user.id) }}' class="btn btn-outline-info">Manage My Account</a>
+    <br><br><br>
     <button type="button" onclick="window.location.href = '/allcores'" class="btn btn-outline-info">Cores</button>
     <button type="button" onclick="window.location.href = '/createcore'" class="btn btn-outline-info">Create New Core</button>
     <br><br><br>

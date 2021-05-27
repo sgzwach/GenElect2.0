@@ -419,10 +419,10 @@ def allusers():
         return render_template('denied.html')
 
 #ADMIN EDIT USER BY USER_ID
-@app.route("/user/<user_id>", methods=['GET', 'POST'])
-@app.route("/edituser/<user_id>", methods=['GET', 'POST'])
+@app.route("/user/<int:user_id>", methods=['GET', 'POST'])
+@app.route("/edituser/<int:user_id>", methods=['GET', 'POST'])
 def edituser(user_id):
-    if current_user.is_authenticated and current_user.role == "admin":
+    if current_user.is_authenticated and (current_user.role == "admin" or (current_user.id == user_id and current_user.role == "instructor")):
         user = Users.query.filter_by(id=int(user_id)).first()
         if user:
             form = UserForm()
@@ -484,22 +484,25 @@ def edituser(user_id):
                 if form.role.data != user.role:
                     #changing from a student we must dump all core registrations and elective registrations
 
-                    if user.role == "student":
-                        #remove all core registrations
-                        for core in user.core_registrations:
-                            db.session.delete(core)
-
-                        #remove all elective registrations
-                        for elective in user.registrations:
-                            db.session.delete(elective)
-
-                        db.session.commit()
-
-                    #make change insuring that admin account is not adjusted
-                    if user.username != "admin":
-                        user.role = form.role.data
+                    if current_user.role != "admin":
+                        flash("Standard users cannot change their roles", "danger")
                     else:
-                        flash("Admin account does not allow role change", 'danger')
+                        if user.role == "student":
+                            #remove all core registrations
+                            for core in user.core_registrations:
+                                db.session.delete(core)
+
+                            #remove all elective registrations
+                            for elective in user.registrations:
+                                db.session.delete(elective)
+
+                            db.session.commit()
+
+                        #make change insuring that admin account is not adjusted
+                        if user.username != "admin":
+                            user.role = form.role.data
+                        else:
+                            flash("Admin account does not allow role change", 'danger')
 
                 #only make these student updates if there wasn't a role change also
                 elif user.role == "student":
