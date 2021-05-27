@@ -948,9 +948,17 @@ def deletenotification(notification_id):
 
 
 #CAMP SCHEDULE PAGE
-# @app.route("/campschedule")
-# def campschedule():
-#     return render_template('campschedule.html')
+@app.route("/campschedule")
+def campschedule():
+    return render_template('campschedule_new.html')
+
+@app.route("/api/schedule")
+@app.route("/api/schedule/<int:uid>")
+def api_schedule(uid=None):
+    events = [
+        {'id': 'test', 'title': 'Camp @ TCB', 'start': '2021-05-26 23:00:00', 'end': '2021-05-27 00:00:00'}
+    ]
+    return jsonify(events)
 
 
 #### STUDENT PAGES ####

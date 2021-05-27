@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.css">
+<h1>Camp Schedule</h1>
+
+<div id='calendar'></div>
+
+{% endblock content %}
+
+{% block scripts %}
+	<script type='text/javascript'>
+		document.addEventListener('DOMContentLoaded', function() {
+			var calE1 = document.getElementById('calendar');
+			var cal = new FullCalendar.Calendar(calE1, {
+				initialView: 'timeGridDay',
+				allDaySlot: false,
+				nowIndicator: true,
+				slotMinTime: '07:00:00',
+				events: '/api/schedule',
+				headerToolbar: {
+					end: 'timeGridDay,timeGridWeek today prev,next'
+				}
+			});
+			cal.render();
+			setInterval(cal.refetchEvents, 60000)
+		});
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.js"></script>
+{% endblock scripts %}
