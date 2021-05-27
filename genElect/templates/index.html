@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+    <h2>Notifications</h2>
     {% for notification in notifications %}
         <article class="media content-section">
           <div class="media-body">
@@ -18,4 +19,8 @@
           </div>
         </article>
     {% endfor %}
+    <h3 id="countdown"></h3>
 {% endblock content %}
+{% block scripts %}
+  <script src="/static/countdown.js"></script>
+{% endblock scripts %}

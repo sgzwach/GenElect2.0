@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, flash, redirect, request
+from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
@@ -1202,6 +1202,14 @@ def drop(offering_id):
     else:
         flash("Please login first", 'info')
         return redirect(url_for('login'))
+
+@app.route("/api/regtime")
+def api_regtime():
+    res = {
+        'starttime': str(getStartTime()),
+        'endtime': str(getEndTime())
+    }
+    return jsonify(res)
 
 #### END OF STUDENTS PAGES ####
 
