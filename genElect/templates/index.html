@@ -6,7 +6,7 @@
     {% for notification in notifications %}
         <article class="media content-section">
           <div class="media-body">
-            {% if current_user.is_authenticated and current_user.username == 'admin' %}
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
               <div class="form-group">
                 <button type="button" onclick="window.location.href = '/editnotification/{{notification.id}}'" class="btn btn-outline-info">Update</button>
                 <button type="button" onclick="window.location.href = '/deletenotification/{{notification.id}}'" class="btn btn-outline-danger">Delete</button>
