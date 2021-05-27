@@ -242,18 +242,9 @@ def completeall():
 def settime():
     if current_user.is_authenticated and current_user.role == "admin":
         form = TimeSetForm()
-        # global registration_start_time
-        # global registration_end_time
         if form.validate_on_submit():
-            try:
-                s = datetime.datetime.strptime(form.start_time.data, "%Y-%m-%d %H:%M:%S")
-                e = datetime.datetime.strptime(form.end_time.data, "%Y-%m-%d %H:%M:%S")
-            except:
-                flash("Invalid date string entered", "danger")
-                return redirect('settime')
             set_config("regstart", form.start_time.data)
             set_config("regend", form.end_time.data)
-            flash("Registration time set", 'success')
             return redirect(f'settime')
         elif request.method == 'GET':
             form.start_time.data = get_time_config("regstart")

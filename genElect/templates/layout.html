@@ -86,6 +86,13 @@
               {% endfor %}
             {% endif %}
           {% endwith %}
+          {% if form %}
+            {% for field, errors in form.errors.items() %}
+              <div class="alert alert-danger">
+                  {{ form[field].label }}: {{ ', '.join(errors) }}
+              </div>
+            {% endfor %}
+          {% endif %}
           {% block content %}{% endblock %}
         </div>
       </div>

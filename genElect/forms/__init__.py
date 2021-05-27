@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField, DateField, FileField
-from wtforms.validators import DataRequired, Length, EqualTo, Required
+from wtforms.validators import DataRequired, Length, EqualTo, Required, ValidationError
 from wtforms import widgets
+from wtforms.fields.html5 import DateTimeField
+import datetime
 
 #Form for User information (for Administrators)
 class UserForm(FlaskForm):
@@ -73,6 +75,14 @@ class NotificationForm(FlaskForm):
 
 #Form for setting the registration time period
 class TimeSetForm(FlaskForm):
-	start_time = StringField('Start Time', validators=[DataRequired()], render_kw={"autofocus": True})
-	end_time = StringField('End Time', validators=[DataRequired()])
+	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S", render_kw={"autofocus": True})
+	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
 	submit = SubmitField('Set Time')
+
+	def validate_start_time(form ,field):
+		if field.data < datetime.datetime.now():
+			raise ValidationError("Start date must be in the future")
+
+	def validate_end_time(form, field):
+		if field.data < form.start_time.data:
+			raise ValidationError("End time must fall after start time")
