@@ -44,11 +44,10 @@ class CoreForm(FlaskForm):
 	name = StringField('Core Name', validators=[DataRequired()], render_kw={"autofocus": True})
 	description = StringField('Description', validators=[DataRequired()])
 	instructor = StringField('Instructor', validators=[DataRequired()])
-	# building = StringField('Building', validators=[DataRequired()])
 	room = SelectField('Room', validators=[Required()], choices=[], coerce=int)
 	core_period = IntegerField('Core Period', validators=[DataRequired()])
 	diff_choices = [('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')]
-	difficulty = SelectField('Elective Difficulty', choices=diff_choices, validators=[Required()])
+	difficulty = SelectField('Core Difficulty', choices=diff_choices, validators=[Required()])
 	submit = SubmitField('Save Core')
 
 

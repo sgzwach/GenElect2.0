@@ -33,19 +33,6 @@
                     {% endif %}
     			</div>
                 <div class="form-group">
-                    {{ form.building.label(class="form-control-label") }}
-                    {% if form.building.errors %}
-                        {{ form.building(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.building.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor%}
-                        </div>
-                    {% else %}
-                        {{ form.building(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
                     {{ form.room.label(class="form-control-label") }}
                     {% if form.room.errors %}
                         {{ form.room(class="form-control form-control-lg is-invalid") }}

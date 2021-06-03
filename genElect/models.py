@@ -77,7 +77,7 @@ class Cores(Base):
     name = db.Column(db.String(100))
     description = db.Column(db.String(500))
     building = db.Column(db.String(100))
-    room = db.Column(db.String(100))
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     core_period = db.Column(db.Integer)
     core_difficulty = db.Column(db.String(100))
     instructor = db.Column(db.String(100))
@@ -114,6 +114,7 @@ class Room(Base):
     building_id = db.Column(db.Integer, db.ForeignKey('buildings.id'))
     events = db.relationship('Events', backref='room', lazy=True, cascade="all,delete")
     offerings = db.relationship('Offerings', backref='room', cascade="all,delete")
+    cores = db.relationship('Cores', backref='room', cascade="all,delete")
 
     def __repr__(self):
         return self.building.name + " - " + self.name

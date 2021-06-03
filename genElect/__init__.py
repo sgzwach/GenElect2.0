@@ -1389,16 +1389,24 @@ def createcore():
     if current_user.is_authenticated and current_user.role == "admin":
         form = CoreForm()
 
+        # populate room choices
+        form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
+
         #IF FORM IS SUBMITTED AND VALID
         if form.validate_on_submit():
+            # lookup room
+            room = Room.query.filter_by(id=form.room.data).first()
+            if not room:
+                flash("Invalid room id", "danger")
+            else:
             #create the new core
-            new_core = Cores(name=form.name.data, description=form.description.data, instructor=form.instructor.data, core_period=int(form.core_period.data), building=form.building.data, room=form.room.data)
-            db.session.add(new_core)
-            #commit our new core
-            db.session.commit()
+                new_core = Cores(name=form.name.data, description=form.description.data, instructor=form.instructor.data, core_period=int(form.core_period.data), room=room)
+                db.session.add(new_core)
+                #commit our new core
+                db.session.commit()
 
-            flash(f"Core {new_core.name} created!", 'success')
-            return redirect(url_for('allcores'))
+                flash(f"Core {new_core.name} created!", 'success')
+                return redirect(url_for('allcores'))
         return render_template('createcore.html', title='Create', form=form)
 
     else:
