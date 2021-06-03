@@ -26,18 +26,18 @@
 	  <tbody>
 	  	{% for offering in offerings %}
 	    <tr>
-	      <th scope="row">{{offering.id}}</th>
-	      <th scope="row">{{offering.elective.name}}</th>
-	      <th scope="row">{{offering.room}}</th>
-	      <th scope="row">{{offering.period_start}}</th>
-	      <th scope="row">{{offering.capacity}}</th>
-	      <th scope="row">{{offering.current_count}}</th>
-	      <th scope="row">{{offering.instructor}}</th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/editoffering/{{offering.id}}'" class="btn btn-outline-info">Update</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/roll/{{offering.id}}'" class="btn btn-outline-info">Roll</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/createoffering?offering_template_id={{offering.id}}'" class="btn btn-outline-info">Use as Template</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/complete/{{offering.id}}'" class="btn btn-outline-success">Complete</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteoffering/{{offering.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	      <td scope="row">{{offering.id}}</td>
+	      <td scope="row">{{offering.elective.name}}</td>
+	      <td scope="row">{{offering.room}}</td>
+	      <td scope="row">{{offering.period_start}}</td>
+	      <td scope="row">{{offering.capacity}}</td>
+	      <td scope="row">{{offering.current_count}}</td>
+	      <td scope="row">{{offering.instructor}}</td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/editoffering/{{offering.id}}'" class="btn btn-outline-info">Update</button></td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/roll/{{offering.id}}'" class="btn btn-outline-info">Roll</button></td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/createoffering?offering_template_id={{offering.id}}'" class="btn btn-outline-info">Use as Template</button></td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/complete/{{offering.id}}'" class="btn btn-outline-success">Complete</button></td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/deleteoffering/{{offering.id}}'" class="btn btn-outline-danger">Delete</button></td>
 	    </tr>
 	    {% endfor %}
 	  </tbody>

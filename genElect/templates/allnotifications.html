@@ -14,11 +14,11 @@
 	  <tbody>
 	  	{% for notification in notifications %}
 	    <tr>
-	      <th scope="row">{{notification.id}}</th>
-	      <th scope="row">{{notification.title}}</th>
-	      <th scope="row">{{notification.date_created}}</th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/editnotification/{{notification.id}}'" class="btn btn-outline-info">Update</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/deletenotification/{{notification.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	      <td scope="row">{{notification.id}}</td>
+	      <td scope="row">{{notification.title}}</td>
+	      <td scope="row">{{notification.date_created}}</td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/editnotification/{{notification.id}}'" class="btn btn-outline-info">Update</button></td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/deletenotification/{{notification.id}}'" class="btn btn-outline-danger">Delete</button></td>
 	    </tr>
 	    {% endfor %}
 	  </tbody>

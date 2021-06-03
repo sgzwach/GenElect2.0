@@ -21,19 +21,19 @@
 	  <tbody>
 	  	{% for user in users %}
 	    <tr>
-	      <th scope="row">{{user.id}}</th>
-	      <th scope="row">{{user.full_name}}</th>
-	      <th scope="row">{{user.username}}</th>
-	      <th scope="row">{{user.email}}</th>
-	      <th scope="row">{{user.role}}</th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/edituser/{{user.id}}'" class="btn btn-outline-info">Update</button></th>
+	      <td scope="row">{{user.id}}</td>
+	      <td scope="row">{{user.full_name}}</td>
+	      <td scope="row">{{user.username}}</td>
+	      <td scope="row">{{user.email}}</td>
+	      <td scope="row">{{user.role}}</td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/edituser/{{user.id}}'" class="btn btn-outline-info">Update</button></td>
 	      {% if user.role == 'student' %}
-	      	<th scope="row"><button type="button" onclick="window.location.href = '/schedule?user_id={{user.id}}'" class="btn btn-outline-info">Schedule</button></th>
+	      	<td scope="row"><button type="button" onclick="window.location.href = '/schedule?user_id={{user.id}}'" class="btn btn-outline-info">Schedule</button></td>
 	      {% else %}
-	      	<th scope="row">Not a student</th>
+	      	<td scope="row">Not a student</td>
 	      {% endif %}
 
-	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteuser/{{user.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/deleteuser/{{user.id}}'" class="btn btn-outline-danger">Delete</button></td>
 	    </tr>
 	    {% endfor %}
 	  </tbody>

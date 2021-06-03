@@ -17,12 +17,12 @@
 	  <tbody>
 	  	{% for elective in electives %}
 	    <tr>
-	      <th scope="row">{{elective.id}}</th>
-	      <th scope="row">{{elective.name}}</th>
-	      <th scope="row">{{elective.description}}</th>
-	      <th scope="row">{{elective.date_created}}</th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/editelective/{{elective.id}}'" class="btn btn-outline-info">Update</button></th>
-	      <th scope="row"><button type="button" onclick="window.location.href = '/deleteelective/{{elective.id}}'" class="btn btn-outline-danger">Delete</button></th>
+	      <td scope="row">{{elective.id}}</td>
+	      <td scope="row">{{elective.name}}</td>
+	      <td scope="row">{{elective.description}}</td>
+	      <td scope="row">{{elective.date_created}}</td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/editelective/{{elective.id}}'" class="btn btn-outline-info">Update</button></td>
+	      <td scope="row"><button type="button" onclick="window.location.href = '/deleteelective/{{elective.id}}'" class="btn btn-outline-danger">Delete</button></td>
 	    </tr>
 	    {% endfor %}
 	  </tbody>
