@@ -51,8 +51,7 @@ class Offerings(Base):
     day = db.Column(db.Date)
     period_start = db.Column(db.Integer)
     period_length = db.Column(db.Integer)
-    building = db.Column(db.String(100))
-    room = db.Column(db.String(100))
+    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     instructor = db.Column(db.String(100))
     current_count = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
@@ -106,11 +105,18 @@ class Building(Base):
     name = db.Column(db.String(100), nullable=False, unique=True)
     rooms = db.relationship('Room', backref='building', lazy=True, cascade="all,delete")
 
+    def __repr__(self):
+        return self.name
+
 class Room(Base):
     __tablename__ = 'rooms'
     name = db.Column(db.String(50), nullable=False)
     building_id = db.Column(db.Integer, db.ForeignKey('buildings.id'))
     events = db.relationship('Events', backref='room', lazy=True, cascade="all,delete")
+    offerings = db.relationship('Offerings', backref='room', cascade="all,delete")
+
+    def __repr__(self):
+        return self.building.name + " - " + self.name
 
 class Events(Base):
     __tablename__ = 'events'

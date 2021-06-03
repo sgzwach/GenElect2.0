@@ -780,14 +780,20 @@ def createoffering():
         for elective in electives:
             choices.append((str(elective.id), elective.name))
         form.elective.choices = choices
+        # fetch rooms
+        form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
 
         if form.validate_on_submit():
             #elective = Electives.query.filter_by(id=int(form.elective.data)).first()
-            new_offering = Offerings(building=form.building.data, room=form.room.data, instructor=form.instructor.data, capacity=form.capacity.data, current_count=0, elective_id=int(form.elective.data), period_start=int(form.period_start.data), period_length=int(form.period_length.data))
-            db.session.add(new_offering)
-            db.session.commit()
-            flash(f"Offering created!", 'success')
-            return redirect(url_for('allofferings'))
+            room = Room.query.filter_by(id=form.room.data).first()
+            if not room:
+                flash("Invalid room id", "danger")
+            else:
+                new_offering = Offerings(room=room, instructor=form.instructor.data, capacity=form.capacity.data, current_count=0, elective_id=int(form.elective.data), period_start=int(form.period_start.data), period_length=int(form.period_length.data))
+                db.session.add(new_offering)
+                db.session.commit()
+                flash(f"Offering created!", 'success')
+                return redirect(url_for('allofferings'))
 
         elif request.method == 'GET':
             #IF TEMPLATED FILL THE FIELDS WITH THE TEMPLATE
@@ -1086,6 +1092,24 @@ def deleteRoom(id=None):
         return redirect(url_for('rooms'))
     else:
         return render_template("denied.html"),403
+
+@app.route("/api/building/<int:id>")
+def apiGetRoomByBuilding(id=None):
+    if current_user.is_authenticated and current_user.role != 'student':
+        r = Room.query.filter_by(building_id=id).all()
+        ret = [{"name": str(x), "id": x.id} for x in r]
+        return jsonify(ret)
+    else:
+        return "Unauthorized", 403
+
+@app.route("/api/buildings")
+def apiGetBuildings():
+    if current_user.is_authenticated and current_user.role != 'student':
+        b = Building.query.all()
+        ret = [{"name": str(x), "id": x.id} for x in b]
+        return jsonify(ret)
+    else:
+        return "Unauthorized", 403
 
 #### STUDENT PAGES ####
 

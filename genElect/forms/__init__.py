@@ -44,8 +44,8 @@ class CoreForm(FlaskForm):
 	name = StringField('Core Name', validators=[DataRequired()], render_kw={"autofocus": True})
 	description = StringField('Description', validators=[DataRequired()])
 	instructor = StringField('Instructor', validators=[DataRequired()])
-	building = StringField('Building', validators=[DataRequired()])
-	room = StringField('Room', validators=[DataRequired()])
+	# building = StringField('Building', validators=[DataRequired()])
+	room = SelectField('Room', validators=[Required()], choices=[], coerce=int)
 	core_period = IntegerField('Core Period', validators=[DataRequired()])
 	diff_choices = [('Beginner', 'Beginner'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')]
 	difficulty = SelectField('Elective Difficulty', choices=diff_choices, validators=[Required()])
@@ -54,11 +54,10 @@ class CoreForm(FlaskForm):
 
 #Form for creating and updating offerings
 class OfferingForm(FlaskForm):
-	building = StringField('Building', validators=[DataRequired()], render_kw={"autofocus": True})
-	room = StringField('Room', validators=[DataRequired()])
+	room = SelectField('Room', validators=[Required()], choices=[], coerce=int)
 	instructor = StringField('Instructor', validators=[DataRequired()])
 	choices = [] #to be filled dynamically
-	elective = SelectField('Elective', choices=choices, validators=[Required()])
+	elective = SelectField('Elective', choices=choices, validators=[Required()], render_kw={"autofocus": True})
 	capacity = IntegerField('Capacity', validators=[DataRequired()])
 	num_choices = [('1','1'), ('2','2'), ('3','3')]
 	period_start = SelectField('Offering Period', choices=num_choices, validators=[Required()])
