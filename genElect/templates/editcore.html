@@ -9,93 +9,80 @@
                     {{ form.name.label(class="form-control-label") }}
 
                     {% if form.name.errors %}
-                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        {{ form.name(class="form-control form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.name.errors %}
                                 <span>{{ error }}</span>
                             {% endfor%}
                         </div>
                     {% else %}
-                        {{ form.name(class="form-control form-control-lg") }}
+                        {{ form.name(class="form-control form-control") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
                     {{ form.description.label(class="form-control-label") }}
                     {% if form.description.errors %}
-                        {{ form.description(class="form-control form-control-lg is-invalid") }}
+                        {{ form.description(class="form-control form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.description.errors %}
                                 <span>{{ error }}</span>
                             {% endfor%}
                         </div>
                     {% else %}
-                        {{ form.description(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.building.label(class="form-control-label") }}
-                    {% if form.building.errors %}
-                        {{ form.building(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.building.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor%}
-                        </div>
-                    {% else %}
-                        {{ form.building(class="form-control form-control-lg") }}
+                        {{ form.description(class="form-control form-control") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
                     {{ form.room.label(class="form-control-label") }}
                     {% if form.room.errors %}
-                        {{ form.room(class="form-control form-control-lg is-invalid") }}
+                        {{ form.room(class="form-control form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.room.errors %}
                                 <span>{{ error }}</span>
                             {% endfor%}
                         </div>
                     {% else %}
-                        {{ form.room(class="form-control form-control-lg") }}
+                        {{ form.room(class="form-control form-control") }}
                     {% endif %}
                 </div>
 
                 <div class="form-group">
                     {{ form.instructor.label(class="form-control-label") }}
                     {% if form.instructor.errors %}
-                        {{ form.instructor(class="form-control form-control-lg is-invalid") }}
+                        {{ form.instructor(class="form-control form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.instructor.errors %}
                                 <span>{{ error }}</span>
                             {% endfor%}
                         </div>
                     {% else %}
-                        {{ form.instructor(class="form-control form-control-lg") }}
+                        {{ form.instructor(class="form-control form-control") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
                     {{ form.core_period.label(class="form-control-label") }}
                     {% if form.core_period.errors %}
-                        {{ form.core_period(class="form-control form-control-lg is-invalid") }}
+                        {{ form.core_period(class="form-control form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.core_period.errors %}
                                 <span>{{ error }}</span>
                             {% endfor%}
                         </div>
                     {% else %}
-                        {{ form.core_period(class="form-control form-control-lg") }}
+                        {{ form.core_period(class="form-control form-control") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
                     {{ form.difficulty.label(class="form-control-label") }}
                     {% if form.difficulty.errors %}
-                        {{ form.difficulty(class="form-control form-control-lg is-invalid") }}
+                        {{ form.difficulty(class="form-control form-control is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.prerequisites.errors %}
                                 <span>{{ error }}</span>
                             {% endfor%}
                         </div>
                     {% else %}
-                        {{ form.difficulty(class="form-control form-control-lg") }}
+                        {{ form.difficulty(class="form-control form-control") }}
                     {% endif %}
                 </div>
     		</fieldset>

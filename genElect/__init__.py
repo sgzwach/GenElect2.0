@@ -832,11 +832,12 @@ def editoffering(offering_id):
             for elective in electives:
                 choices.append((str(elective.id), elective.name))
             form.elective.choices = choices
+            # populate room choices
+            form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
             if form.validate_on_submit():
                 elective = Electives.query.filter_by(id=int(form.elective.data)).first()
                 offering.elective = elective
-                offering.building = form.building.data
-                offering.room = form.room.data
+                offering.room = Room.query.filter_by(id=form.room.data).first()
                 offering.instructor = form.instructor.data
                 offering.capacity = form.capacity.data
                 offering.period_start = int(form.period_start.data)
@@ -846,8 +847,7 @@ def editoffering(offering_id):
                 return redirect(f'/offering/{offering_id}')
             elif request.method == 'GET':
                 form.elective.data = str(offering.elective.id)
-                form.building.data = offering.building
-                form.room.data = offering.room
+                form.room.process_data(offering.room.id)
                 form.instructor.data = offering.instructor
                 form.capacity.data = offering.capacity
                 form.period_start.data = str(offering.period_start)
@@ -1399,7 +1399,7 @@ def createcore():
             if not room:
                 flash("Invalid room id", "danger")
             else:
-            #create the new core
+                #create the new core
                 new_core = Cores(name=form.name.data, description=form.description.data, instructor=form.instructor.data, core_period=int(form.core_period.data), room=room)
                 db.session.add(new_core)
                 #commit our new core
@@ -1424,13 +1424,15 @@ def editcore(core_id):
             #create the core form
             form = CoreForm()
 
+            # populate room choices
+            form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
+
             if form.validate_on_submit():
                 #update the core information
                 core.name = form.name.data
                 core.description = form.description.data
                 core.instructor = form.instructor.data
-                core.building = form.building.data
-                core.room = form.room.data
+                core.room = Room.query.filter_by(id=form.room.data).first()
                 core.core_period = form.core_period.data
 
                 #commit the changes
@@ -1442,8 +1444,7 @@ def editcore(core_id):
                 form.name.data = core.name
                 form.description.data = core.description
                 form.instructor.data = core.instructor
-                form.building.data = core.building
-                form.room.data = core.room
+                form.room.process_data(core.room.id)
                 form.core_period.data = core.core_period
 
             return render_template('editcore.html', core=core, form=form, title="Core Edit")
