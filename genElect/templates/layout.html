@@ -40,6 +40,7 @@
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
+              <a class="nav-item nav-link" href="{{ url_for('campschedule') }}">Schedule</a>
               {% if current_user.is_authenticated %}
                 {% if current_user.role == "admin" %}
                   <!-- <a class="nav-item nav-link" href="{{ url_for('admin') }}">Admin</a> -->
@@ -59,7 +60,6 @@
                 {% endif %}
                 {% if current_user.role == "student" %}
                   <a class="nav-item nav-link" href="https://dsu.edu/visit-dsu/files/Campus_Parking_Map.pdf" target="blank">Campus Map</a>
-                  <!-- <a class="nav-item nav-link" href="/campschedule">Camp Schedule</a> -->
                   <a class="nav-item nav-link" href="/electives">Electives</a>
                   <a class="nav-item nav-link" href="/schedule">My Schedule</a>
                   <a class="nav-item nav-link" href="/completions">My Completions</a>
@@ -67,7 +67,6 @@
                 {% endif %}
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
               {% else %}
-                <!-- <a class="nav-item nav-link" href="/campschedule">Camp Schedule</a> -->
                 <a class="nav-item nav-link" href="/electives">Electives</a>
                 <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
               {% endif %}

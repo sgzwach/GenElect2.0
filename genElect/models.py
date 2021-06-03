@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from sqlalchemy.orm import validates
@@ -112,20 +112,32 @@ class Room(Base):
     __tablename__ = 'rooms'
     name = db.Column(db.String(50), nullable=False)
     building_id = db.Column(db.Integer, db.ForeignKey('buildings.id'))
-    events = db.relationship('Events', backref='room', lazy=True, cascade="all,delete")
+    events = db.relationship('Event', backref='room', lazy=True, cascade="all,delete")
     offerings = db.relationship('Offerings', backref='room', cascade="all,delete")
     cores = db.relationship('Cores', backref='room', cascade="all,delete")
 
     def __repr__(self):
         return self.building.name + " - " + self.name
 
-class Events(Base):
+class Event(Base):
     __tablename__ = 'events'
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     title = db.Column(db.String(100), nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     description = db.Column(db.String(250), nullable=False)
+
+    def jsEvent(self):
+        obj = {
+            'id': self.id,
+            'title': self.title + " @ " + str(self.room),
+            'start': self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'end': self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'url': url_for('event', id=self.id),
+            'html': render_template('eventmodal.html', event=self)
+        }
+        return obj
+
 
 
 #### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW

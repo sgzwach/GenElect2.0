@@ -93,3 +93,15 @@ class RoomForm(FlaskForm):
 	building = SelectField('Building', validators=[Required()], coerce=int, render_kw={"autofocus": True})
 	name = StringField('Room Name', validators=[DataRequired(), Length(3,100)])
 	submit = SubmitField('Save Room')
+
+class EventForm(FlaskForm):
+	title = StringField('Title', validators=[DataRequired(), Length(3,100)], render_kw={"autofocus": True})
+	description = StringField('Description', validators=[DataRequired(), Length(0, 250)])
+	room = SelectField('Room', validators=[Required()], coerce=int)
+	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
+	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
+	submit = SubmitField('Save Event')
+
+	def validate_end_time(form, field):
+		if field.data < form.start_time.data:
+			raise ValidationError("End time must fall after start time")

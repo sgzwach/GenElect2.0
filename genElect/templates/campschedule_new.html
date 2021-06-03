@@ -1,10 +1,36 @@
 {% extends "layout.html" %}
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.css">
-<h1>Camp Schedule</h1>
+<h1>Camp Schedule
+	{% if current_user.role == "admin" %}
+		<a href="{{url_for('event')}}" class="btn btn-outline-info">New Event</a>
+	{% endif %}
+</h1>
 
 <div id='calendar'></div>
 
+<!-- Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id=eventModalBody>
+        ...
+      </div>
+      <div class="modal-footer">
+				{% if current_user.role == "admin" %}
+					<a class="btn btn-primary" href="#" id="eventModalEditButton">Edit Event</a>
+				{% endif %}
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
 
 {% block scripts %}
@@ -19,6 +45,15 @@
 				events: '/api/schedule',
 				headerToolbar: {
 					end: 'timeGridDay,timeGridWeek today prev,next'
+				},
+				eventClick: function(info) {
+					info.jsEvent.preventDefault();
+					$('#eventModalLabel').text(info.event.title);
+					$('#eventModalBody').html(info.event.extendedProps.html);
+					{% if current_user.role == "admin" %}
+					$('#eventModalEditButton').attr('href', info.event.url);
+					{% endif %}
+					$('#eventModal').modal('show');
 				}
 			});
 			cal.render();
