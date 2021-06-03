@@ -2,8 +2,10 @@
 {% block content %}
     <h1>All Offerings Page &nbsp
       <button type="button" onclick="window.location.href = '/createoffering'" class="btn btn-outline-info">Create New Offering</button>
+      <button type="button" onclick="window.location.href = '/settime'" class="btn btn-outline-info">Set Registration Time</button>
       <button type="button" data-toggle="modal" data-target="#completeModal" class="btn btn-outline-info">Complete Registrations</button>
-    </h1><br>
+    </h1>
+    <p id="countdown"></p>
 	<table class="table">
 	  <thead>
 	    <tr>
@@ -60,3 +62,6 @@
   </div>
     <!-- <button type="button" onclick="window.location.href = '/createoffering'" class="btn btn-outline-info">Create New Offering</button> -->
 {% endblock content %}
+{% block scripts %}
+  <script src="/static/countdown.js"></script>
+{% endblock scripts %}
