@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField, DateField, FileField
-from wtforms.validators import DataRequired, Length, EqualTo, Required, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField, DateField, FileField, BooleanField
+from wtforms.validators import DataRequired, Length, EqualTo, Required, ValidationError, Optional
 from wtforms import widgets
 from wtforms.fields.html5 import DateTimeField
 import datetime
@@ -100,8 +100,20 @@ class EventForm(FlaskForm):
 	room = SelectField('Room', validators=[Required()], coerce=int)
 	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
 	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
+	recur = BooleanField('Recurring Event')
+	recur_end_date = DateField('Recur End Date', format="%Y-%m-%d", validators=[Optional()])
 	submit = SubmitField('Save Event')
 
 	def validate_end_time(form, field):
 		if field.data < form.start_time.data:
 			raise ValidationError("End time must fall after start time")
+
+	def validate_recur(form, field):
+		if field.data and not form.recur_end_date.data:
+			raise ValidationError("You must enter an end date for recurrence")
+
+	def validate_recur_end_date(form, field):
+		d = field.data
+		r = form.recur.data
+		if r and d and datetime.datetime(d.year, d.month, d.day) < form.start_time.data:
+			raise ValidationError("Recurrence must end in the future")

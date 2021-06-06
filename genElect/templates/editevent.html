@@ -4,7 +4,7 @@
     	<form method="POST" action="">
     		{{ form.hidden_tag() }}
     		<fieldset class="form-group">
-    			<legend class="border-bottom mb-4">Create Event</legend>
+    			<legend class="border-bottom mb-4">Update Event</legend>
                 {{ form.title.label(class="form-control-label") }}
                 {{ form.title (class="form-control form-control-lg") }}
     		</fieldset>
@@ -23,14 +23,6 @@
         <fieldset class="form-group">
                 {{ form.end_time.label(class="form-control-label") }}
                 {{ form.end_time (class="form-control form-control-lg") }}
-    		</fieldset>
-        <fieldset class="form-group">
-                {{ form.recur.label(class="form-control-label") }}
-                {{ form.recur (class="form-control form-control-lg") }}
-    		</fieldset>
-        <fieldset class="form-group">
-                {{ form.recur_end_date.label(class="form-control-label") }}
-                {{ form.recur_end_date (class="form-control form-control-lg") }}
     		</fieldset>
     		<div class="form-group">
     			{{ form.submit(class="btn btn-outline-info") }}

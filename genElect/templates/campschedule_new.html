@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.css">
 <h1>Camp Schedule
 	{% if current_user.role == "admin" %}
-		<a href="{{url_for('event')}}" class="btn btn-outline-info">New Event</a>
+		<a href="{{url_for('createevent')}}" class="btn btn-outline-info">New Event</a>
 	{% endif %}
 </h1>
 

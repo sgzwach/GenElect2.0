@@ -133,7 +133,7 @@ class Event(Base):
             'title': self.title + " @ " + str(self.room),
             'start': self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             'end': self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'url': url_for('event', id=self.id),
+            'url': url_for('editevent', id=self.id),
             'html': render_template('eventmodal.html', event=self)
         }
         return obj

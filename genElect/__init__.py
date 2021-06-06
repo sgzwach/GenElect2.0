@@ -962,18 +962,57 @@ def campschedule():
 @app.route("/api/schedule")
 @app.route("/api/schedule/<int:uid>")
 def api_schedule(uid=None):
-    events = [
-        {'id': 'test', 'title': 'Camp @ TCB', 'start': '2021-05-26 23:00:00', 'end': '2021-05-27 00:00:00'}
-    ]
     events = [e.jsEvent() for e in Event.query.all()]
     return jsonify(events)
 
 @app.route("/event", methods=['GET', 'POST'])
-@app.route("/event/<int:id>", methods=['GET', 'POST'])
-def event(id=None):
+def createevent():
     if current_user.is_authenticated and current_user.role == "admin":
         form = EventForm()
-        op = 'Create'
+        # populate room choices
+        form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
+        if request.method == 'POST':
+            if form.validate_on_submit():
+                event = Event(
+                    title=form.title.data,
+                    start_time = form.start_time.data,
+                    end_time = form.end_time.data,
+                    description = form.description.data,
+                    room = Room.query.filter_by(id=form.room.data).first()
+                )
+                db.session.add(event)
+                if form.recur.data:
+                    curstart = form.start_time.data
+                    delta = form.end_time.data - curstart
+                    recur = form.recur_end_date.data
+                    while (curstart < datetime.datetime(recur.year, recur.month, recur.day)):
+                        # increment day (start day created above)
+                        curstart += datetime.timedelta(days=1)
+                        endtime = curstart + delta
+                        event = Event(
+                            title=form.title.data,
+                            start_time = curstart,
+                            end_time = endtime,
+                            description = form.description.data,
+                            room = Room.query.filter_by(id=form.room.data).first()
+                        )
+                        db.session.add(event)
+                db.session.commit()
+                flash(f"Event created: {event.title}", "success")
+                return redirect(url_for('createevent'))
+            else:
+                flash("Unable to create event", "danger")
+        if request.method == "GET":
+            form.start_time.data = datetime.datetime.now()
+            form.end_time.data = datetime.datetime.now() + datetime.timedelta(hours=1)
+        return render_template("event.html", form=form)
+    else:
+        return render_template('denied.html'), 403
+
+@app.route("/event/<int:id>", methods=['GET', 'POST'])
+def editevent(id=None):
+    if current_user.is_authenticated and current_user.role == "admin":
+        form = EventForm()
         event = None
         # populate room choices
         form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
@@ -981,27 +1020,17 @@ def event(id=None):
             event = Event.query.filter_by(id=id).first()
         if request.method == 'POST': # creating new location in this case
             if form.validate_on_submit():
-                if not event:
-                    event = Event(
-                        title=form.title.data,
-                        start_time = form.start_time.data,
-                        end_time = form.end_time.data,
-                        description = form.description.data,
-                        room = Room.query.filter_by(id=form.room.data).first()
-                    )
-                    db.session.add(event)
-                    flash(f"Event created: {event.title}", "success")
-                    rp = url_for('event')
-                else:
+                if event:
                     event.title = form.title.data
                     event.start_time = form.start_time.data
                     event.end_time = form.end_time.data
                     event.description = form.description.data
                     event.room = Room.query.filter_by(id=form.room.data).first()
                     flash("Event updated", "success")
-                    rp = url_for('campschedule')
+                else:
+                    flash("Event not found", "danger")
                 db.session.commit()
-                return redirect(rp)
+                return redirect(url_for('campschedule'))
             else:
                 flash("Invalid event info", "danger")
         elif request.method == 'GET':
@@ -1011,11 +1040,7 @@ def event(id=None):
                 form.end_time.data = event.end_time
                 form.description.data = event.description
                 form.room.process_data(event.room.id)
-                op = 'Update'
-            else:
-                form.start_time.data = datetime.datetime.now()
-                form.end_time.data = datetime.datetime.now() + datetime.timedelta(hours=1)
-        return render_template("event.html", form=form, op=op)
+        return render_template("editevent.html", form=form)
     else:
         return render_template('denied.html'), 403
 
