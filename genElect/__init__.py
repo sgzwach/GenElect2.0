@@ -1003,8 +1003,27 @@ def api_schedule(uid=None):
     if current_user.is_authenticated:
         for r in current_user.registrations:
             events.append(r.offering.jsEvent())
-        for c in current_user.cores:
-            events += c.jsEvents()
+        for c in current_user.core_registrations:
+            events += c.core.jsEvents()
+    else:
+        # for each day, hard code core/elective
+        d = datetime.datetime(2021,6,14,9)
+        while d < datetime.datetime(2021,6,18):
+            e = {
+                'title': 'Core Sessions',
+                'start': d.strftime("%Y-%m-%d %H:%M:%S"),
+                'end': (d+datetime.timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S"),
+                'html': render_template('coremodal.html', event={'description': 'Your core sessions will appear here when logged in!'})
+            }
+            events.append(e)
+            e = {
+                'title': 'Elective Sessions',
+                'start': (d+datetime.timedelta(hours=4, minutes=30)).strftime("%Y-%m-%d %H:%M:%S"),
+                'end': (d+datetime.timedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
+                'html': render_template('coremodal.html', event={'description': 'Your elective sessions will appear here when logged in!'})
+            }
+            events.append(e)
+            d += datetime.timedelta(days=1)
     return jsonify(events)
 
 @app.route("/event", methods=['GET', 'POST'])
@@ -1361,7 +1380,7 @@ def register(offering_id):
 
         #check if registered for same time period or elective
         for registration in current_user.registrations:
-            if registration.offering.period_start == offering.period_start:
+            if registration.offering.start_time == offering.start_time :
                 flash("Elective time conflict", 'danger')
                 return redirect(url_for('electives'))
             if registration.offering.elective == offering.elective and offering.elective.can_retake == False:
