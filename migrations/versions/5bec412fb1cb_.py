@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c7c1ac3cd484
+Revision ID: 5bec412fb1cb
 Revises: 
-Create Date: 2021-06-03 00:11:11.298897
+Create Date: 2021-06-06 15:27:17.664332
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c7c1ac3cd484'
+revision = '5bec412fb1cb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -103,7 +103,8 @@ def upgrade():
     sa.Column('room_id', sa.Integer(), nullable=False),
     sa.Column('core_period', sa.Integer(), nullable=True),
     sa.Column('core_difficulty', sa.String(length=100), nullable=True),
-    sa.Column('instructor', sa.String(length=100), nullable=True),
+    sa.Column('instructor_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['instructor_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['room_id'], ['rooms.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -127,11 +128,12 @@ def upgrade():
     sa.Column('period_start', sa.Integer(), nullable=True),
     sa.Column('period_length', sa.Integer(), nullable=True),
     sa.Column('room_id', sa.Integer(), nullable=False),
-    sa.Column('instructor', sa.String(length=100), nullable=True),
+    sa.Column('instructor_id', sa.Integer(), nullable=False),
     sa.Column('current_count', sa.Integer(), nullable=True),
     sa.Column('capacity', sa.Integer(), nullable=True),
     sa.Column('elective_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['elective_id'], ['electives.id'], ),
+    sa.ForeignKeyConstraint(['instructor_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['room_id'], ['rooms.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

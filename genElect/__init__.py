@@ -782,14 +782,18 @@ def createoffering():
         form.elective.choices = choices
         # fetch rooms
         form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
-
+        # fetch instructors
+        form.instructor.choices = [(t.id, t.full_name) for t in Users.query.filter(Users.role.in_(['instructor', 'admin'])).order_by('full_name').all()]
         if form.validate_on_submit():
             #elective = Electives.query.filter_by(id=int(form.elective.data)).first()
             room = Room.query.filter_by(id=form.room.data).first()
             if not room:
                 flash("Invalid room id", "danger")
+            instructor = Users.query.filter_by(id=form.room.data).first()
+            if not instructor or instructor.role not in ['instructor', 'admin']:
+                flash("Invalid instructor")
             else:
-                new_offering = Offerings(room=room, instructor=form.instructor.data, capacity=form.capacity.data, current_count=0, elective_id=int(form.elective.data), period_start=int(form.period_start.data), period_length=int(form.period_length.data))
+                new_offering = Offerings(room=room, instructor=instructor, capacity=form.capacity.data, current_count=0, elective_id=int(form.elective.data), period_start=int(form.period_start.data), period_length=int(form.period_length.data))
                 db.session.add(new_offering)
                 db.session.commit()
                 flash(f"Offering created!", 'success')
@@ -804,8 +808,7 @@ def createoffering():
                     flash("Offering template not found", 'danger')
                     return redirect(url_for('allofferings'))
                 else: #fill the new elective with the template information
-                    form.building.data = template_offering.building
-                    form.room.data = template_offering.room
+                    form.room.process_data(template_offering.room.id)
                     form.instructor.data = template_offering.instructor
                     form.capacity.data = template_offering.capacity
                     form.elective.data = str(template_offering.elective_id)
@@ -1464,22 +1467,21 @@ def createcore():
 
         # populate room choices
         form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
-
+        # populate instructors
+        form.instructor.choices = [(t.id, str(t)) for t in Users.query.filter(Users.role.in_(['instructor', 'admin'])).all()]
         #IF FORM IS SUBMITTED AND VALID
         if form.validate_on_submit():
             # lookup room
             room = Room.query.filter_by(id=form.room.data).first()
-            if not room:
-                flash("Invalid room id", "danger")
-            else:
-                #create the new core
-                new_core = Cores(name=form.name.data, description=form.description.data, instructor=form.instructor.data, core_period=int(form.core_period.data), room=room)
-                db.session.add(new_core)
-                #commit our new core
-                db.session.commit()
+            instructor = Users.query.filter_by(id=form.instructor.data).first()
+            #create the new core
+            new_core = Cores(name=form.name.data, description=form.description.data, instructor=instructor, core_period=int(form.core_period.data), room=room)
+            db.session.add(new_core)
+            #commit our new core
+            db.session.commit()
 
-                flash(f"Core {new_core.name} created!", 'success')
-                return redirect(url_for('allcores'))
+            flash(f"Core {new_core.name} created!", 'success')
+            return redirect(url_for('allcores'))
         return render_template('createcore.html', title='Create', form=form)
 
     else:
@@ -1499,12 +1501,13 @@ def editcore(core_id):
 
             # populate room choices
             form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
-
+            # populate instructor choices
+            form.instructor.choices = [(t.id, str(t)) for t in Users.query.filter(Users.role.in_(['instructor', 'admin'])).all()]
             if form.validate_on_submit():
                 #update the core information
                 core.name = form.name.data
                 core.description = form.description.data
-                core.instructor = form.instructor.data
+                core.instructor = Users.query.filter_by(id=form.instructor.id).first()
                 core.room = Room.query.filter_by(id=form.room.data).first()
                 core.core_period = form.core_period.data
 
@@ -1516,7 +1519,7 @@ def editcore(core_id):
             elif request.method == 'GET':
                 form.name.data = core.name
                 form.description.data = core.description
-                form.instructor.data = core.instructor
+                form.instructor.process_data(core.instructor.id)
                 form.room.process_data(core.room.id)
                 form.core_period.data = core.core_period
 

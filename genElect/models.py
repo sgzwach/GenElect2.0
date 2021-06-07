@@ -27,6 +27,11 @@ class Users(Base, UserMixin):
     registrations = db.relationship('Registrations', backref='user', lazy=True)
     core_registrations = db.relationship('CoreRegistrations', backref='user', lazy=True)
     completed_electives = db.relationship('Completions', backref='user', lazy=True)
+    offerings = db.relationship('Offerings', backref='instructor', lazy=True)
+    cores = db.relationship('Cores', backref='instructor', lazy=True)
+
+    def __repr__(self):
+        return self.full_name
 #    completed_badge_portions = db.relationship('BadgePortions', backref='user', lazy=True) ADD BACK IF BADGES ARE ADDED
 
     # # Future VIP registration option
@@ -52,7 +57,7 @@ class Offerings(Base):
     period_start = db.Column(db.Integer)
     period_length = db.Column(db.Integer)
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
-    instructor = db.Column(db.String(100))
+    instructor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     current_count = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
@@ -80,7 +85,7 @@ class Cores(Base):
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     core_period = db.Column(db.Integer)
     core_difficulty = db.Column(db.String(100))
-    instructor = db.Column(db.String(100))
+    instructor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     registrations = db.relationship('CoreRegistrations', backref='core', lazy=True)
 
 
