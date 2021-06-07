@@ -1507,14 +1507,15 @@ def editcore(core_id):
                 #update the core information
                 core.name = form.name.data
                 core.description = form.description.data
-                core.instructor = Users.query.filter_by(id=form.instructor.id).first()
+                core.instructor = Users.query.filter_by(id=form.instructor.data).first()
                 core.room = Room.query.filter_by(id=form.room.data).first()
                 core.core_period = form.core_period.data
 
                 #commit the changes
                 db.session.commit()
                 flash("Core Info Updated", 'success')
-                return redirect(f'/core/{core_id}')
+                # return redirect(f'/core/{core_id}')
+                return redirect(url_for('allcores'))
 
             elif request.method == 'GET':
                 form.name.data = core.name
