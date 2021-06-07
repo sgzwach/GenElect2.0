@@ -4,6 +4,8 @@ from flask_login import UserMixin
 from sqlalchemy.orm import validates
 from genElect import db
 
+import datetime
+
 # Base model that for other models to inherit from
 class Base(db.Model):
     __abstract__ = True
@@ -98,6 +100,25 @@ class Cores(Base):
     core_difficulty = db.Column(db.String(100))
     instructor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     registrations = db.relationship('CoreRegistrations', backref='core', lazy=True)
+
+    def jsEvents(self):
+        # generate dates
+        if not self.core_period:
+            return []
+        d = datetime.datetime(2021, 6, 14, 9) + datetime.timedelta(hours=1*(self.core_period-1))
+        out = []
+        while d < datetime.datetime(2021, 6, 18):
+            obj = {
+                'id': self.id,
+                'title': self.name + " @ " + str(self.room),
+                'start': d.strftime("%Y-%m-%d %H:%M:%S"),
+                'end': (d+datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                'url': url_for('editevent', id=self.id),
+                'html': render_template('coremodal.html', event=self)
+            }
+            out.append(obj)
+            d += datetime.timedelta(days=1)
+        return out
 
 
 class Completions(Base):

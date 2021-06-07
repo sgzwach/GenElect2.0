@@ -176,6 +176,8 @@ def notregistered():
 @app.route("/complete/<offering_id>")
 def complete(offering_id=None):
     if current_user.is_authenticated and current_user.role == "admin":
+        flash("Individual offering completion is currently disabled", "info")
+        return redirect(url_for('allofferings'))
         if offering_id:
             offering = Offerings.query.filter_by(id=offering_id).first()
             if not offering:
@@ -1001,6 +1003,8 @@ def api_schedule(uid=None):
     if current_user.is_authenticated:
         for r in current_user.registrations:
             events.append(r.offering.jsEvent())
+        for c in current_user.cores:
+            events += c.jsEvents()
     return jsonify(events)
 
 @app.route("/event", methods=['GET', 'POST'])
