@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
 import datetime #for registration time set
@@ -19,7 +20,7 @@ app.config['BASEDIR'] = '.'
 
 #setup database
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch=True)
 db.create_all()
 
 #LOGIN MANAGER
@@ -246,10 +247,13 @@ def settime():
         if form.validate_on_submit():
             set_config("regstart", form.start_time.data)
             set_config("regend", form.end_time.data)
+            d = form.offering_date.data
+            set_config("offerdate", datetime.datetime(d.year, d.month, d.day))
             return redirect(f'settime')
         elif request.method == 'GET':
             form.start_time.data = get_time_config("regstart")
             form.end_time.data = get_time_config("regend")
+            form.offering_date.data = get_time_config("offerdate").date()
         return render_template('settime.html', title='Set Registration Time', form=form)
     else:
         return render_template('denied.html')
@@ -766,7 +770,7 @@ def deleteelective(elective_id):
 #ALL OFFERINGS PAGE
 @app.route("/allofferings")
 def allofferings():
-    offerings = Offerings.query.order_by(Offerings.elective_id).all()
+    offerings = Offerings.query.join(Electives, Offerings.elective).order_by(Offerings.start_time, Electives.name).all()
     return render_template('allofferings.html', offerings=offerings, title="Offerings")
 
 #ADMIN CREATE NEW OFFERING
@@ -793,8 +797,34 @@ def createoffering():
             if not instructor or instructor.role not in ['instructor', 'admin']:
                 flash("Invalid instructor")
             else:
-                new_offering = Offerings(room=room, instructor=instructor, capacity=form.capacity.data, current_count=0, elective_id=int(form.elective.data), period_start=int(form.period_start.data), period_length=int(form.period_length.data))
+                d = form.date.data
+                st = datetime.datetime(d.year, d.month, d.day, 13, 30) + datetime.timedelta(minutes=(form.period_start.data-1)*90)
+                et = st + datetime.timedelta(minutes=90 * form.period_length.data)
+                new_offering = Offerings(
+                    room=room,
+                    instructor=instructor,
+                    capacity=form.capacity.data,
+                    current_count=0,
+                    elective_id=int(form.elective.data),
+                    period_start=int(form.period_start.data),
+                    period_length=int(form.period_length.data),
+                    start_time = st,
+                    end_time = et)
                 db.session.add(new_offering)
+                if form.recur.data:
+                    while (st.date() < form.recur_end_date.data):
+                        st += datetime.timedelta(days=1)
+                        et += datetime.timedelta(days=1)
+                        new_offering = Offerings(
+                            room=room,
+                            instructor=instructor,
+                            capacity=form.capacity.data,
+                            current_count=0,
+                            elective_id=int(form.elective.data),
+                            period_start=int(form.period_start.data),
+                            period_length=int(form.period_length.data),
+                            start_time = st,
+                            end_time = et)
                 db.session.commit()
                 flash(f"Offering created!", 'success')
                 return redirect(url_for('allofferings'))
@@ -837,11 +867,12 @@ def editoffering(offering_id):
             form.elective.choices = choices
             # populate room choices
             form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
+            form.instructor.choices = [(t.id, t.full_name) for t in Users.query.filter(Users.role.in_(['instructor', 'admin'])).order_by('full_name').all()]
             if form.validate_on_submit():
                 elective = Electives.query.filter_by(id=int(form.elective.data)).first()
                 offering.elective = elective
                 offering.room = Room.query.filter_by(id=form.room.data).first()
-                offering.instructor = form.instructor.data
+                offering.instructor = Users.query.filter_by(id=form.instructor.data).first()
                 offering.capacity = form.capacity.data
                 offering.period_start = int(form.period_start.data)
                 offering.period_length = int(form.period_length.data)
@@ -851,10 +882,10 @@ def editoffering(offering_id):
             elif request.method == 'GET':
                 form.elective.data = str(offering.elective.id)
                 form.room.process_data(offering.room.id)
-                form.instructor.data = offering.instructor
+                form.instructor.process_data(offering.instructor.id)
                 form.capacity.data = offering.capacity
-                form.period_start.data = str(offering.period_start)
-                form.period_length.data = str(offering.period_length)
+                form.period_start.process_data(offering.period_start)
+                form.period_length.process_data(offering.period_length)
             return render_template('editoffering.html', offering=offering, form=form, title="Offering Edit")
         else:
             return render_template('notfound.html')
@@ -966,6 +997,10 @@ def campschedule():
 @app.route("/api/schedule/<int:uid>")
 def api_schedule(uid=None):
     events = [e.jsEvent() for e in Event.query.all()]
+    # get user offerings
+    if current_user.is_authenticated:
+        for r in current_user.registrations:
+            events.append(r.offering.jsEvent())
     return jsonify(events)
 
 @app.route("/event", methods=['GET', 'POST'])
@@ -1204,7 +1239,9 @@ def electives():
         search = ""
 
     #QUERY FOR WHAT OFFERINGS TO SHOW
-    all_offerings = Offerings.query.order_by(Offerings.elective_id).all()
+    od = get_time_config("offerdate")
+    ed = od + datetime.timedelta(days=1)
+    all_offerings = Offerings.query.filter(and_(Offerings.start_time >= od, Offerings.start_time <= ed )).order_by(Offerings.elective_id).all()
     offerings = []
     for offering in all_offerings:
         if (period == 0 or offering.period_start == period) and (search == "" or search.lower() in offering.elective.name.lower()):
@@ -1289,6 +1326,8 @@ def register(offering_id):
     currTime = datetime.datetime.now()#.strftime("%H:%M:%S")
     registration_start_time=get_time_config("regstart")
     registration_end_time=get_time_config("regend")
+    od = get_time_config("offerdate")
+    ed = od + datetime.timedelta(days=1)
     if currTime < registration_start_time or currTime > registration_end_time:
         flash(f"It is {currTime} and Registration time is from {registration_start_time} to {registration_end_time}", 'danger')
         return redirect(url_for('electives'))
@@ -1305,7 +1344,7 @@ def register(offering_id):
             flash("Elective already registered for", 'danger')
             return redirect(url_for('electives'))
 
-        offering = Offerings.query.filter_by(id=offering_id).first()
+        offering = Offerings.query.filter(and_(Offerings.start_time >= od, Offerings.start_time <= ed, Offerings.id==offering_id)).first()
         if not offering:
             flash("Elective not found for registration", 'danger')
             return redirect(url_for('electives'))

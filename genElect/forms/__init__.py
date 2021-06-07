@@ -58,10 +58,23 @@ class OfferingForm(FlaskForm):
 	choices = [] #to be filled dynamically
 	elective = SelectField('Elective', choices=choices, validators=[Required()], render_kw={"autofocus": True})
 	capacity = IntegerField('Capacity', validators=[DataRequired()])
-	num_choices = [('1','1'), ('2','2'), ('3','3')]
-	period_start = SelectField('Offering Period', choices=num_choices, validators=[Required()])
-	period_length = SelectField('Offering Length', choices=num_choices, validators=[Required()])
+	num_choices = [(1,'1'), (2,'2'), (3,'3')]
+	period_start = SelectField('Offering Period', choices=num_choices, validators=[Required()], coerce=int)
+	period_length = SelectField('Offering Length', choices=num_choices, validators=[Required()], coerce=int)
+	date = DateField('Offering Date', format="%Y-%m-%d", default=datetime.datetime.now().date())
+	recur = BooleanField('Recurring Event')
+	recur_end_date = DateField('Recur End Date', format="%Y-%m-%d", validators=[Optional()])
 	submit = SubmitField('Save Offering')
+
+	def validate_recur(form, field):
+		if field.data and not form.recur_end_date.data:
+			raise ValidationError("You must enter an end date for recurrence")
+
+	def validate_recur_end_date(form, field):
+		d = field.data
+		r = form.recur.data
+		if r and d and d < form.date.data:
+			raise ValidationError("Recurrence must end in the future")
 
 
 #Form for creating and updating notifications
@@ -75,6 +88,7 @@ class NotificationForm(FlaskForm):
 class TimeSetForm(FlaskForm):
 	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S", render_kw={"autofocus": True})
 	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
+	offering_date = DateField('Offering Date', validators=[DataRequired()], format="%Y-%m-%d")
 	submit = SubmitField('Set Time')
 
 	def validate_start_time(form ,field):

@@ -53,7 +53,6 @@ class CoreRegistrations(Base):
 
 class Offerings(Base):
     __tablename__ = 'offerings'
-    day = db.Column(db.Date)
     period_start = db.Column(db.Integer)
     period_length = db.Column(db.Integer)
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
@@ -62,6 +61,18 @@ class Offerings(Base):
     capacity = db.Column(db.Integer)
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
     registrations = db.relationship('Registrations', backref='offering', lazy=True)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+
+    def jsEvent(self):
+        obj = {
+            'id': self.id,
+            'title': self.elective.name + " @ " + str(self.room),
+            'start': self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'end': self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+            'html': render_template('offeringmodal.html', offering=self)
+        }
+        return obj
 
 #     def __init__(self, elective_id):
 #         self.elective_id  = elective_id
