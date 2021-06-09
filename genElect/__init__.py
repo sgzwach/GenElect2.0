@@ -992,18 +992,29 @@ def deletenotification(notification_id):
 
 #CAMP SCHEDULE PAGE
 @app.route("/campschedule")
-def campschedule():
-    return render_template('campschedule_new.html')
+@app.route("/campschedule/<int:id>")
+def campschedule(id=None):
+    if id and current_user.is_authenticated and current_user.role in ['admin', 'instructor']:
+        user = Users.query.filter_by(id=id).first()
+    else:
+        user = None
+    return render_template('campschedule_new.html', user=user)
 
 @app.route("/api/schedule")
-@app.route("/api/schedule/<int:uid>")
-def api_schedule(uid=None):
+@app.route("/api/schedule/<int:id>")
+def api_schedule(id=None):
     events = [e.jsEvent() for e in Event.query.all()]
     # get user offerings
+    if id and (current_user.role in ['admin', 'instructor']):
+        user = Users.query.filter_by(id=id).first()
+    else:
+        user = current_user
+    if not user:
+        return jsonify([]), 404
     if current_user.is_authenticated:
-        for r in current_user.registrations:
+        for r in user.registrations:
             events.append(r.offering.jsEvent())
-        for c in current_user.core_registrations:
+        for c in user.core_registrations:
             events += c.core.jsEvents()
     else:
         # for each day, hard code core/elective
@@ -1013,14 +1024,14 @@ def api_schedule(uid=None):
                 'title': 'Core Sessions',
                 'start': d.strftime("%Y-%m-%d %H:%M:%S"),
                 'end': (d+datetime.timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S"),
-                'html': render_template('coremodal.html', event={'description': 'Your core sessions will appear here when logged in!'})
+                'html': render_template('coremodal.html', event={'description': 'Your core sessions will appear here when logged in!', 'generic': True})
             }
             events.append(e)
             e = {
                 'title': 'Elective Sessions',
                 'start': (d+datetime.timedelta(hours=4, minutes=30)).strftime("%Y-%m-%d %H:%M:%S"),
                 'end': (d+datetime.timedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
-                'html': render_template('coremodal.html', event={'description': 'Your elective sessions will appear here when logged in!'})
+                'html': render_template('coremodal.html', event={'description': 'Your elective sessions will appear here when logged in!','generic': True})
             }
             events.append(e)
             d += datetime.timedelta(days=1)

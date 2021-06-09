@@ -28,7 +28,7 @@
 	      <td scope="row">{{user.role}}</td>
 	      <td scope="row"><button type="button" onclick="window.location.href = '/edituser/{{user.id}}'" class="btn btn-outline-info">Update</button></td>
 	      {% if user.role == 'student' %}
-	      	<td scope="row"><button type="button" onclick="window.location.href = '/schedule?user_id={{user.id}}'" class="btn btn-outline-info">Schedule</button></td>
+	      	<td scope="row"><button type="button" onclick="window.location.href = '/campschedule/{{user.id}}'" class="btn btn-outline-info">Schedule</button></td>
 	      {% else %}
 	      	<td scope="row">Not a student</td>
 	      {% endif %}

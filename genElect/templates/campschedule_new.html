@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.css">
-<h1>Camp Schedule
+<h1>Camp Schedule {% if user %} - {{ user.full_name }} {% endif %}
 	{% if current_user.role == "admin" %}
 		<a href="{{url_for('createevent')}}" class="btn btn-outline-info">New Event</a>
 	{% endif %}
@@ -24,7 +24,7 @@
       </div>
       <div class="modal-footer">
 				{% if current_user.role == "admin" %}
-					<a class="btn btn-primary" href="#" id="eventModalEditButton">Edit Event</a>
+					<button type="button" class="btn btn-primary" onclick="window.location.href = '#'"id="eventModalEditButton">Edit Event</button>
 				{% endif %}
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
@@ -42,7 +42,11 @@
 				allDaySlot: false,
 				nowIndicator: true,
 				slotMinTime: '07:00:00',
+				{% if user %}
+				events: '{{ url_for("api_schedule", id=user.id)}}',
+				{% else %}
 				events: '/api/schedule',
+				{% endif %}
 				headerToolbar: {
 					end: 'timeGridDay,timeGridWeek today prev,next'
 				},
@@ -50,8 +54,10 @@
 					info.jsEvent.preventDefault();
 					$('#eventModalLabel').text(info.event.title);
 					$('#eventModalBody').html(info.event.extendedProps.html);
-					{% if current_user.role == "admin" %}
-					$('#eventModalEditButton').attr('href', info.event.url);
+					{% if current_user.role == "admin" and not user %}
+					$('#eventModalEditButton').attr('onclick', 'window.location.href = "' + info.event.url + '"');
+					{% elif current_user.role == "admin" %}
+					$('#eventModalEditButton').prop('disabled', true);
 					{% endif %}
 					$('#eventModal').modal('show');
 				}
