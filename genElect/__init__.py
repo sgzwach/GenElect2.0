@@ -861,6 +861,7 @@ def createoffering():
                     flash("Offering template not found", 'danger')
                     return redirect(url_for('allofferings'))
                 else: #fill the new elective with the template information
+                    form.offering_id.process_data(template_id)
                     form.room.process_data(template_offering.room.id)
                     form.instructor.process_data(template_offering.instructor.id)
                     form.capacity.data = template_offering.capacity
@@ -901,6 +902,7 @@ def editoffering(offering_id):
                 st = datetime.datetime(d.year, d.month, d.day, 12, 30) + datetime.timedelta(minutes=90 * (form.period_start.data - 1))
                 et = st + datetime.timedelta(minutes=90)
                 offering.elective = elective
+                print(f'room data {form.room.data}')
                 offering.room = Room.query.filter_by(id=form.room.data).first()
                 offering.instructor = Users.query.filter_by(id=form.instructor.data).first()
                 offering.capacity = form.capacity.data
@@ -919,6 +921,7 @@ def editoffering(offering_id):
                 form.period_start.process_data(offering.period_start)
                 form.period_length.process_data(offering.period_length)
                 form.date.process_data(offering.start_time.date())
+                form.offering_id.data = offering.id
             return render_template('editoffering.html', offering=offering, form=form, title="Offering Edit")
         else:
             return render_template('notfound.html')
@@ -1317,6 +1320,35 @@ def apiGetBuildings():
         return jsonify(ret)
     else:
         return "Unauthorized", 403
+
+@app.route("/api/rooms/offer", methods=["GET", "POST"])
+def apiGetOpenRooms_Offer():
+    if current_user.is_authenticated and current_user.role in ['admin', 'instructor']:
+        if request.method == 'POST':
+            dat = request.get_json()
+            if not dat:
+                flash("Invalid request data", "danger")
+                return "Error", 500
+            vals = {x['name']: x['value'] for x in dat}
+            st = datetime.datetime.strptime(vals['date'], "%Y-%m-%d") + datetime.timedelta(hours=12, minutes=30) + datetime.timedelta(minutes=90 * (int(vals['period_start']) - 1))
+            et = st + datetime.timedelta(minutes=90 * int(vals['period_length']))
+            outrooms = []
+            # this is heavy and gross
+            for r in Room.query.all():
+                if room_is_available(r.id, st, et):
+                    outrooms.append((r.id,str(r)))
+            if 'recur' in vals and vals['recur'] == 'y': # then we must loop for dates
+                ret = datetime.datetime.strptime(vals['recur_end_date'], "%Y-%m-%d") + datetime.timedelta(hours=12, minutes=30)
+                st += datetime.timedelta(days=1)
+                et += datetime.timedelta(days=1)
+                while st <= ret:
+                    for r,n in outrooms:
+                        if not room_is_available(r, st, et):
+                            outrooms.remove((r,n))
+                    st += datetime.timedelta(days=1)
+                    et += datetime.timedelta(days=1)
+            return jsonify(outrooms)
+    return "Nope", 403
 
 #### STUDENT PAGES ####
 

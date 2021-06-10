@@ -1,9 +1,45 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField, DateField, FileField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, IntegerField, SelectMultipleField, DateField, FileField, BooleanField, HiddenField
 from wtforms.validators import DataRequired, Length, EqualTo, Required, ValidationError, Optional
 from wtforms import widgets
 from wtforms.fields.html5 import DateTimeField
 import datetime
+from sqlalchemy import and_, or_
+
+from genElect.models import Offerings, Event
+
+def room_is_available(rid, st, et, oid=None):
+	if not oid:
+		o = Offerings.query.filter(
+			and_(Offerings.room_id == rid,
+				 or_(and_(et >= Offerings.start_time,
+						  et <= Offerings.end_time),
+					 and_(st >= Offerings.start_time,
+						  st <= Offerings.end_time)))).first()
+	else:
+		o = Offerings.query.filter(
+			and_(Offerings.room_id == rid,
+			     Offerings.id != oid,
+				 or_(and_(et >= Offerings.start_time,
+						  et <= Offerings.end_time),
+					 and_(st >= Offerings.start_time,
+						  st <= Offerings.end_time)))).first()
+	e = Event.query.filter(
+		and_(Event.room_id == rid,
+		 or_(and_(et >= Event.start_time,
+				  et <= Event.end_time),
+			 and_(st >= Event.start_time,
+				  st <= Event.end_time)))).first()
+	if o or e:
+		return False
+	else:
+		return True
+
+def core_period_to_datetimes(d, ps, pe):
+	return (datetime.datetime(d.year, d.month, d.day, 8, 30) + datetime.timedelta(minutes=60 * (ps - 1)), datetime.datetime(d.year, d.month, d.day, 9, 30)+ datetime.timedelta(minutes=60 * (pe - 1)))
+
+def offering_period_to_datetimes(d, ps, pe):
+	return (datetime.datetime(d.year, d.month, d.day, 12, 30) + datetime.timedelta(minutes=90 * (ps - 1)), datetime.datetime(d.year, d.month, d.day, 2)+ datetime.timedelta(minutes=90 * (pe - 1)))
 
 #Form for User information (for Administrators)
 class UserForm(FlaskForm):
@@ -64,7 +100,16 @@ class OfferingForm(FlaskForm):
 	date = DateField('Offering Date', format="%Y-%m-%d", default=datetime.datetime.now().date())
 	recur = BooleanField('Recurring Event')
 	recur_end_date = DateField('Recur End Date', format="%Y-%m-%d", validators=[Optional()])
+	offering_id = HiddenField('Offering ID', validators=[Optional()])
 	submit = SubmitField('Save Offering')
+
+	def validate_date(form, field):
+		d = field.data
+		(st, et) = offering_period_to_datetimes(d, form.period_start.data, form.period_length.data)
+		if field.data and st.time() >= datetime.datetime(2021, 6, 14, 8, 30).time() and st.time() <= datetime.datetime(2021, 6, 14, 11, 30).time():
+			raise ValidationError("You cannot schedule an offering during core periods")
+		if not room_is_available(form.room.data, st, et, form.offering_id.data):
+			raise ValidationError("Selected room is occupied")
 
 	def validate_recur(form, field):
 		if field.data and not form.recur_end_date.data:
@@ -75,6 +120,13 @@ class OfferingForm(FlaskForm):
 		r = form.recur.data
 		if r and d and d < form.date.data:
 			raise ValidationError("Recurrence must end in the future")
+		od = form.date.data
+		if r and d and od:
+			while od <= d:
+				(st, et) = offering_period_to_datetimes(od, form.period_start.data, form.period_length.data)
+				if not room_is_available(form.room.data, st, et):
+					raise ValidationError(f"Room is unavailable on {st}")
+				od += datetime.timedelta(days=1)
 
 
 #Form for creating and updating notifications
