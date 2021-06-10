@@ -805,13 +805,16 @@ def createoffering():
         form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
         # fetch instructors
         form.instructor.choices = [(t.id, t.full_name) for t in Users.query.filter(Users.role.in_(['instructor', 'admin'])).order_by('full_name').all()]
+        if current_user.role != 'admin':
+            form.instructor.process_data(current_user.id)
+            form.instructor.render_kw = {'disabled': 'disabled'}
         if form.validate_on_submit():
             #elective = Electives.query.filter_by(id=int(form.elective.data)).first()
             room = Room.query.filter_by(id=form.room.data).first()
             if not room:
                 flash("Invalid room id", "danger")
             instructor = Users.query.filter_by(id=form.instructor.data).first()
-            if not instructor or instructor.role not in ['instructor', 'admin']:
+            if not instructor or instructor.role not in ['instructor', 'admin'] or (current_user.role != 'admin' and instructor.id != current_user.id):
                 flash("Invalid instructor", "danger")
             else:
                 d = form.date.data
@@ -856,7 +859,7 @@ def createoffering():
                     return redirect(url_for('allofferings'))
                 else: #fill the new elective with the template information
                     form.room.process_data(template_offering.room.id)
-                    form.instructor.data = template_offering.instructor
+                    form.instructor.process_data(template_offering.instructor.id)
                     form.capacity.data = template_offering.capacity
                     form.elective.data.process_data(template_offering.elective_id)
                     form.period_start.process_data(template_offering.period_start)
