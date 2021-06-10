@@ -1625,7 +1625,7 @@ def createcore():
 @app.route("/core/<core_id>", methods=['GET', 'POST'])
 @app.route("/editcore/<core_id>", methods=['GET', 'POST'])
 def editcore(core_id):
-    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
+    if current_user.is_authenticated and current_user.role == "admin":
         core = Cores.query.filter_by(id=int(core_id)).first()
         if core:
             #create the core form

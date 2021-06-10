@@ -16,8 +16,10 @@
 	      <th scope="col">Room</th>
 	      <th scope="col">Period</th>
 	      <th scope="col">Roll</th>
-	      <th scope="col">Update</th>
-	      <th scope="col">Delete</th>
+        {% if current_user.role == 'admin' %}
+  	      <th scope="col">Update</th>
+  	      <th scope="col">Delete</th>
+        {% endif %}
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -29,9 +31,17 @@
 	      <td scope="row">{{core.instructor}}</td>
 	      <td scope="row">{{core.room}}</td>
 	      <td scope="row">{{core.core_period}}</td>
-	      <td scope="row"><button type="button" onclick="window.location.href = '/coreroll/{{core.id}}'" class="btn btn-outline-info">Roll</button></td>
-	      <td scope="row"><button type="button" onclick="window.location.href = '/editcore/{{core.id}}'" class="btn btn-outline-info">Update</button></td>
-	      <td scope="row"><button type="button" onclick="window.location.href = '/deletecore/{{core.id}}'" class="btn btn-outline-danger">Delete</button></td>
+        {% if current_user.role == 'admin' or core.instructor == current_user %}
+	       <td scope="row"><button type="button" onclick="window.location.href = '/coreroll/{{core.id}}'" class="btn btn-outline-info">Roll</button></td>
+        {% else %}
+          <td></td>
+        {% endif %}
+        {% if current_user.role == 'admin' %}
+  	      <td scope="row"><button type="button" onclick="window.location.href = '/editcore/{{core.id}}'" class="btn btn-outline-info">Update</button></td>
+  	      <td scope="row"><button type="button" onclick="window.location.href = '/deletecore/{{core.id}}'" class="btn btn-outline-danger">Delete</button></td>
+        {% else %}
+          <td></td>
+        {% endif %}
 	    </tr>
 	    {% endfor %}
 	  </tbody>

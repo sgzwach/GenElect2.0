@@ -72,7 +72,8 @@ class Offerings(Base):
             'title': self.elective.name + " @ " + str(self.room),
             'start': self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             'end': self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
-            'html': render_template('offeringmodal.html', offering=self)
+            'html': render_template('offeringmodal.html', offering=self),
+            'url': '#'
         }
         return obj
 
