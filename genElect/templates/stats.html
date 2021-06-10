@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Admin Statistics Page</h1>
+    <h1>Admin Statistics - Offering Day: {{ date | datetime('date') }}</h1>
     <br><br>
     <h2>Offerings <25% filled</h2>
     <table class="table">
@@ -53,6 +53,4 @@
 	  </tbody>
 	</table>
 
-	<br><br>
-	<button type="button" onclick="window.location.href = '/admin'" class="btn btn-outline-info">Admin Page</button>
 {% endblock content %}

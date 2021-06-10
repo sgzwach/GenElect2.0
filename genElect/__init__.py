@@ -54,6 +54,8 @@ def format_datetime(value, format='full'):
         format="%Y-%m-%d %I:%M%p"
     elif format == 'time':
         format="%I:%M%p"
+    elif format == 'date':
+        format = "%Y-%m-%d"
     return value.strftime(format)
 
 #CONFIG FETCH UTILITY
@@ -157,15 +159,16 @@ def stats():
     if current_user.is_authenticated and current_user.role == "admin" or current_user.role == "instructor":
         empty = []
         full = []
-
-        for offering in Offerings.query.all():
+        ad = get_time_config('offerdate')
+        ed = ad + datetime.timedelta(days=1)
+        for offering in Offerings.query.filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).all():
             if offering.capacity == 0:
                 continue
             elif offering.current_count / offering.capacity <= 0.25:
                 empty.append(offering)
             elif offering.current_count / offering.capacity >= 0.75:
                 full.append(offering)
-        return render_template('stats.html', empty=empty, full=full)
+        return render_template('stats.html', empty=empty, full=full, date=ad)
     else:
         return render_template('denied.html')
 
