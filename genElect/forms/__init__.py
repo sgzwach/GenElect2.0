@@ -86,8 +86,8 @@ class NotificationForm(FlaskForm):
 
 #Form for setting the registration time period
 class TimeSetForm(FlaskForm):
-	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S", render_kw={"autofocus": True})
-	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
+	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M", render_kw={"autofocus": True})
+	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M")
 	offering_date = DateField('Offering Date', validators=[DataRequired()], format="%Y-%m-%d")
 	submit = SubmitField('Set Time')
 
@@ -112,8 +112,8 @@ class EventForm(FlaskForm):
 	title = StringField('Title', validators=[DataRequired(), Length(3,100)], render_kw={"autofocus": True})
 	description = StringField('Description', validators=[DataRequired(), Length(0, 250)])
 	room = SelectField('Room', validators=[Required()], coerce=int)
-	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
-	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M:%S")
+	start_time = DateTimeField('Start Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M")
+	end_time = DateTimeField('End Time', validators=[DataRequired()], format="%Y-%m-%d %H:%M")
 	recur = BooleanField('Recurring Event')
 	recur_end_date = DateField('Recur End Date', format="%Y-%m-%d", validators=[Optional()])
 	submit = SubmitField('Save Event')
