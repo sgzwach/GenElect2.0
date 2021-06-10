@@ -4,6 +4,7 @@
 <h1>Camp Schedule {% if user %} - {{ user.full_name }} {% endif %}
 	{% if current_user.role == "admin" %}
 		<a href="{{url_for('createevent')}}" class="btn btn-outline-info">New Event</a>
+		<a href="{{url_for('allEvents')}}" class="btn btn-outline-info">Event List</a>
 	{% endif %}
 </h1>
 

@@ -1132,6 +1132,31 @@ def editevent(id=None):
     else:
         return render_template('denied.html'), 403
 
+@app.route("/events")
+def allEvents():
+    if current_user.is_authenticated and current_user.role == 'admin':
+        events = Event.query.order_by(Event.start_time, Event.title).all()
+        return render_template('allevents.html', events=events)
+    else:
+        return render_template("denied.html"),403
+
+@app.route("/event/delete/<int:id>", methods=['POST'])
+def deleteEvent(id=None):
+    if current_user.is_authenticated and current_user.role == 'admin':
+        if not id:
+            flash("No valid event id provided", "danger")
+            return redirect(url_for('allEvents'))
+        e = Event.query.filter_by(id=id).first()
+        if not e:
+            flash("Invalid event id", "danger")
+            return redirect(url_for('allEvents'))
+        db.session.delete(e)
+        db.session.commit()
+        flash("Deleted event", "success")
+        return redirect(url_for('allEvents'))
+    else:
+        return render_template("denied.html"),403
+
 @app.route("/building", methods=['GET', 'POST'])
 @app.route("/building/<int:id>", methods=['GET', 'POST'])
 def building(id=None):

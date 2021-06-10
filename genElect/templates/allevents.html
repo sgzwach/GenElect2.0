@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>All Events &nbsp
+      <a href="{{url_for('createevent')}}" class="btn btn-outline-info">New Event</a>
+    </h1><br>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">ID</th>
+	      <th scope="col">Name</th>
+        <th scope="col">Date</th>
+        <th scope="col">Edit</th>
+	      <th scope="col">Delete</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for event in events %}
+	    <tr>
+	      <td scope="row">{{event.id}}</td>
+	      <td scope="row">{{event.title}}</td>
+        <td scope="row">{{event.start_time | datetime}}</td>
+        <td scope="row"><a href="{{url_for('editevent', id=event.id)}}" class="btn btn-outline-info">Edit</a></td>
+        <td scope="row">
+          <form action="{{url_for('deleteEvent', id=event.id)}}" method="post">
+            <input type="submit" class="btn btn-outline-danger" value="Delete"></input>
+          </form>
+        </td>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+{% endblock content %}
