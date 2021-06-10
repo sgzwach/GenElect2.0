@@ -1036,11 +1036,17 @@ def api_schedule(id=None):
         user = current_user
     if not user:
         return jsonify([]), 404
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.role == 'student':
         for r in user.registrations:
             events.append(r.offering.jsEvent())
         for c in user.core_registrations:
             events += c.core.jsEvents()
+    elif current_user.is_authenticated and current_user.role == 'instructor':
+        print(current_user.cores, current_user.offerings)
+        for r in current_user.offerings:
+            events.append(r.jsEvent())
+        for c in current_user.cores:
+            events += c.jsEvents()
     else:
         # for each day, hard code core/elective
         d = datetime.datetime(2021,6,14,9)
