@@ -1,6 +1,6 @@
 <strong>Description: </strong>{{ event.description }}<br>
 {% if not event.generic %}
 <strong>Instructor: </strong>{{ event.instructor }}<br>
-<strong>Start: </strong>{{ event.start_time().strftime('%I:%M%p') }}<br>
-<strong>End: </strong>{{ event.end_time().strftime('%I:%M%p') }}<br>
+<strong>Start: </strong>{{ event.start_time() | datetime('time') }}<br>
+<strong>End: </strong>{{ event.end_time() | datetime('time') }}<br>
 {% endif %}

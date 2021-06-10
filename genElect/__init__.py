@@ -45,6 +45,15 @@ from genElect.models import Building, Room, Event
 
 from genElect.forms import *
 
+# Shawn's time filters (need to break this out to other files later)
+@app.template_filter('datetime')
+def format_datetime(value, format='full'):
+    if format == 'full':
+        format="%Y-%m-%d %I:%M%p"
+    elif format == 'time':
+        format="%I:%M%p"
+    return value.strftime(format)
+
 #CONFIG FETCH UTILITY
 def get_config(key):
     c = Configs.query.filter_by(key=key).first()

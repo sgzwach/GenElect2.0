@@ -102,16 +102,16 @@ class Cores(Base):
     registrations = db.relationship('CoreRegistrations', backref='core', lazy=True)
 
     def start_time(self):
-        return datetime.datetime(2021,6,14,9) + datetime.timedelta(hours=1*(self.core_period-1))
+        return datetime.datetime(2021,6,14,8,30) + datetime.timedelta(hours=1*(self.core_period-1))
 
     def end_time(self):
-        return datetime.datetime(2021,6,14,10) + datetime.timedelta(hours=1*(self.core_period-1))
+        return datetime.datetime(2021,6,14,9,30) + datetime.timedelta(hours=1*(self.core_period-1))
 
     def jsEvents(self):
         # generate dates
         if not self.core_period:
             return []
-        d = datetime.datetime(2021, 6, 14, 9) + datetime.timedelta(hours=1*(self.core_period-1))
+        d = datetime.datetime(2021, 6, 14, 8, 30) + datetime.timedelta(hours=1*(self.core_period-1))
         out = []
         while d < datetime.datetime(2021, 6, 18):
             obj = {

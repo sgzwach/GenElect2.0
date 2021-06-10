@@ -43,6 +43,7 @@
             <p class="article-content">Difficulty: {{ offering.elective.elective_difficulty }}</p>
             <p class="article-content">Current Student Count: {{ offering.current_count }}</p>
             <p class="article-content">Period: {{ offering.period_start }}</p>
+            <p class="article-content">Start Time: {{ offering.start_time | datetime('time') }}</p>
             {% if offering.elective.prerequisites %}
               <span class="article-content">Prerequisites:</span>
               {% for prereq in offering.elective.prerequisites %}

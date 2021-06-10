@@ -1,6 +1,6 @@
 <strong>Description: </strong>{{ offering.elective.description }}<br>
 {% if not offering.generic %}
 <strong>Instructor: </strong>{{ offering.instructor }}<br>
-<strong>Start: </strong>{{ offering.start_time.strftime('%Y-%m-%d %I:%M%p') }}<br>
-<strong>End: </strong>{{ offering.end_time.strftime('%Y-%m-%d %I:%M%p') }}<br>
+<strong>Start: </strong>{{ offering.start_time | datetime }}<br>
+<strong>End: </strong>{{ offering.end_time | datetime }}<br>
 {% endif %}
