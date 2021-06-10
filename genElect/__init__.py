@@ -804,9 +804,9 @@ def createoffering():
             room = Room.query.filter_by(id=form.room.data).first()
             if not room:
                 flash("Invalid room id", "danger")
-            instructor = Users.query.filter_by(id=form.room.data).first()
+            instructor = Users.query.filter_by(id=form.instructor.data).first()
             if not instructor or instructor.role not in ['instructor', 'admin']:
-                flash("Invalid instructor")
+                flash("Invalid instructor", "danger")
             else:
                 d = form.date.data
                 st = datetime.datetime(d.year, d.month, d.day, 13, 30) + datetime.timedelta(minutes=(form.period_start.data-1)*90)
