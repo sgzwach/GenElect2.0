@@ -809,7 +809,7 @@ def createoffering():
                 flash("Invalid instructor", "danger")
             else:
                 d = form.date.data
-                st = datetime.datetime(d.year, d.month, d.day, 13, 30) + datetime.timedelta(minutes=(form.period_start.data-1)*90)
+                st = datetime.datetime(d.year, d.month, d.day, 12, 30) + datetime.timedelta(minutes=(form.period_start.data-1)*90)
                 et = st + datetime.timedelta(minutes=90 * form.period_length.data)
                 new_offering = Offerings(
                     room=room,
@@ -852,9 +852,10 @@ def createoffering():
                     form.room.process_data(template_offering.room.id)
                     form.instructor.data = template_offering.instructor
                     form.capacity.data = template_offering.capacity
-                    form.elective.data = str(template_offering.elective_id)
-                    form.period_start.data = str(template_offering.period_start)
-                    form.period_length.data = str(template_offering.period_length)
+                    form.elective.data.process_data(template_offering.elective_id)
+                    form.period_start.process_data(template_offering.period_start)
+                    form.period_length.process_data(template_offering.period_length)
+                    form.date.process_data(template_offering.start_time.date())
 
         return render_template('createoffering.html', title='Create Offering', form=form)
 
@@ -881,22 +882,28 @@ def editoffering(offering_id):
             form.instructor.choices = [(t.id, t.full_name) for t in Users.query.filter(Users.role.in_(['instructor', 'admin'])).order_by('full_name').all()]
             if form.validate_on_submit():
                 elective = Electives.query.filter_by(id=int(form.elective.data)).first()
+                d = form.date.data
+                st = datetime.datetime(d.year, d.month, d.day, 12, 30) + datetime.timedelta(minutes=90 * (form.period_start.data - 1))
+                et = st + datetime.timedelta(minutes=90)
                 offering.elective = elective
                 offering.room = Room.query.filter_by(id=form.room.data).first()
                 offering.instructor = Users.query.filter_by(id=form.instructor.data).first()
                 offering.capacity = form.capacity.data
                 offering.period_start = int(form.period_start.data)
                 offering.period_length = int(form.period_length.data)
+                offering.start_time = st
+                offering.end_time = et
                 db.session.commit()
                 flash("Offering Info Updated", 'success')
-                return redirect(f'/offering/{offering_id}')
+                return redirect(url_for('allofferings'))
             elif request.method == 'GET':
-                form.elective.data = str(offering.elective.id)
+                form.elective.process_data(offering.elective.id)
                 form.room.process_data(offering.room.id)
                 form.instructor.process_data(offering.instructor.id)
                 form.capacity.data = offering.capacity
                 form.period_start.process_data(offering.period_start)
                 form.period_length.process_data(offering.period_length)
+                form.date.process_data(offering.start_time.date())
             return render_template('editoffering.html', offering=offering, form=form, title="Offering Edit")
         else:
             return render_template('notfound.html')
