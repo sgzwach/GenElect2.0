@@ -43,7 +43,6 @@
               <a class="nav-item nav-link" href="{{ url_for('campschedule') }}">Schedule</a>
               {% if current_user.is_authenticated %}
                 {% if current_user.role == "admin" %}
-                  <!-- <a class="nav-item nav-link" href="{{ url_for('admin') }}">Admin</a> -->
                   <a class="nav-item nav-link" href="{{ url_for('allusers') }}">Users</a>
                   <a class="nav-item nav-link" href="{{ url_for('allnotifications') }}">Notifications</a>
                   <a class="nav-item nav-link" href="{{ url_for('allcores') }}">Cores</a>
@@ -53,7 +52,6 @@
                   <a class="nav-item nav-link" href="{{ url_for('rooms') }}">Rooms</a>
                 {% endif %}
                 {% if current_user.role == "instructor" %}
-                  <a class="nav-item nav-link" href="{{ url_for('instructor') }}">Instructor Panel</a>
                   <a class="nav-item nav-link" href="{{ url_for('allcores') }}">Cores</a>
                   <a class="nav-item nav-link" href="{{ url_for('allelectives') }}">Electives</a>
                   <a class="nav-item nav-link" href="{{ url_for('allofferings') }}">Offerings</a>
@@ -61,7 +59,6 @@
                 {% if current_user.role == "student" %}
                   <a class="nav-item nav-link" href="https://dsu.edu/visit-dsu/files/Campus_Parking_Map.pdf" target="blank">Campus Map</a>
                   <a class="nav-item nav-link" href="/electives">Electives</a>
-                  <!-- <a class="nav-item nav-link" href="/schedule">My Schedule</a> -->
                   <a class="nav-item nav-link" href="/completions">My Completions</a>
                   <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 {% endif %}

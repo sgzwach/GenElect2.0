@@ -861,7 +861,7 @@ def createoffering():
                     form.room.process_data(template_offering.room.id)
                     form.instructor.process_data(template_offering.instructor.id)
                     form.capacity.data = template_offering.capacity
-                    form.elective.data.process_data(template_offering.elective_id)
+                    form.elective.process_data(template_offering.elective_id)
                     form.period_start.process_data(template_offering.period_start)
                     form.period_length.process_data(template_offering.period_length)
                     form.date.process_data(template_offering.start_time.date())
