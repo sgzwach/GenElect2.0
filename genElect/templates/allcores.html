@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>All Cores Page &nbsp<button type="button" onclick="window.location.href = '/createcore'" class="btn btn-outline-info">Create New core</button></h1><br>
+    <h1>All Cores Page &nbsp
+      {% if current_user.role == 'admin' %}
+        <button type="button" onclick="window.location.href = '/createcore'" class="btn btn-outline-info">Create New core</button>
+      {% endif %}
+    </h1><br>
+
 	<table class="table">
 	  <thead>
 	    <tr>
