@@ -131,6 +131,7 @@ class Completions(Base):
     __tablename__ = 'completions'
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     elective_id = db.Column(db.Integer, db.ForeignKey('electives.id'), nullable=False)
+    date = db.Column(db.DateTime)
 
 
 class Prerequisites(Base):

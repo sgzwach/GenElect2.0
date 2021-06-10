@@ -48,6 +48,8 @@ from genElect.forms import *
 # Shawn's time filters (need to break this out to other files later)
 @app.template_filter('datetime')
 def format_datetime(value, format='full'):
+    if not value:
+        return value
     if format == 'full':
         format="%Y-%m-%d %I:%M%p"
     elif format == 'time':
@@ -216,7 +218,11 @@ def completeall():
         registrations = Registrations.query.all()
         offerings = Offerings.query.all()
         for registration in registrations: #complete each registration
-            completion = Completions(user_id=registration.user_id,elective_id=registration.offering.elective.id)
+            completion = Completions(
+                user_id=registration.user_id,
+                elective_id=registration.offering.elective.id,
+                date = registration.offering.start_time
+            )
             db.session.delete(registration) #if we want to dump all registrations while completing them
             db.session.add(completion)
 

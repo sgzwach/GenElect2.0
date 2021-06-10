@@ -3,14 +3,16 @@
 <h1>My Completions and Progress</h1>
     <!-- Print out the completed elective courses -->
     <br><h2>Completed Elective Courses</h2>
-    {% for completion in completions %}
-        <article class="media content-section">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">Completed Elective</a>
-            </div>
-            <h2><a class="article-title" href="#">Elective Course: {{ completion.elective.name }}</a></h2>
-            <p class="article-content">Elective Description: {{ completion.elective.description }}</p>
-        </article>
-    {% endfor %}
+    <table class='table'>
+      <tr>
+        <th>Elective</th>
+        <th>Completed Date</th>
+      </tr>
+      {% for completion in completions %}
+        <tr>
+          <td>{{ completion.elective.name }}</td>
+          <td>{{ completion.date  | datetime }}</td>
+        </tr>
+      {% endfor %}
+    </table>
 {% endblock content %}
