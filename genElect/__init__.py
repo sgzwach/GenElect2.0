@@ -889,6 +889,9 @@ def editoffering(offering_id):
             # populate room choices
             form.room.choices = [(r.id, str(r)) for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all()]
             form.instructor.choices = [(t.id, t.full_name) for t in Users.query.filter(Users.role.in_(['instructor', 'admin'])).order_by('full_name').all()]
+            if current_user.role != 'admin':
+                form.instructor.process_data(current_user.id)
+                form.instructor.render_kw = {'disabled': 'disabled'}
             if form.validate_on_submit():
                 elective = Electives.query.filter_by(id=int(form.elective.data)).first()
                 d = form.date.data
