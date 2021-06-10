@@ -745,7 +745,7 @@ def editelective(elective_id):
 @app.route("/deleteelective/<elective_id>")
 @app.route("/elective/<elective_id>/delete")
 def deleteelective(elective_id):
-    if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
+    if current_user.is_authenticated and (current_user.role == "admin"):
         elective = Electives.query.filter_by(id=elective_id).first()
         if elective:
             #DELETE PREREQ INSTANCES FOR ELECTIVE
