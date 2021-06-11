@@ -1,10 +1,12 @@
+var path = '/api/rooms/offer';
+
 function checkRooms(event) {
   if (event && event.target.id == 'room')
     return
   dict = $('form').serializeArray()
   $.ajax({
       type: 'POST',
-      url: '/api/rooms/offer',
+      url: path,
       data: JSON.stringify(dict), // or JSON.stringify ({name: 'jonas'}),
       contentType: "application/json",
       dataType: 'json'
