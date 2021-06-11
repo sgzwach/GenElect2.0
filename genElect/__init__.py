@@ -42,6 +42,7 @@ from genElect.models import Cores
 from genElect.models import CoreRegistrations
 from genElect.models import Configs
 from genElect.models import Building, Room, Event
+from genElect.models import CoreAttend, OfferingAttend
 
 from genElect.forms import *
 
@@ -1609,6 +1610,22 @@ def attendance(offering_id):
             return render_template('notfound.html')
     else:
         return render_template('denied.html')
+
+
+@app.route('/studentattendance')
+@app.route('/studentattendance/<int:id>')
+def studentattendance(id=None):
+    if current_user.is_authenticated:
+        if current_user.role == 'student':
+            user = current_user
+        elif current_user.role in ['instructor', 'admin'] and id:
+            user = Users.query.filter_by(id=id).first()
+        if user:
+            oa = user.offeringattend
+            ca = user.coreattend
+        return render_template("attendance.html", oa=oa, ca=ca, user=user)
+
+
 
 
 

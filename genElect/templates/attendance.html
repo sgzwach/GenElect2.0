@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Attendance for {{ user.full_name }}&nbsp</h1>
+	<table class="table">
+	  <thead>
+	    <tr>
+        <th>Core</th>
+        <th>Date Attended</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for a in ca %}
+	    <tr>
+	      <td scope="row">{{ a.core }}</td>
+        <td scope="row">{{ a.date | datetime }}</td>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Elective</th>
+        <th>Date Attended</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in oa %}
+      <tr>
+        <td scope="row">{{ a.elective }}</td>
+        <td scope="row">{{ a.date | datetime }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock content %}

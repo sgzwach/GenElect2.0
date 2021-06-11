@@ -31,6 +31,9 @@ class Users(Base, UserMixin):
     completed_electives = db.relationship('Completions', backref='user', lazy=True)
     offerings = db.relationship('Offerings', backref='instructor', lazy=True)
     cores = db.relationship('Cores', backref='instructor', lazy=True)
+    coreattend = db.relationship('CoreAttend', backref='student')
+    offeringattend = db.relationship('OfferingAttend', backref='student')
+
 
     def __repr__(self):
         return self.full_name
@@ -65,6 +68,9 @@ class Offerings(Base):
     registrations = db.relationship('Registrations', backref='offering', lazy=True)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return f'{self.elective.name} w/ {self.instructor} @ {self.room}'
 
     def jsEvent(self):
         obj = {
@@ -101,6 +107,7 @@ class Cores(Base):
     core_difficulty = db.Column(db.String(100))
     instructor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     registrations = db.relationship('CoreRegistrations', backref='core', lazy=True)
+    attendance = db.relationship('CoreAttend', backref='core')
 
     def start_time(self):
         return datetime.datetime(2021,6,14,8,30) + datetime.timedelta(hours=1*(self.core_period-1))
@@ -126,6 +133,9 @@ class Cores(Base):
             out.append(obj)
             d += datetime.timedelta(days=1)
         return out
+
+    def __repr__(self):
+        return f'{self.name} w/ {self.instructor} @ {self.room}'
 
 
 class Completions(Base):
@@ -183,7 +193,19 @@ class Event(Base):
         }
         return obj
 
+class CoreAttend(Base):
+    __tablename__ = 'coreattends'
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    status = db.Column(db.String(25))
+    date = db.Column(db.DateTime(),default=db.func.current_timestamp())
+    core_id = db.Column(db.Integer, db.ForeignKey('cores.id'), nullable=False)
 
+class OfferingAttend(Base):
+    __tablename__ = 'offeringattends'
+    offering_id = db.Column(db.Integer, db.ForeignKey('offerings.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    status = db.Column(db.String(25))
+    date = db.Column(db.DateTime(),default=db.func.current_timestamp())
 
 #### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW
 #### COULD BE COOL TO ALSO EXPORT AND IMPORT THE DIFFERENT BADGES THAT STUDENTS EARN
