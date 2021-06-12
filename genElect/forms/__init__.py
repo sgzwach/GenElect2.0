@@ -12,24 +12,24 @@ def room_is_available(rid, st, et, oid=None):
 	if not oid:
 		o = Offerings.query.filter(
 			and_(Offerings.room_id == rid,
-				 or_(and_(et >= Offerings.start_time,
+				 or_(and_(et > Offerings.start_time,
 						  et <= Offerings.end_time),
 					 and_(st >= Offerings.start_time,
-						  st <= Offerings.end_time)))).first()
+						  st < Offerings.end_time)))).first()
 	else:
 		o = Offerings.query.filter(
 			and_(Offerings.room_id == rid,
 			     Offerings.id != oid,
-				 or_(and_(et >= Offerings.start_time,
+				 or_(and_(et > Offerings.start_time,
 						  et <= Offerings.end_time),
 					 and_(st >= Offerings.start_time,
-						  st <= Offerings.end_time)))).first()
+						  st < Offerings.end_time)))).first()
 	e = Event.query.filter(
 		and_(Event.room_id == rid,
-		 or_(and_(et >= Event.start_time,
+		 or_(and_(et > Event.start_time,
 				  et <= Event.end_time),
 			 and_(st >= Event.start_time,
-				  st <= Event.end_time)))).first()
+				  st < Event.end_time)))).first()
 	if o or e:
 		return False
 	else:
