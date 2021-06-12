@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('date_created', sa.DateTime(), nullable=True),
     sa.Column('date_modified', sa.DateTime(), nullable=True),
-    sa.Column('ip', sa.String(), nullable=True),
+    sa.Column('ip', sa.String(length=32), nullable=True),
     sa.Column('attempts', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )

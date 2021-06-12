@@ -208,7 +208,7 @@ class OfferingAttend(Base):
 
 class LoginAttempt(Base):
     __tablename__ = 'loginattempts'
-    ip = db.Column(db.String)
+    ip = db.Column(db.String(32))
     attempts = db.Column(db.Integer)
 
 #### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW
