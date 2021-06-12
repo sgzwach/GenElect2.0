@@ -206,6 +206,11 @@ class OfferingAttend(Base):
     status = db.Column(db.String(25))
     date = db.Column(db.DateTime(),default=db.func.current_timestamp())
 
+class LoginAttempt(Base):
+    __tablename__ = 'loginattempts'
+    ip = db.Column(db.String)
+    attempts = db.Column(db.Integer)
+
 #### PLAYING WITH THE IDEA OF HAVING BADGES WILL ADD AFTER FIRST YEAR ON NEW
 #### COULD BE COOL TO ALSO EXPORT AND IMPORT THE DIFFERENT BADGES THAT STUDENTS EARN
 

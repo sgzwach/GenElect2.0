@@ -53,6 +53,7 @@ from genElect.models import CoreRegistrations
 from genElect.models import Configs
 from genElect.models import Building, Room, Event
 from genElect.models import CoreAttend, OfferingAttend
+from genElect.models import LoginAttempt
 
 from genElect.forms import *
 
@@ -118,7 +119,18 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
+    attempt = LoginAttempt.query.filter_by(ip=request.remote_addr).first()
+    if attempt and attempt.attempts >= 5:
+        flash("You've execeeded the number of allowed login attempts - your IP is now blocked", "danger")
+        return redirect("/")
     if form.validate_on_submit():
+        if not attempt:
+            attempt = LoginAttempt(ip=request.remote_addr, attempts=1)
+            db.session.add(attempt)
+            db.session.commit()
+        else:
+            attempt.attempts = LoginAttempt.attempts + 1
+            db.session.commit()
         user = Users.query.filter_by(username=form.username.data).first() #login with username for now
 
         #now try email if the username didn't work
@@ -129,6 +141,9 @@ def login():
         if user and bcrypt.checkpw(form.password.data.encode(), user.password):
             login_user(user, remember=form.remember.data)
             flash(f"User {form.username.data} login successful!", 'success')
+            # reset Login attempts for IP
+            attempt.attempts = 0
+            db.session.commit()
             return redirect(url_for('index'))
         else:
             flash("Login failed, try again", 'danger')
