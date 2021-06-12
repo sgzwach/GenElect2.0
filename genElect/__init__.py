@@ -1084,14 +1084,13 @@ def api_schedule(id=None):
         for c in user.core_registrations:
             events += c.core.jsEvents()
     elif current_user.is_authenticated and current_user.role == 'instructor':
-        print(current_user.cores, current_user.offerings)
         for r in current_user.offerings:
             events.append(r.jsEvent())
         for c in current_user.cores:
             events += c.jsEvents()
     else:
         # for each day, hard code core/elective
-        d = datetime.datetime(2021,6,14,9)
+        d = datetime.datetime(2021,6,14,8,30)
         while d < datetime.datetime(2021,6,18):
             e = {
                 'title': 'Core Sessions',
@@ -1102,8 +1101,8 @@ def api_schedule(id=None):
             events.append(e)
             e = {
                 'title': 'Elective Sessions',
-                'start': (d+datetime.timedelta(hours=4, minutes=30)).strftime("%Y-%m-%d %H:%M:%S"),
-                'end': (d+datetime.timedelta(hours=9)).strftime("%Y-%m-%d %H:%M:%S"),
+                'start': (d+datetime.timedelta(hours=4)).strftime("%Y-%m-%d %H:%M:%S"),
+                'end': (d+datetime.timedelta(hours=8, minutes=30)).strftime("%Y-%m-%d %H:%M:%S"),
                 'html': render_template('coremodal.html', event={'description': 'Your elective sessions will appear here when logged in!','generic': True})
             }
             events.append(e)
