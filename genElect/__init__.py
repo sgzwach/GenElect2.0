@@ -447,8 +447,11 @@ def uploadusers():
 #ADMIN ALL USERS PAGE
 @app.route("/allusers")
 def allusers():
-    if current_user.is_authenticated and current_user.role == "admin":
-        users = Users.query.all()
+    if current_user.is_authenticated and current_user.role in ['admin', 'instructor']:
+        if current_user.role == 'admin':
+            users = Users.query.all()
+        else:
+            users = Users.query.filter(or_(Users.role == 'instructor', Users.role == 'student'))
         return render_template('allusers.html', users=users)
     else:
         return render_template('denied.html')
@@ -1084,11 +1087,16 @@ def api_schedule(id=None):
             events.append(r.offering.jsEvent())
         for c in user.core_registrations:
             events += c.core.jsEvents()
-    elif current_user.is_authenticated and current_user.role == 'instructor':
+    elif current_user.is_authenticated and current_user.role == 'instructor' and not user:
         for r in current_user.offerings:
             events.append(r.jsEvent())
         for c in current_user.cores:
             events += c.jsEvents()
+    elif current_user.is_authenticated and current_user.role in ['instructor', 'admin'] and user:
+        for r in user.registrations:
+            events.append(r.offering.jsEvent())
+        for c in user.core_registrations:
+            events += c.core.jsEvents()
     else:
         # for each day, hard code core/elective
         d = datetime.datetime(2021,6,14,8,30)

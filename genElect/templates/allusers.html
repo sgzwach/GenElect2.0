@@ -1,9 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>All Users Page &nbsp
-		<button type="button" onclick="window.location.href = '/createuser'" class="btn btn-outline-info">Create New User</button>
-	    <button type="button" onclick="window.location.href = '/uploadusers'" class="btn btn-outline-info">Upload User CSV File</button>
-	    <button type="button" onclick="window.location.href = '/notregistered'" class="btn btn-outline-info">List Unregistered Users</button>
+      {% if current_user.role == 'admin' %}
+  		  <button type="button" onclick="window.location.href = '/createuser'" class="btn btn-outline-info">Create New User</button>
+  	    <button type="button" onclick="window.location.href = '/uploadusers'" class="btn btn-outline-info">Upload User CSV File</button>
+  	    <button type="button" onclick="window.location.href = '/notregistered'" class="btn btn-outline-info">List Unregistered Users</button>
+      {% endif %}
     </h1><br>
 	<table class="table">
 	  <thead>
@@ -13,9 +15,13 @@
 	      <th scope="col">Username</th>
 	      <th scope="col">Email</th>
 	      <th scope="col">Role</th>
-	      <th scope="col">Update</th>
+        {% if current_user.role == 'admin' %}
+	        <th scope="col">Update</th>
+        {% endif %}
 	      <th scope="col">Schedule</th>
-	      <th scope="col">Delete</th>
+        {% if current_user.role == 'admin' %}
+	        <th scope="col">Delete</th>
+        {% endif %}
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -26,14 +32,17 @@
 	      <td scope="row">{{user.username}}</td>
 	      <td scope="row">{{user.email}}</td>
 	      <td scope="row">{{user.role}}</td>
+        {% if current_user.role == 'admin' %}
 	      <td scope="row"><button type="button" onclick="window.location.href = '/edituser/{{user.id}}'" class="btn btn-outline-info">Update</button></td>
+        {% endif %}
 	      {% if user.role == 'student' %}
 	      	<td scope="row"><button type="button" onclick="window.location.href = '/campschedule/{{user.id}}'" class="btn btn-outline-info">Schedule</button></td>
 	      {% else %}
 	      	<td scope="row">Not a student</td>
 	      {% endif %}
-
+        {% if current_user.role == 'admin' %}
 	      <td scope="row"><button type="button" onclick="window.location.href = '/deleteuser/{{user.id}}'" class="btn btn-outline-danger">Delete</button></td>
+        {% endif %}
 	    </tr>
 	    {% endfor %}
 	  </tbody>
