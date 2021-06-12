@@ -22,7 +22,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../genelect.db'
 mysqluser = os.environ.get('MYSQL_USER')
 mysqlpass = os.environ.get('MYSQL_PASSWORD')
 mysqldb   = os.environ.get('MYSQL_DATABASE')
-proxydepth = os.environ.get('PROXY_DEPTH')
+try:
+    proxydepth = int(os.environ.get('PROXY_DEPTH'))
+except:
+    proxydepth = None
 if mysqluser and proxydepth: # likely behind proxy & in docker
     app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqldb://{mysqluser}:{mysqlpass}@db/{mysqldb}"
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=proxydepth, x_host=proxydepth)
@@ -136,9 +139,10 @@ def login():
             login_user(user, remember=form.remember.data)
             flash(f"User {form.username.data} login successful!", 'success')
             app.logger.info(f"{user.username} logged in successfully")
-            # reset Login attempts for IP
-            attempt.attempts = 0
-            db.session.commit()
+            # reset Login attempts for IP - unless perfect on first attempt in which case record isn't created
+            if attempt:
+                attempt.attempts = 0
+                db.session.commit()
             return redirect(url_for('index'))
         else:
             if not attempt:
