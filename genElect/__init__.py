@@ -171,6 +171,7 @@ def account():
 #INSTRUCTOR PAGE
 @app.route("/instructor")
 def instructor():
+    return redirect("/")
     if current_user.is_authenticated and current_user.role == "admin" or current_user.role == "instructor":
         return render_template('instructor.html')
     else:
