@@ -22,9 +22,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../genelect.db'
 mysqluser = os.environ.get('MYSQL_USER')
 mysqlpass = os.environ.get('MYSQL_PASSWORD')
 mysqldb   = os.environ.get('MYSQL_DATABASE')
-if mysqluser: # likely behind proxy & in docker
+proxydepth = os.environ.get('PROXY_DEPTH')
+if mysqluser and proxydepth: # likely behind proxy & in docker
     app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqldb://{mysqluser}:{mysqlpass}@db/{mysqldb}"
-    app.wsgi_app = ProxyFix(app.wsgi_app)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=proxydepth, x_host=proxydepth)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASEDIR'] = '.'
 
