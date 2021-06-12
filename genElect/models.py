@@ -25,7 +25,7 @@ class Users(Base, UserMixin):
     full_name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     role = db.Column(db.String(32), nullable=False)
-    password = db.Column(db.String(128))
+    password = db.Column(db.Binary(128))
     registrations = db.relationship('Registrations', backref='user', lazy=True)
     core_registrations = db.relationship('CoreRegistrations', backref='user', lazy=True)
     completed_electives = db.relationship('Completions', backref='user', lazy=True)
@@ -33,7 +33,6 @@ class Users(Base, UserMixin):
     cores = db.relationship('Cores', backref='instructor', lazy=True)
     coreattend = db.relationship('CoreAttend', backref='student')
     offeringattend = db.relationship('OfferingAttend', backref='student')
-
 
     def __repr__(self):
         return self.full_name

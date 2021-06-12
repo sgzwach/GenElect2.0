@@ -1,10 +1,12 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.middleware.proxy_fix import ProxyFix
 from sqlalchemy import and_
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
 import datetime #for registration time set
 import bcrypt # new password hashes
+import os # get environment variables
 
 #set app to flask instance
 app = Flask(__name__, template_folder='templates')
@@ -12,15 +14,23 @@ app = Flask(__name__, template_folder='templates')
 #CONFIGURATIONS
 #set secret key
 app.config['SECRET_KEY'] = 'ec19370b6275506ac26a40c4e6c2e597'
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if SECRET_KEY:
+    app.config['SECRET_KEY'] = SECRET_KEY
 #sqlite uri
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../genelect.db'
-
+mysqluser = os.environ.get('MYSQL_USER')
+mysqlpass = os.environ.get('MYSQL_PASSWORD')
+mysqldb   = os.environ.get('MYSQL_DATABASE')
+if mysqluser: # likely behind proxy & in docker
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqldb://{mysqluser}:{mysqlpass}@db/{mysqldb}"
+    app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BASEDIR'] = '.'
 
 #setup database
 db = SQLAlchemy(app)
-migrate = Migrate(app, db, render_as_batch=True)
+migrate = Migrate(app, db, render_as_batch=True, compare_type=True)
 db.create_all()
 
 #LOGIN MANAGER
