@@ -329,11 +329,11 @@ def createuser():
         #correctly append cores to choices for the core dropdowns
         for core in cores:
             if core.core_period == 1:
-                choices1.append((str(core.id),core.name))
+                choices1.append((str(core.id),f'{core.name}-{core.description}'))
             elif core.core_period == 2:
-                choices2.append((str(core.id),core.name))
+                choices2.append((str(core.id),f'{core.name}-{core.description}'))
             else:
-                choices3.append((str(core.id),core.name))
+                choices3.append((str(core.id),f'{core.name}-{core.description}'))
 
         #setting up choices and default data
         form.core1.choices = choices1 #set the choices
@@ -488,11 +488,11 @@ def edituser(user_id):
                 #correctly append cores to choices for the core dropdowns
                 for core in cores:
                     if core.core_period == 1:
-                        choices1.append((str(core.id),core.name))
+                        choices1.append((str(core.id), f'{core.name}-{core.description}'))
                     elif core.core_period == 2:
-                        choices2.append((str(core.id),core.name))
+                        choices2.append((str(core.id),f'{core.name}-{core.description}'))
                     else:
-                        choices3.append((str(core.id),core.name))
+                        choices3.append((str(core.id),f'{core.name}-{core.description}'))
 
                 #setting up choices and default data
                 form.core1.choices = choices1 #set the choices
@@ -678,7 +678,7 @@ def createelective():
 
         #CREATE THE PREREQ LIST CHOICES
         prereq_choices = [('-1','None')]
-        electives = Electives.query.all()
+        electives = Electives.query.order_by(Electives.name).all()
         for elective in electives:
             prereq_choices.append((str(elective.id), elective.name))
         #SET THE PREREQ LIST
@@ -710,7 +710,7 @@ def createelective():
 @app.route("/allelectives")
 def allelectives():
     if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
-        electives = Electives.query.all()
+        electives = Electives.query.order_by(Electives.name).all()
         return render_template('allelectives.html', electives=electives, title="Electives")
     else:
         return render_template('denied.html')
@@ -728,7 +728,7 @@ def editelective(elective_id):
 
             #CREATE THE PREREQ LIST CHOICES
             prereq_choices = [('-1','None')]
-            electives = Electives.query.all()
+            electives = Electives.query.order_by(Electives.name).all()
             for e in electives:
                 if elective != e:
                     prereq_choices.append((str(e.id), e.name))
@@ -834,7 +834,7 @@ def createoffering():
     if current_user.is_authenticated and (current_user.role == "admin" or current_user.role == "instructor"):
         form = OfferingForm()
         choices = []
-        electives = Electives.query.all()
+        electives = Electives.query.order_by(Electives.name).all()
         for elective in electives:
             choices.append((str(elective.id), elective.name))
         form.elective.choices = choices
@@ -920,7 +920,7 @@ def editoffering(offering_id):
         if offering:
             form = OfferingForm()
             choices = []
-            electives = Electives.query.all()
+            electives = Electives.query.order_by(Electives.name).all()
             for elective in electives:
                 choices.append((str(elective.id), elective.name))
             form.elective.choices = choices
@@ -1305,6 +1305,7 @@ def room(id=None):
                 flash("Invalid room info", "danger")
         elif request.method == 'GET':
             if loc:
+                form.building.process_data(loc.building.id)
                 form.name.data = loc.name
                 op = 'Update'
         return render_template("room.html", form=form, op=op)
