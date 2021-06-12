@@ -3,6 +3,8 @@ version: '3.6'
 services:
 
   genelect:
+    logging:
+      driver: syslog
     build:
       context: .
       dockerfile: Dockerfile
