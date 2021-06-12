@@ -451,7 +451,7 @@ def allusers():
         if current_user.role == 'admin':
             users = Users.query.all()
         else:
-            users = Users.query.filter(or_(Users.role == 'instructor', Users.role == 'student'))
+            users = Users.query.filter_by(role='student')
         return render_template('allusers.html', users=users)
     else:
         return render_template('denied.html')
