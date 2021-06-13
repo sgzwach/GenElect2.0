@@ -199,7 +199,7 @@ def stats():
         seats = {x[0]: x[1] for x in seats}
         sections = Offerings.query.with_entities(Offerings.period_start, func.count(Offerings.capacity)).filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).group_by(Offerings.period_start).all()
         sections = {x[0]: x[1] for x in sections}
-        for offering in Offerings.query.filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).all():
+        for offering in Offerings.query.join(Electives, Offerings.elective).filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).order_by(Offerings.period_start, Electives.name).all():
             if offering.capacity == 0:
                 continue
             elif offering.current_count / offering.capacity <= 0.25:
