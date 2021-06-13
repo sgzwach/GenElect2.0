@@ -1386,7 +1386,7 @@ def apiGetOpenRooms_Offer():
             except:
                 oid = None
                 offer = None
-            for r in Room.query.all():
+            for r in Room.query.join(Building, Room.building).order_by(Building.name, Room.name).all():
                 if room_is_available(r.id, st, et, oid):
                     if offer and r.id == offer.room.id:
                         outrooms.append((r.id,str(r),True))
