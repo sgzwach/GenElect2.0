@@ -1376,10 +1376,10 @@ def apiGetOpenRooms_Offer():
             et = st + datetime.timedelta(minutes=90 * int(vals['period_length']))
             outrooms = []
             # this is heavy and gross
-            if 'offering_id' in vals:
+            try:
                 oid = int(vals['offering_id'])
                 offer = Offerings.query.filter_by(id=oid).first()
-            else:
+            except:
                 oid = None
                 offer = None
             for r in Room.query.all():
