@@ -1381,6 +1381,7 @@ def apiGetOpenRooms_Offer():
                 offer = Offerings.query.filter_by(id=oid).first()
             else:
                 oid = None
+                offer = None
             for r in Room.query.all():
                 if room_is_available(r.id, st, et, oid):
                     if offer and r.id == offer.room.id:
