@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.middleware.proxy_fix import ProxyFix
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, current_user
 import datetime #for registration time set
@@ -195,6 +195,10 @@ def stats():
         full = []
         ad = get_time_config('offerdate')
         ed = ad + datetime.timedelta(days=1)
+        seats = Offerings.query.with_entities(Offerings.period_start, func.sum(Offerings.capacity)).filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).group_by(Offerings.period_start).all()
+        seats = {x[0]: x[1] for x in seats}
+        sections = Offerings.query.with_entities(Offerings.period_start, func.count(Offerings.capacity)).filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).group_by(Offerings.period_start).all()
+        sections = {x[0]: x[1] for x in sections}
         for offering in Offerings.query.filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).all():
             if offering.capacity == 0:
                 continue
@@ -202,7 +206,7 @@ def stats():
                 empty.append(offering)
             elif offering.current_count / offering.capacity >= 0.75:
                 full.append(offering)
-        return render_template('stats.html', empty=empty, full=full, date=ad)
+        return render_template('stats.html', empty=empty, full=full, date=ad, sections=sections, seats=seats)
     else:
         return render_template('denied.html')
 
@@ -1393,9 +1397,9 @@ def apiGetOpenRooms_Offer():
                 st += datetime.timedelta(days=1)
                 et += datetime.timedelta(days=1)
                 while st <= ret:
-                    for r,n in outrooms:
-                        if not room_is_available(r, st, et):
-                            outrooms.remove((r,n))
+                    for r,n,a in outrooms:
+                        if not room_is_available(r, st, et, a):
+                            outrooms.remove((r,n,a))
                     st += datetime.timedelta(days=1)
                     et += datetime.timedelta(days=1)
             return jsonify(outrooms)

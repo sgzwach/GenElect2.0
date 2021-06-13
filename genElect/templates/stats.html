@@ -1,12 +1,32 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>Admin Statistics - Offering Day: {{ date | datetime('date') }}</h1>
-    <br><br>
+    <hr>
+    <h2>Offering Stats</h2>
+    <table class='table'>
+      <tr>
+        <th></th>
+        <th>Period 1</th>
+        <th>Period 2</th>
+        <th>Period 3</th>
+      </tr>
+      <tr>
+        <td>Offerings</td>
+        <td>{% if 1 in sections.keys() %}{{ sections[1] }}{% else %}0{% endif %}</td>
+        <td>{% if 2 in sections.keys() %}{{ sections[2] }}{% else %}0{% endif %}</td>
+        <td>{% if 3 in sections.keys() %}{{ sections[3] }}{% else %}0{% endif %}</td>
+      </tr>
+      <tr>
+        <td>Seats</td>
+        <td>{% if 1 in seats.keys() %}{{ seats[1] }}{% else %}0{% endif %}</td>
+        <td>{% if 2 in seats.keys() %}{{ seats[2] }}{% else %}0{% endif %}</td>
+        <td>{% if 3 in seats.keys() %}{{ seats[3] }}{% else %}0{% endif %}</td>
+      </tr>
+    </table>
     <h2>Offerings <25% filled</h2>
     <table class="table">
 	  <thead>
 	    <tr>
-	      <th scope="col">Offering ID</th>
 	      <th scope="col">Elective Name</th>
 	      <th scope="col">Instructor Name</th>
 	      <th scope="col">Period</th>
@@ -17,12 +37,11 @@
 	  <tbody>
 	  	{% for offering in empty %}
 	    <tr>
-	      <th scope="row">{{offering.id}}</th>
-	      <th scope="row">{{offering.elective.name}}</th>
-	      <th scope="row">{{offering.instructor}}</th>
-	      <th scope="row">{{offering.period_start}}</th>
-	      <th scope="row">{{offering.capacity}}</th>
-	      <th scope="row">{{offering.current_count}}</th>
+	      <td scope="row">{{offering.elective.name}}</td>
+	      <td scope="row">{{offering.instructor}}</td>
+	      <td scope="row">{{offering.period_start}}</td>
+	      <td scope="row">{{offering.capacity}}</td>
+	      <td scope="row">{{offering.current_count}}</td>
 	    {% endfor %}
 	  </tbody>
 	</table>
@@ -32,7 +51,6 @@
     <table class="table">
 	  <thead>
 	    <tr>
-	      <th scope="col">Offering ID</th>
 	      <th scope="col">Elective Name</th>
 	      <th scope="col">Instructor Name</th>
 	      <th scope="col">Period</th>
@@ -43,12 +61,11 @@
 	  <tbody>
 	  	{% for offering in full %}
 	    <tr>
-	      <th scope="row">{{offering.id}}</th>
-	      <th scope="row">{{offering.elective.name}}</th>
-	      <th scope="row">{{offering.instructor}}</th>
-	      <th scope="row">{{offering.period_start}}</th>
-	      <th scope="row">{{offering.capacity}}</th>
-	      <th scope="row">{{offering.current_count}}</th>
+	      <td scope="row">{{offering.elective.name}}</td>
+	      <td scope="row">{{offering.instructor}}</td>
+	      <td scope="row">{{offering.period_start}}</td>
+	      <td scope="row">{{offering.capacity}}</td>
+	      <td scope="row">{{offering.current_count}}</td>
 	    {% endfor %}
 	  </tbody>
 	</table>
