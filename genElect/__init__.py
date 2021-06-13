@@ -1087,12 +1087,12 @@ def api_schedule(id=None):
             events.append(r.offering.jsEvent())
         for c in user.core_registrations:
             events += c.core.jsEvents()
-    elif current_user.is_authenticated and current_user.role == 'instructor' and not user:
+    elif current_user.is_authenticated and current_user.role == 'instructor' and not id:
         for r in current_user.offerings:
             events.append(r.jsEvent())
         for c in current_user.cores:
             events += c.jsEvents()
-    elif current_user.is_authenticated and current_user.role in ['instructor', 'admin'] and user:
+    elif current_user.is_authenticated and current_user.role in ['instructor', 'admin'] and id:
         for r in user.registrations:
             events.append(r.offering.jsEvent())
         for c in user.core_registrations:
