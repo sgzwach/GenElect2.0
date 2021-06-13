@@ -1383,7 +1383,7 @@ def apiGetOpenRooms_Offer():
                 oid = None
             for r in Room.query.all():
                 if room_is_available(r.id, st, et, oid):
-                    if r.id == offer.room.id:
+                    if offer and r.id == offer.room.id:
                         outrooms.append((r.id,str(r),True))
                     else:
                         outrooms.append((r.id,str(r),False))
