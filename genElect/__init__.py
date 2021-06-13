@@ -1376,9 +1376,17 @@ def apiGetOpenRooms_Offer():
             et = st + datetime.timedelta(minutes=90 * int(vals['period_length']))
             outrooms = []
             # this is heavy and gross
+            if 'offering_id' in vals:
+                oid = int(vals['offering_id'])
+                offer = Offerings.query.filter_by(id=oid).first()
+            else:
+                oid = None
             for r in Room.query.all():
-                if room_is_available(r.id, st, et):
-                    outrooms.append((r.id,str(r)))
+                if room_is_available(r.id, st, et, oid):
+                    if r.id == offer.room.id:
+                        outrooms.append((r.id,str(r),True))
+                    else:
+                        outrooms.append((r.id,str(r),False))
             if 'recur' in vals and vals['recur'] == 'y' and vals['recur_end_date'] != "": # then we must loop for dates
                 ret = datetime.datetime.strptime(vals['recur_end_date'], "%Y-%m-%d") + datetime.timedelta(hours=12, minutes=30)
                 st += datetime.timedelta(days=1)

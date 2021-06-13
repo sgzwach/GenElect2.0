@@ -14,6 +14,8 @@ function checkRooms(event) {
     $('#room').empty();
     $.each(data, function(k,v){
       $('#room').append($("<option></option>").attr("value", v[0]).text(v[1]));
+      if (v[2])
+        $('#room').val(v[0]);
     });
   });
 }
