@@ -941,7 +941,7 @@ def editoffering(offering_id):
                 elective = Electives.query.filter_by(id=int(form.elective.data)).first()
                 d = form.date.data
                 st = datetime.datetime(d.year, d.month, d.day, 12, 30) + datetime.timedelta(minutes=90 * (form.period_start.data - 1))
-                et = st + datetime.timedelta(minutes=90)
+                et = st + datetime.timedelta(minutes=90 * form.period_length.data)
                 offering.elective = elective
                 print(f'room data {form.room.data}')
                 offering.room = Room.query.filter_by(id=form.room.data).first()
