@@ -2,9 +2,9 @@
 {% block content %}
     <h1>{{title}} {% if od %}{{od | datetime('date')}}{% endif %} &nbsp
       <button type="button" onclick="window.location.href = '/createoffering'" class="btn btn-outline-info">New Offering</button>
+      <button type="button" onclick="window.location.href = '/stats'" class="btn btn-outline-info">Stats</button>
       {% if current_user.role == 'admin' %}
         <button type="button" onclick="window.location.href = '/settime'" class="btn btn-outline-info">Set Registration Time</button>
-        <button type="button" onclick="window.location.href = '/stats'" class="btn btn-outline-info">Stats</button>
         <button type="button" data-toggle="modal" data-target="#completeModal" class="btn btn-outline-info">Complete Registrations</button>
       {% endif %}
       {% if od %}
