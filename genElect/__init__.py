@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, flash, redirect, request, jsonify
+from flask import Flask, render_template, url_for, flash, redirect, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.middleware.proxy_fix import ProxyFix
 from sqlalchemy import and_, func
@@ -833,8 +833,33 @@ def deleteelective(elective_id):
 #ALL OFFERINGS PAGE
 @app.route("/allofferings")
 def allofferings():
-    offerings = Offerings.query.join(Electives, Offerings.elective).order_by(Offerings.start_time, Electives.name).all()
-    return render_template('allofferings.html', offerings=offerings, title="Offerings")
+    if current_user.is_authenticated and current_user.role in ['admin', 'instructor']:
+        if not session.get('activeofferings', False): # check if they want active only or not
+            offerings = Offerings.query.join(Electives, Offerings.elective).order_by(Offerings.start_time, Electives.name).all()
+            return render_template('allofferings.html', offerings=offerings, title="All Offerings")
+        else:
+            ad = get_time_config("offerdate")
+            ed = ad + datetime.timedelta(days=1)
+            offerings = Offerings.query.join(Electives, Offerings.elective).filter(and_(Offerings.start_time >= ad, Offerings.end_time <= ed)).order_by(Offerings.start_time, Electives.name).all()
+            return render_template('allofferings.html', offerings=offerings, title="Offerings", od=ad)
+    else:
+        flash("Access denied", "danger")
+        return redirect('/')
+
+@app.route("/offerings/active")
+def setactiveofferings():
+    if current_user.is_authenticated:
+        session['activeofferings'] = True
+    return redirect(url_for('allofferings'))
+
+@app.route("/offerings/all")
+def unsetactiveofferings():
+    if current_user.is_authenticated:
+        session['activeofferings'] = False
+    return redirect(url_for('allofferings'))
+
+
+
 
 #ADMIN CREATE NEW OFFERING
 #Elective Creator Page (TESTING ROUTE)
