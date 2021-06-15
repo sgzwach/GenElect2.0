@@ -11,13 +11,19 @@
         <th>Period 3</th>
       </tr>
       <tr>
-        <td>Offerings</td>
+        <td>Available Offerings</td>
         <td>{% if 1 in sections.keys() %}{{ sections[1] }}{% else %}0{% endif %}</td>
         <td>{% if 2 in sections.keys() %}{{ sections[2] }}{% else %}0{% endif %}</td>
         <td>{% if 3 in sections.keys() %}{{ sections[3] }}{% else %}0{% endif %}</td>
       </tr>
       <tr>
-        <td>Seats</td>
+        <td>Total Occupied Seats</td>
+        <td>{% if 1 in occupied.keys() %}{{ occupied[1] }}{% else %}0{% endif %}</td>
+        <td>{% if 2 in occupied.keys() %}{{ occupied[2] }}{% else %}0{% endif %}</td>
+        <td>{% if 3 in occupied.keys() %}{{ occupied[3] }}{% else %}0{% endif %}</td>
+      </tr>
+      <tr>
+        <td>Total Seats</td>
         <td>{% if 1 in seats.keys() %}{{ seats[1] }}{% else %}0{% endif %}</td>
         <td>{% if 2 in seats.keys() %}{{ seats[2] }}{% else %}0{% endif %}</td>
         <td>{% if 3 in seats.keys() %}{{ seats[3] }}{% else %}0{% endif %}</td>

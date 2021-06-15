@@ -199,6 +199,8 @@ def stats():
         seats = {x[0]: x[1] for x in seats}
         sections = Offerings.query.with_entities(Offerings.period_start, func.count(Offerings.capacity)).filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).group_by(Offerings.period_start).all()
         sections = {x[0]: x[1] for x in sections}
+        occupied = Offerings.query.with_entities(Offerings.period_start, func.count(Offerings.current_count)).filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).group_by(Offerings.period_start).all()
+        occupied = {x[0]: x[1] for x in occupied}
         for offering in Offerings.query.join(Electives, Offerings.elective).filter(and_(Offerings.start_time >= ad, Offerings.start_time <= ed)).order_by(Offerings.period_start, Electives.name).all():
             if offering.capacity == 0:
                 continue
@@ -206,7 +208,7 @@ def stats():
                 empty.append(offering)
             elif offering.current_count / offering.capacity >= 0.75:
                 full.append(offering)
-        return render_template('stats.html', empty=empty, full=full, date=ad, sections=sections, seats=seats)
+        return render_template('stats.html', empty=empty, full=full, date=ad, sections=sections, seats=seats, occupied=occupied)
     else:
         return render_template('denied.html')
 
